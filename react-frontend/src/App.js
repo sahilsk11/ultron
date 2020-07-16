@@ -6,7 +6,7 @@ function App() {
   const onClickFunction = listening ? SpeechRecognition.stopListening : () => SpeechRecognition.startListening({ continuous: true });
   const send = () => {
     const simulateProd = true;
-    const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "http://api.sahilkapur.com" : "http://localhost:8080/addDailyWeight?";
+    const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080/addDailyWeight?";
     const params = "transcript="+transcript;
     fetch(endpoint+params)
       .then(response => response.json())
