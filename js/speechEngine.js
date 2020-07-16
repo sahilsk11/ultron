@@ -41,6 +41,7 @@ const intentRouter = ({ intent, transcript }) => {
  */
 const addWeightIntent = ({ transcript }) => {
   let intentBody = {};
+  transcript = transcript.toLowerCase();
   const metrics = ["weight", "bmi", "muscle mass", "bone mass", "body fat"];
   for (const metric of metrics) {
     const metricNameStartIndex = transcript.indexOf(metric);
