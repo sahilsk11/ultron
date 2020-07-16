@@ -7,7 +7,7 @@ function App() {
   const send = () => {
     const simulateProd = true;
     const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com/addDailyWeight" : "http://localhost:8080/addDailyWeight";
-    const params = "?transcript="+transcript;
+    const params = "?transcript="+transcript.toLowerCase();
     fetch(endpoint+params)
       .then(response => response.json())
       .then(data => alert(data));

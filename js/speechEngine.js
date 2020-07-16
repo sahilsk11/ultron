@@ -44,7 +44,7 @@ const addWeightIntent = ({ transcript }) => {
   transcript = transcript.toLowerCase();
   const metrics = ["weight", "bmi", "muscle mass", "bone mass", "body fat"];
   for (const metric of metrics) {
-    const metricNameStartIndex = transcript.indexOf(metric);
+    const metricNameStartIndex = transcript.lastIndexOf(metric);
     if (metricNameStartIndex >= 0) {
       const metricValueStartIndex = metricNameStartIndex + metric.length + 1; //second char after metric name; could be out of bounds
       if (metricValueStartIndex < transcript.length) {
