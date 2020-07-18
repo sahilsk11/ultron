@@ -15,9 +15,9 @@ const addDailyWeightEntry = async ({ weight, bmi, bodyFat, muscleMass, waterMass
         fields: {
           "weight (lbs)": weight,
           "bmi": bmi,
-          "body fat": bodyFat/100,
-          "muscle mass": muscleMass/100,
-          "bone mass": boneMass/100
+          "body fat": bodyFat / 100,
+          "muscle mass": muscleMass / 100,
+          "bone mass": boneMass / 100
         }
       }
     ]
@@ -27,6 +27,21 @@ const addDailyWeightEntry = async ({ weight, bmi, bodyFat, muscleMass, waterMass
   console.log(response.status)
 }
 
-module.exports = {
-  addDailyWeightEntry
+const getGitCommits = async () => {
+  const url = "http://localhost:5000/gitCommits"
+  let response = await axios.get(url);
+  // {
+  //   "code": 200,
+  //   "commits": "527"
+  // }
+  // console.log({ ...response, message: "You have " + response.commits + " commits in the past year." });
+  response = response.data;
+  return { ...response, message: "You have " + response.commits + " commits in the past year." } 
 }
+
+module.exports = {
+  addDailyWeightEntry,
+  getGitCommits
+}
+
+getGitCommits();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import actionLauncher from "./actionLauncher";
 import "./App.css"
 
 function App() {
@@ -11,6 +12,8 @@ function App() {
     if (listening) {
       setMessage("Go ahead...");
       setUpdateTime(new Date());
+    } else {
+      setMessage("Hello, Sahil.");
     }
     if (!listening && transcript !== '') {
       send({ transcript, startListening: SpeechRecognition.startListening, resetTranscript, setMessage })
@@ -22,18 +25,18 @@ function App() {
   useInterval(() => {
     if (transcript !== '' && listening) {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
-      console.log(timeDiff);
-      if (timeDiff > 3) {
+      if (timeDiff > 2) {
+        setMessage("processing...")
+        resetTranscript();
         send({ transcript, startListening: SpeechRecognition.startListening, resetTranscript, setMessage })
-        setTimeout(() => resetTranscript(), 1000);
       }
     }
-  }, transcript !== '' ? 2000 : null);
+  }, transcript !== '' ? 1000 : null);
 
   return (
     <div>
       <h2 className="greeting">{message}</h2>
-      <img className="voice-icon" onClick={() => SpeechRecognition.startListening({ continuous: true })}
+      <img className="voice-icon" onClick={() => listening ? SpeechRecognition.stopListening() : SpeechRecognition.startListening({ continuous: true })}
         src="https://cdn.dribbble.com/users/32512/screenshots/5668419/calm_ai_design_by_gleb.gif" />
       <div className="listening" />
       <p className="transcript"><em>{transcript}</em></p>
@@ -50,10 +53,7 @@ const send = async ({ transcript, startListening, resetTranscript, setMessage })
   fetch(endpoint + params)
     .then(response => response.json())
     .then(data => {
-      if (data.intent === "launch") {
-        window.open(data.url);
-        setMessage("Launching Lyft...")
-      }
+      actionLauncher({ data, setMessage });
     });
   setTimeout(() => {
     resetTranscript();
