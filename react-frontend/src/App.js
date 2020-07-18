@@ -45,7 +45,7 @@ function App() {
 
 const send = async ({ transcript, startListening, resetTranscript, setMessage }) => {
   const simulateProd = false;
-  const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com/addDailyWeight" : "http://localhost:8080/setIntent";
+  const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com/setIntent" : "http://localhost:8080/setIntent";
   const params = "?transcript=" + transcript.toLowerCase();
   fetch(endpoint + params)
     .then(response => response.json())
