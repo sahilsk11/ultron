@@ -139,7 +139,7 @@ const addWeightIntent = ({ transcript }) => {
 
 const launchIntent = ({ transcript }) => {
   if (transcript.includes("google")) {
-    const cleanedTranscript = transcript.replace("google", "");
+    let cleanedTranscript = transcript.replace("google", "");
     return { url: "https://google.com/search?q=" + cleanedTranscript, app: "Google" }
   }
   if (transcript.includes("git")) {
@@ -150,11 +150,20 @@ const launchIntent = ({ transcript }) => {
   }
   if (transcript.includes("gym") || transcript.includes("workout") || transcript.includes("lift")) {
     return { url: "https://gym.sahilkapur.com", app: "Lyft" };
-  } else if (transcript.includes("robinhood") || transcript.includes("robin hood")) {
-    return { url: "https://robinhood.com", app: "Robinhood" };
-  } else {
-    return { code: 400, message: "Could not find app to launch" };
   }
+  if (transcript.includes("robinhood") || transcript.includes("robin hood")) {
+    return { url: "https://robinhood.com", app: "Robinhood" };
+  }
+  if (transcript.includes("twitter")) {
+    return  { url: "https://twitter.com", app: "Twitter" };
+  }
+  if (transcript.includes("youtube")) {
+    return { url: "https://youtube.com", app: "Twitter" };
+  }
+  if (transcript.includes("swat")) {
+    return { url: "https://apptest.headspin.io", app: "SWAT" };
+  }
+  return { code: 400, message: "Could not find app to launch" };
 }
 
 const smallTalkIntent = ({ transcript }) => {
