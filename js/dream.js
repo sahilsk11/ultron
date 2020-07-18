@@ -43,5 +43,3 @@ module.exports = {
   addDailyWeightEntry,
   getGitCommits
 }
-
-getGitCommits();

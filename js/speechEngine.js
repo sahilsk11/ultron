@@ -142,6 +142,12 @@ const launchIntent = ({ transcript }) => {
     const cleanedTranscript = transcript.replace("google", "");
     return { url: "https://google.com/search?q=" + cleanedTranscript, app: "Google" }
   }
+  if (transcript.includes("git")) {
+    const repoIndexStart = indexOfNextSpace(transcript.indexOf("git"), transcript) + 1;
+    const repoEndIndex = indexOfNextSpace(repoIndexStart, transcript);
+    const repoName = transcript.substring(repoIndexStart, repoEndIndex);
+    return { url: "https://github.com/sahilsk11/" + repoName, app: "GitHub" }
+  }
   if (transcript.includes("gym") || transcript.includes("workout") || transcript.includes("lift")) {
     return { url: "https://gym.sahilkapur.com", app: "Lyft" };
   } else if (transcript.includes("robinhood") || transcript.includes("robin hood")) {
