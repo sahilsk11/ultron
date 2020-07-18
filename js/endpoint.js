@@ -26,4 +26,11 @@ app.get("/addDailyWeight", async (req, res) => {
   const response = await dream.addDailyWeightEntry({ weight, bmi, bodyFat, muscleMass, waterMass, boneMass });
   console.log({ weight, bmi, bodyFat, muscleMass, waterMass, boneMass })
   res.json({ code: 200 });
-})
+});
+
+app.get("/setIntent", async (req, res) => {
+  const transcript = req.query.transcript;
+  const intent = speechEngine.intentParser({ transcript });
+  const body = await speechEngine.intentRouter({intent, transcript});
+  res.json({ code: 200, intent, ...body })
+});

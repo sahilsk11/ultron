@@ -17,20 +17,32 @@ const intentParser = ({ transcript }) => {
   const intents = {
     "addWeight": {
       utterances: ["add weight", "how much i weigh"]
+    },
+    "displayCapabilities": {
+      utterances: ["what can you do", "show me your power"]
+    },
+    "greeting": {
+      utterances: ["good evening", "good morning", "what's up", "what's good"]
+    },
+    "launch": {
+      utterances: ["launch"]
     }
   }
-  for (const intent in Object.keys(intents)) {
+  for (const intent of Object.keys(intents)) {
     for (const utterance of intents[intent].utterances) {
       if (transcript.toLowerCase().includes(utterance)) {
         return intent;
       }
     }
   }
+  return "unknown";
 }
 
-const intentRouter = ({ intent, transcript }) => {
+const intentRouter = async ({ intent, transcript }) => {
   switch (intent) {
     case "addWeight": return addWeightIntent({ transcript });
+    case "launch": return launchIntent({ transcript });
+    case "unknown": return {};
   }
 }
 
@@ -57,6 +69,11 @@ const addWeightIntent = ({ transcript }) => {
   return intentBody;
 }
 
+const launchIntent = ({ transcript }) => {
+  if (transcript.includes("gym")) {
+    return { url: "https://gym.sahilkapur.com" };
+  }
+}
 
 /* Helper functions */
 
@@ -78,5 +95,7 @@ const toCamelCase = (str) => {
 }
 
 module.exports = {
-  addWeightIntent
+  addWeightIntent,
+  intentParser,
+  intentRouter
 }
