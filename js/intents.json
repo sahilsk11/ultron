@@ -1,0 +1,114 @@
+{
+  "addWeight": {
+    "utterances": [
+      "add weight",
+      "how much i weigh"
+    ],
+    "regex": "",
+    "priority": 10
+  },
+  "displayCapabilities": {
+    "utterances": [
+      "what can you do",
+      "show me your power"
+    ],
+    "regex": "",
+    "priority": 3
+  },
+  "greeting": {
+    "utterances": [
+      "hello",
+      "good evening",
+      "morning",
+      "rise and shine"
+    ],
+    "regex": "",
+    "priority": 1
+  },
+  "launch": {
+    "utterances": [
+      "launch",
+      "google"
+    ],
+    "regex": "",
+    "priority": 4
+  },
+  "smallTalk": {
+    "utterances": [
+      "good to see you",
+      "what it do",
+      "what's new",
+      "how are you",
+      "have you been",
+      "what's up",
+      "what's good",
+      "you too",
+      "what's on your mind"
+    ],
+    "regex": "",
+    "priority": 5
+  },
+  "ping": {
+    "utterances": [
+      "hey dummy",
+      "you there",
+      "you listening",
+      "you listening",
+      "knock knock",
+      "wake up"
+    ],
+    "regex": "",
+    "priority": 1
+  },
+  "lateNight": {
+    "utterances": [
+      "not waking up now",
+      "I've been up",
+      "not exactly waking up",
+      "not really waking up",
+      "haven't slept"
+    ],
+    "regex": "",
+    "priority": 1
+  },
+  "confirm": {
+    "utterances": [
+      "yeah",
+      "that's correct",
+      "something like that",
+      "nailed it",
+      "not bad"
+    ],
+    "regex": "",
+    "priority": 1
+  },
+  "philosophy": {
+    "utterances": [],
+    "regex": "",
+    "priority": 1
+  },
+  "flipCoin": {
+    "utterances": [
+      "flip a coin",
+      "heads or tails",
+      "flip again"
+    ],
+    "regex": "",
+    "priority": 1
+  },
+  "githubCommits": {
+    "utterances": [
+      "github commits",
+      "git commit"
+    ],
+    "regex": "",
+    "priority": 1
+  },
+  "domainLookup": {
+    "utterances": [
+      "domain lookup"
+    ],
+    "regex": "",
+    "priority": 1
+  }
+}

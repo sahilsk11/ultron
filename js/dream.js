@@ -39,7 +39,18 @@ const getGitCommits = async () => {
   return { ...response, message: "You have " + response.commits + " commits in the past year." } 
 }
 
+const checkDomainAvailability = async (domainName) => {
+  const url = "https://domain-availability.whoisxmlapi.com/api/v1";
+  const params = `?apiKey=${process.env.WHOIS_API_KEY}&domainName=${domainName}`;
+  console.log(url + params)
+  let response = await axios.get(url + params);
+  response = response.data;
+  console.log(response);
+  return response;
+}
+
 module.exports = {
   addDailyWeightEntry,
-  getGitCommits
+  getGitCommits,
+  checkDomainAvailability
 }

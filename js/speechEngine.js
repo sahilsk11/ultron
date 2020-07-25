@@ -1,4 +1,5 @@
 const dream = require("./dream");
+const intents = require("./intents.json")
 
 /**
  * Convert raw string input to corrected text based on known errors in STT
@@ -16,49 +17,20 @@ const correctTranscript = ({ transcript }) => {
  * @return string name of the intent
  */
 const intentParser = ({ transcript }) => {
-  const intents = {
-    "addWeight": {
-      utterances: ["add weight", "how much i weigh"]
-    },
-    "displayCapabilities": {
-      utterances: ["what can you do", "show me your power"]
-    },
-    "greeting": {
-      utterances: ["hello", "good evening", "morning", "rise and shine"]
-    },
-    "launch": {
-      utterances: ["launch", "google"]
-    },
-    "smallTalk": {
-      utterances: ["good to see you", "what it do", "what's new", "how are you", "have you been", "what's up", "what's good", "you too", "what's on your mind"]
-    },
-    "ping": {
-      utterances: ["hey dummy", "you there", "you listening", "you listening", "knock knock", "wake up"]
-    },
-    "lateNight": {
-      utterances: ["not waking up now", "I've been up", "not exactly waking up", "not really waking up", "haven't slept"]
-    },
-    "confirm": {
-      utterances: ["yeah", "that's correct", "something like that", "nailed it", "not bad"]
-    },
-    "philosophy": {
-      utterances: []
-    },
-    "flipCoin": {
-      utterances: ["flip a coin", "heads or tails"]
-    },
-    "githubCommits": {
-      utterances: ["github commits", "git commit"]
-    }
-  }
+  let matchedIntents = [];
   for (const intent of Object.keys(intents)) {
     for (const utterance of intents[intent].utterances) {
       if (transcript.toLowerCase().includes(utterance)) {
-        return intent;
+        matchedIntents.push({ intent, priority: intents[intent].priority });
       }
     }
   }
-  return "unknown";
+  if (matchedIntents.length === 0) {
+    return "unknown";
+  } else {
+    matchedIntents = matchedIntents.sort((a, b) => b.priority - a.priority);
+    return matchedIntents[0].intent;
+  }
 }
 
 const intentRouter = async ({ intent, transcript }) => {
@@ -71,7 +43,17 @@ const intentRouter = async ({ intent, transcript }) => {
     case "ping": return pingIntent({ transcript });
     case "confirm": return confirmIntent({ transcript });
     case "githubCommits": return dream.getGitCommits();
+    case "flipCoin": return coinFlip();
     case "unknown": return {};
+  }
+}
+
+function coinFlip() {
+  const bool = Math.floor(Math.random() * 2);
+  if (bool == 0) {
+    return { message: "You got heads, sir." };
+  } else {
+    return { message: "You got tails, sir." };
   }
 }
 
@@ -97,19 +79,17 @@ const greetingIntent = ({ transcript }) => {
 }
 
 const lateNightIntent = ({ transcript }) => {
-  if (transcript.includes("waking up") || transcript.includes("been awake")) {
-    const messages = [
-      "So it seems. Working on late night projects, are we?",
-      "Ah, I should have guessed. What are we doing tonight sir?"
-    ];
-    return { message: getRandomPhrase(messages) };
-  }
+  const messages = [
+    "So it seems. Working on late night projects, are we?",
+    "Ah, I should have guessed. What are we doing tonight sir?"
+  ];
+  return { message: getRandomPhrase(messages) };
 }
 
 const confirmIntent = ({ transcript }) => {
   let messages = [
     "Love to hear it, sir.",
-    "Excellent, news.",
+    "Excellent news.",
   ];
   return { message: getRandomPhrase(messages) };
 }
@@ -155,7 +135,7 @@ const launchIntent = ({ transcript }) => {
     return { url: "https://robinhood.com", app: "Robinhood" };
   }
   if (transcript.includes("twitter")) {
-    return  { url: "https://twitter.com", app: "Twitter" };
+    return { url: "https://twitter.com", app: "Twitter" };
   }
   if (transcript.includes("youtube")) {
     return { url: "https://youtube.com", app: "Twitter" };
@@ -186,6 +166,17 @@ const pingIntent = ({ transcript }) => {
   return { message: getRandomPhrase(messages) }
 }
 
+const domainIntent = async ({ transcript }) => {
+  let domain = transcript.substring((transcript.lastIndexOf("lookup") + "lookup".length + 1));
+  domain = domain.split(" ").join("");
+  let availability = await dream.checkDomainAvailability(domain);
+  if (availability.DomainInfo.domainAvailability === "AVAILABLE") {
+    return { message: "Domain " + domain + " is avaialable at $0.00." }
+  } else {
+    return { message: "Domain " + domain + " is not avaialable." }
+  }
+}
+
 /* Helper functions */
 
 /**
@@ -211,7 +202,6 @@ const getRandomPhrase = (phraseArray) => {
 
 module.exports = {
   correctTranscript,
-  addWeightIntent,
   intentParser,
   intentRouter
 }
