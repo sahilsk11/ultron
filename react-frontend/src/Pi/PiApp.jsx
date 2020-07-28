@@ -8,6 +8,7 @@ export default function PiApp({
   startSession,
   closeSession,
   state,
+  intentResponse,
   updateState
 }) {
   const ambient = (
@@ -17,8 +18,9 @@ export default function PiApp({
       src="pi-ambient.gif"
     />
   );
-  const active = ActionScreen({ closeSession, greeting: "listening...", state });
+  const active = ActionScreen({ closeSession, greeting: "listening...", state, transcript });
   const processing = ActionScreen({ closeSession, greeting: "thinking...", state });
+  const response = ResponseScreen({ intentResponse, message });
   let content;
   console.log(state)
   if (state === "ambient") {
@@ -28,7 +30,8 @@ export default function PiApp({
   } else if (state === "processing") {
     content = processing;
   } else {
-    content = message;
+    console.log(message);
+    content = response;
   }
   return (
     <div className="pi-wrapper">
@@ -38,17 +41,28 @@ export default function PiApp({
   )
 }
 
-function ActionScreen({ closeSession, greeting, state }) {
+function ActionScreen({ closeSession, greeting, state, transcript }) {
   const gif = state === "listening" ? ListeningWaves() : Processing();
   return (
     <div onClick={() => closeSession()} className="pi-active-container">
       <h1 className="pi-greeting"><em>{greeting}</em></h1>
       <div className="pi-transcript-wrapper">
-        <p className="pi-transcript"><em>I'm talking and this is the text</em></p>
+        <p className="pi-transcript"><em>{transcript}</em></p>
       </div>
       {gif}
     </div >
   );
+}
+
+function ResponseScreen({ intentResponse, message }) {
+  return (
+    <div className="pi-active-container">
+      <h1 className="pi-greeting"><em>{intentResponse}</em></h1>
+      <div className="pi-transcript-wrapper">
+        <p className="pi-transcript"><em>{message}</em></p>
+      </div>
+    </div>
+  )
 }
 
 function ListeningWaves() {

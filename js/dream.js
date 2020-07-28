@@ -50,7 +50,7 @@ const checkDomainAvailability = async (domainName) => {
 }
 
 const controlLights = ({ roomName, commandName }) => {
-  
+    
 }
 
 module.exports = {

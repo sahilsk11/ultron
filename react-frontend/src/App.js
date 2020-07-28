@@ -5,25 +5,11 @@ import "./App.css"
 import PiApp from "./Pi/PiApp";
 
 function Index() {
-  const [message, setMessage] = useState("Hello, Sahil.");
   const [lastTranscriptUpdate, setUpdateTime] = useState(null);
   const { listening, transcript, resetTranscript } = useSpeechRecognition();
   const [state, updateState] = useState("ambient");
-
-  // useEffect(() => {
-  //   if (listening) {
-  //     setMessage("Go ahead...");
-  //     setUpdateTime(new Date());
-  //     updateState("listening");
-  //   } else {
-  //     setMessage("Hello, Sahil.");
-  //     updateState("ambient");
-  //   }
-  //   if (!listening && transcript !== '') {
-  //     send({ transcript, startListening: SpeechRecognition.startListening, resetTranscript, setMessage, updateState });
-  //     updateState("processing");
-  //   }
-  // }, [listening]);
+  const [message, setMessage] = useState("Hello, Sahil.");
+  const [intentResponse, setIntent] = useState(null);
 
   const startSession = () => {
     setMessage("Go ahead...");
@@ -32,10 +18,13 @@ function Index() {
     SpeechRecognition.startListening({ continuous: true });
   }
 
-  const endSession = () => {
-    send({ transcript, startListening: SpeechRecognition.startListening, resetTranscript, setMessage, updateState });
+  const endSession = async () => {
     setMessage("processing...")
     updateState("processing");
+    await send({ transcript, setMessage, setIntent });
+    resetTranscript();
+    updateState("response");
+    //updateIntent
   }
 
   const closeSession = () => {
@@ -60,6 +49,7 @@ function Index() {
 
   const props = {
     message,
+    intentResponse,
     transcript,
     startSession,
     closeSession,
@@ -90,25 +80,27 @@ function App({
         <img className="voice-icon"
           src="https://cdn.dribbble.com/users/32512/screenshots/5668419/calm_ai_design_by_gleb.gif" />
       </div>
-      <p onClick={() => alert('transcript')} className="transcript"><em>{transcript}</em></p>
+      <p className="transcript"><em>{transcript}</em></p>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet" />
     </div>
   );
 }
 
-const send = async ({ transcript, startListening, resetTranscript, setMessage, updateState }) => {
+const send = async ({ transcript, setMessage, setIntent }) => {
   const simulateProd = false;
-  const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com/setIntent" : "http://localhost:8080/setIntent";
+  const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com/setIntent" : "http://192.168.2.97:8080/setIntent";
   const params = "?transcript=" + transcript.toLowerCase();
   fetch(endpoint + params)
     .then(response => response.json())
     .then(data => {
-      actionLauncher({ data, setMessage });
-      updateState("response");
+      const { intent, message } = actionLauncher({ data, setMessage });
+      setIntent(intent);
+      setMessage(message);
+      //updateState("response");
     });
-  setTimeout(() => {
-    resetTranscript();
-  }, 1000);
+  // setTimeout(() => {
+  //   resetTranscript();
+  // }, 1000);
 }
 
 function useInterval(callback, delay) {
