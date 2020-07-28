@@ -1,5 +1,7 @@
 const dream = require("./dream");
 const intents = require("./intents.json")
+const fs = require('fs');
+
 
 /**
  * Convert raw string input to corrected text based on known errors in STT
@@ -45,6 +47,8 @@ const intentRouter = async ({ intent, transcript }) => {
     case "githubCommits": return dream.getGitCommits();
     case "flipCoin": return coinFlip();
     case "lights": return lightsIntent({ transcript });
+    case "domainLookup": return domainIntent({ transcript });
+    case "quote": return quoteIntent({ transcript });
     case "unknown": return {};
   }
 }
@@ -56,6 +60,13 @@ function coinFlip() {
   } else {
     return { message: "You got tails, sir." };
   }
+}
+
+const quoteIntent = () => {
+  let rawdata = fs.readFileSync('out.json');
+  let lines = JSON.parse(rawdata);
+  const line = lines[Math.floor(Math.random() * lines.length)];
+  return { message: line.quote + " (" + line.category + ")" };
 }
 
 const lightsIntent = ({ transcript }) => {

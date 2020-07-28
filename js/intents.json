@@ -117,5 +117,10 @@
     ],
     "regex": "",
     "priority": 10
+  },
+  "quote": {
+    "utterances": ["me a quote", "enlighten me", "tell me something", "blow my mind"],
+    "regex": "",
+    "priority": 10
   }
 }

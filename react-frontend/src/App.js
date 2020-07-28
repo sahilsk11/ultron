@@ -24,6 +24,9 @@ function Index() {
     await send({ transcript, setMessage, setIntent });
     resetTranscript();
     updateState("response");
+    setTimeout(() => {
+      if (state === "response") updateState("ambient")
+    }, 10000)
     //updateIntent
   }
 
@@ -33,6 +36,24 @@ function Index() {
   }
 
   useEffect(() => setUpdateTime(new Date()), [transcript]);
+
+  if (state === "ambient" && !listening) {
+    SpeechRecognition.startListening({ continuous: true });
+  }
+
+  if (state !== "listening") {
+    if (transcript.toLowerCase().includes("ultron")) {
+      resetTranscript();
+      startSession();
+    }
+  }
+
+  if (state === "response") {
+    if (transcript.toLowerCase().includes("clear")) {
+      resetTranscript();
+      closeSession();
+    }
+  }
 
   useInterval(() => {
     if (transcript !== '' && listening) {
