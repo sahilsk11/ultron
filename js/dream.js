@@ -36,7 +36,7 @@ const getGitCommits = async () => {
   // }
   // console.log({ ...response, message: "You have " + response.commits + " commits in the past year." });
   response = response.data;
-  return { ...response, message: "You have " + response.commits + " commits in the past year." } 
+  return { ...response, message: "You have " + response.commits + " commits in the past year." }
 }
 
 const checkDomainAvailability = async (domainName) => {
@@ -49,8 +49,13 @@ const checkDomainAvailability = async (domainName) => {
   return response;
 }
 
+const controlLights = ({ roomName, commandName }) => {
+  
+}
+
 module.exports = {
   addDailyWeightEntry,
   getGitCommits,
-  checkDomainAvailability
+  checkDomainAvailability,
+  controlLights
 }

@@ -80,18 +80,17 @@ function App({
   message,
   listening,
   stopListening,
-  startListening,
+  startSession,
   transcript
 }) {
   return (
-    <div>
+    <div className="app-container">
       <h2 className="greeting">{message}</h2>
-      <div>
-        <img className="voice-icon" onClick={() => listening ? stopListening() : startListening({ continuous: true })}
+      <div className="voice-icon-wrapper" onClick={() => { listening ? stopListening() : startSession({ continuous: true }) }}>
+        <img className="voice-icon"
           src="https://cdn.dribbble.com/users/32512/screenshots/5668419/calm_ai_design_by_gleb.gif" />
       </div>
-      <div className="listening" />
-      <p className="transcript"><em>{transcript}</em></p>
+      <p onClick={() => alert('transcript')} className="transcript"><em>{transcript}</em></p>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet" />
     </div>
   );

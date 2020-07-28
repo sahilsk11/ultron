@@ -110,5 +110,12 @@
     ],
     "regex": "",
     "priority": 1
+  },
+  "lights": {
+    "utterances": [
+      "lights"
+    ],
+    "regex": "",
+    "priority": 10
   }
 }

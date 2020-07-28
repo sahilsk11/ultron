@@ -1,5 +1,24 @@
 body {
   background-color:#0b0723;
+  position: relative;
+  height: 100vh;
+}
+
+.app-container {
+  width: 600px;
+  position: relative;
+  margin: 0px auto;
+  margin-top: calc(50vh - 300px);
+  /*transform: translateY(-50%);*/
+}
+
+.voice-icon-wrapper {
+  margin: 0px auto;
+  max-width: 400px;
+  height: 400px;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .voice-icon {
@@ -8,24 +27,19 @@ body {
   left: 50%;
   transform: translate(-50%,-50%);
   z-index: -1;
-  cursor: pointer;
-  max-width: 100%;
+  margin: 0px auto;
+  display: block;
 }
 
 .greeting {
   text-align: center;
-  margin-top: calc(50vh - 230px);
   color: rgb(142, 139, 161);
   font-family: 'Montserrat', sans-serif;
+  margin-bottom: 0px;
 }
 
 .transcript {
   text-align: center;
-  margin-top: 400px;
   color: rgb(142, 139, 161);
   font-family: 'Montserrat', sans-serif;
-}
-
-.listening {
-
 }

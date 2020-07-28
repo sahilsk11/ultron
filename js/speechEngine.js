@@ -44,6 +44,7 @@ const intentRouter = async ({ intent, transcript }) => {
     case "confirm": return confirmIntent({ transcript });
     case "githubCommits": return dream.getGitCommits();
     case "flipCoin": return coinFlip();
+    case "lights": return lightsIntent({ transcript });
     case "unknown": return {};
   }
 }
@@ -55,6 +56,17 @@ function coinFlip() {
   } else {
     return { message: "You got tails, sir." };
   }
+}
+
+const lightsIntent = ({ transcript }) => {
+  const lightIndex = transcript.indexOf("light");
+  const roomStartIndex = indexOfNextSpace(lightIndex, transcript) + 1;
+  const roomEndIndex = indexOfNextSpace(roomStartIndex, transcript);
+  const roomName = transcript.substring(roomStartIndex, roomEndIndex);
+  const commandStartIndex = roomEndIndex + 1;
+  const commandEndIndex = indexOfNextSpace(commandStartIndex, transcript);
+  const commandName = transcript.substring(commandStartIndex, commandEndIndex);
+  dream.controlLights({ roomName, commandName });
 }
 
 const greetingIntent = ({ transcript }) => {
