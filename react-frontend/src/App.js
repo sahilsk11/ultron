@@ -59,10 +59,6 @@ function Index() {
     if (transcript !== '' && state === "listening") {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
       if (timeDiff > 2) {
-        // setMessage("processing...")
-        // resetTranscript();
-        // send({ transcript, startListening: SpeechRecognition.startListening, resetTranscript, setMessage, updateState });
-        // updateState("processing");
         endSession();
       }
     }
@@ -99,7 +95,9 @@ function App({
       <h2 className="greeting">{message}</h2>
       <div className="voice-icon-wrapper" onClick={() => { listening ? stopListening() : startSession({ continuous: true }) }}>
         <img className="voice-icon"
-          src="https://cdn.dribbble.com/users/32512/screenshots/5668419/calm_ai_design_by_gleb.gif" />
+          src="https://cdn.dribbble.com/users/32512/screenshots/5668419/calm_ai_design_by_gleb.gif"
+          alt=""
+        />
       </div>
       <p className="transcript"><em>{transcript}</em></p>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet" />
@@ -117,11 +115,10 @@ const send = async ({ transcript, setMessage, setIntent }) => {
       const { intent, message } = actionLauncher({ data, setMessage });
       setIntent(intent);
       setMessage(message);
-      //updateState("response");
+
+      const msg = new SpeechSynthesisUtterance(message);
+      window.speechSynthesis.speak(msg);
     });
-  // setTimeout(() => {
-  //   resetTranscript();
-  // }, 1000);
 }
 
 function useInterval(callback, delay) {

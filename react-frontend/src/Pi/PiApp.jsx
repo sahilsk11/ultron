@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import "./pi.css";
-import { act } from "react-dom/test-utils";
 
 export default function PiApp({
   message,
@@ -16,6 +15,7 @@ export default function PiApp({
       className="pi-ambient"
       onClick={() => startSession()}
       src="pi-ambient.gif"
+      alt=""
     />
   );
   const active = ActionScreen({ closeSession, greeting: "listening...", state, transcript });
@@ -66,7 +66,7 @@ function ResponseScreen({ intentResponse, message, updateState }) {
 }
 
 function ListeningWaves() {
-  const gif = <img src="./pi-listening.gif" className="pi-listening" />;
+  const gif = <img src="./pi-listening.gif" className="pi-listening" alt="" />;
   return gif;
 }
 
