@@ -10,6 +10,7 @@ function Index() {
   const [state, updateState] = useState("ambient");
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
+  const [forceListeningOff, setListeningOverride] = useState(false);
   //https://www.npmjs.com/package/react-mic
   useEffect(() => {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
@@ -43,7 +44,7 @@ function Index() {
 
   useEffect(() => setUpdateTime(new Date()), [transcript]);
 
-  if (state === "ambient" && !listening) {
+  if (state === "ambient" && !listening && !forceListeningOff) {
     SpeechRecognition.startListening({ continuous: true });
   }
 

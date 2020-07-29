@@ -53,23 +53,29 @@ app.get("/setIntent", async (req, res) => {
   });
 });
 
-app.get('/audioFile', async function async (req, res) {
+app.get('/audioFile', async function async(req, res) {
   const filename = req.query.fileName;
   let sent = false;
   let tries = 0;
-  while (!sent && tries++ < 50) {
-    try {
-      if (fs.existsSync("./audio/" + filename)) {
-        sent = true;
-        ms.pipe(req, res, "./audio/" + filename);
+  const attemptSend = async () => {
+    while (!sent && tries++ < 50) {
+      try {
+        if (fs.existsSync("./audio/" + filename)) {
+          sent = true;
+          ms.pipe(req, res, "./audio/" + filename);
+        }
+      } catch (err) {
+        console.error(err)
       }
-    } catch (err) {
-      console.error(err)
+      await sleep(100);
     }
-    await sleep(100);
   }
-  if (!sent)
+  await attemptSend();
+  if (!sent) {
     console.error("Could not send audio file");
+  } else {
+    
+  }
 });
 
 function sleep(ms) {
