@@ -10,7 +10,7 @@ function Index() {
   const [state, updateState] = useState("ambient");
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
-
+  //https://www.npmjs.com/package/react-mic
   useEffect(() => {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
       alert("Unsupported Browser");
@@ -51,13 +51,11 @@ function Index() {
     if (transcript.toLowerCase().includes("ultron")) {
       resetTranscript();
       startSession();
-    }
-  }
-
-  if (state === "response") {
-    if (transcript.toLowerCase().includes("clear")) {
-      resetTranscript();
-      closeSession();
+    } else if (listening && state === "response") {
+      if (transcript.toLowerCase().includes("clear")) {
+        resetTranscript();
+        closeSession();
+      }
     }
   }
 
@@ -73,7 +71,7 @@ function Index() {
   const props = {
     message,
     intentResponse,
-    transcript,
+    transcript: state === 'listening' ? transcript : '',
     startSession,
     closeSession,
     state,
@@ -117,18 +115,21 @@ const send = async ({ transcript, setMessage, setIntent }) => {
   const params = "?transcript=" + transcript.toLowerCase();
   fetch(endpoint + params)
     .then(response => response.json())
-    .then(data => {
+    .then(async data => {
       const { intent, message } = actionLauncher({ data, setMessage });
       setIntent(intent);
       setMessage(message);
-      if ('speechSynthesis' in window) {
-        const msg = new SpeechSynthesisUtterance(message);
-        msg.pitch = 0.2;
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
-      } else {
-        alert("TTS Not Available");
-      }
+      const audio = new Audio('http://127.0.0.1:8080/audioFile?fileName=' + data.fileName);
+      await audio.play();
+      console.log('audio done');
+      // if ('speechSynthesis' in window) {
+      //   const msg = new SpeechSynthesisUtterance(message);
+      //   msg.pitch = 0.2;
+      //   msg.rate = 0.9;
+      //   window.speechSynthesis.speak(msg);
+      // } else {
+      //   alert("TTS Not Available");
+      // }
     });
 }
 

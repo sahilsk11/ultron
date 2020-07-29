@@ -1,5 +1,8 @@
 const dream = require("./dream");
 const speechEngine = require("./speechEngine");
+const { exec } = require("child_process");
+const ms = require('mediaserver');
+const fs = require('fs')
 
 const express = require("express");
 const app = express();
@@ -30,9 +33,47 @@ app.get("/setIntent", async (req, res) => {
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
   const intent = speechEngine.intentParser({ transcript });
   if (intent === "unknown") {
-    res.json({ code: 400, intent, message: "Unkown intent" });
+    res.json({ code: 400, intent, message: "Unknown intent" });
     return;
   }
+  console.log(intent);
   const body = await speechEngine.intentRouter({ intent, transcript });
-  res.json({ code: 200, intent, ...body })
+  const fileName = generateFileName() + ".wav";
+  exec(`./mimic -t "${body.message}" --setf duration_stretch=1.1 --setf int_f0_target_mean=90 -o audio/${fileName}`, (error, stdout, stderr) => {
+    res.json({ code: 200, intent, ...body, fileName });
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
 });
+
+app.get('/audioFile', function (req, res) {
+  const filename = req.query.fileName;
+  let sent = false;
+  while (!sent) {
+    try {
+      if (fs.existsSync("./audio/" + filename)) {
+        sent = true;
+        ms.pipe(req, res, "./audio/" + filename);
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+});
+
+function generateFileName() {
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRTUVWXYZ';
+  let str = "";
+  for (var i = 0; i < 10; i++) {
+    const index = Math.floor(Math.random() * chars.length);
+    str += chars.charAt(index);
+  }
+  return str;
+}

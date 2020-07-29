@@ -3,3 +3,4 @@ passwords.py
 node_modules/
 env/
 __pycache__/
+mimic
