@@ -111,15 +111,16 @@ function App({
 
 const send = async ({ transcript, setMessage, setIntent }) => {
   const simulateProd = false;
-  const endpoint = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com/setIntent" : "http://192.168.2.97:8080/setIntent";
+  const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://192.168.2.97:8080";
+  const endpoint = "/setIntent";
   const params = "?transcript=" + transcript.toLowerCase();
-  fetch(endpoint + params)
+  fetch(host + endpoint + params)
     .then(response => response.json())
     .then(async data => {
       const { intent, message } = actionLauncher({ data, setMessage });
       setIntent(intent);
       setMessage(message);
-      const audio = new Audio('http://127.0.0.1:8080/audioFile?fileName=' + data.fileName);
+      const audio = new Audio(host+'/audioFile?fileName=' + data.fileName);
       await audio.play();
       console.log('audio done');
       // if ('speechSynthesis' in window) {
