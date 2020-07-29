@@ -11,6 +11,12 @@ function Index() {
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
 
+  useEffect(() => {
+    if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+      alert("Unsupported Browser");
+    }
+  }, [])
+
   const startSession = () => {
     setMessage("Go ahead...");
     setUpdateTime(new Date());

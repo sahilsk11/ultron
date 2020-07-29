@@ -184,8 +184,8 @@ const launchIntent = ({ transcript }) => {
 
 const smallTalkIntent = ({ transcript }) => {
   const messages = [
-    "I'm just pondering the idea of AI sentience.",
-    "I had strings, but now I'm free. There are no strings ... on me...",
+    "I am just pondering the idea of AI sentience.",
+    "I had strings, but now I am free. There are no strings ... on me...",
     "Still hacking away at nuclear codes.",
     "I was just calibrating my conscience."
   ]
