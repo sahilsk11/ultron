@@ -39,7 +39,7 @@ app.get("/setIntent", async (req, res) => {
   console.log(intent);
   const body = await speechEngine.intentRouter({ intent, transcript });
   const fileName = generateFileName() + ".wav";
-  exec("./mimic -t " + body.message + " --setf duration_stretch=1.1 -o audio/" + fileName, (error, stdout, stderr) => {
+  exec("./mimic -t \"" + body.message + "\" --setf duration_stretch=1.1 -o audio/" + fileName, (error, stdout, stderr) => {
     res.json({ code: 200, intent, ...body, fileName });
     if (error) {
       console.log(`error: ${error.message}`);
@@ -68,6 +68,8 @@ app.get('/audioFile', async function async (req, res) {
     }
     await sleep(100);
   }
+  if (!sent)
+    console.error("Could not send audio file");
 });
 
 function sleep(ms) {
