@@ -56,7 +56,7 @@ function Index() {
   }
 
   useInterval(() => {
-    if (transcript !== '' && listening) {
+    if (transcript !== '' && state === "listening") {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
       if (timeDiff > 2) {
         // setMessage("processing...")
@@ -66,7 +66,7 @@ function Index() {
         endSession();
       }
     }
-  }, transcript !== '' ? 1000 : null);
+  }, transcript !== '' && state === "listening" ? 1000 : null);
 
   const props = {
     message,
