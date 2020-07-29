@@ -1,6 +1,7 @@
 passwords.py
 .env
 node_modules/
+audio/
 env/
 __pycache__/
 mimic
