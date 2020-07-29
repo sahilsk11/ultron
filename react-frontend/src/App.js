@@ -115,9 +115,14 @@ const send = async ({ transcript, setMessage, setIntent }) => {
       const { intent, message } = actionLauncher({ data, setMessage });
       setIntent(intent);
       setMessage(message);
-
-      const msg = new SpeechSynthesisUtterance(message);
-      window.speechSynthesis.speak(msg);
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(message);
+        msg.pitch = 0.2;
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+      } else {
+        alert("TTS Not Available");
+      }
     });
 }
 
