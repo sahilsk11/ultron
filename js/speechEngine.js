@@ -46,7 +46,7 @@ const intentRouter = async ({ intent, transcript }) => {
     case "confirm": return confirmIntent({ transcript });
     case "githubCommits": return dream.getGitCommits();
     case "flipCoin": return coinFlip();
-    case "lights": return lightsIntent({ transcript });
+    case "lights": return await lightsIntent({ transcript });
     case "domainLookup": return domainIntent({ transcript });
     case "quote": return quoteIntent({ transcript });
     case "unknown": return {};
@@ -69,15 +69,28 @@ const quoteIntent = () => {
   return { message: line.quote + " (" + line.category + ")" };
 }
 
-const lightsIntent = ({ transcript }) => {
+const lightsIntent = async ({ transcript }) => {
+  /**
+   * turn kitchen lights on
+   * kitchen lights on
+   * 
+   */
+  transcript = transcript.replace("turn ", "");
   const lightIndex = transcript.indexOf("light");
-  const roomStartIndex = indexOfNextSpace(lightIndex, transcript) + 1;
-  const roomEndIndex = indexOfNextSpace(roomStartIndex, transcript);
+  const roomEndIndex = lightIndex - 1;
+  const roomStartIndex = 0;
   const roomName = transcript.substring(roomStartIndex, roomEndIndex);
-  const commandStartIndex = roomEndIndex + 1;
+
+  const commandStartIndex = indexOfNextSpace(lightIndex, transcript) + 1;
   const commandEndIndex = indexOfNextSpace(commandStartIndex, transcript);
   const commandName = transcript.substring(commandStartIndex, commandEndIndex);
-  dream.controlLights({ roomName, commandName });
+
+  const responseCode = await dream.controlLights({ roomName, commandName });
+  if (responseCode === 200) {
+    return { message: "Turning " + roomName + " lights " + commandName }
+  } else {
+    return { message: "Could not turn " + roomName + " lights " + commandName }
+  }
 }
 
 const greetingIntent = ({ transcript }) => {
@@ -212,6 +225,14 @@ const indexOfNextSpace = (startIndex, str) => {
   const spaceIndex = substr.indexOf(" ");
   if (spaceIndex < 0) return str.length;
   return startIndex + spaceIndex;
+}
+
+const indexOfPrevSpace = (startIndex, str) => {
+  let index = startIndex;
+  while (index >= 0 && str.substring(index, index + 1) !== ' ') {
+    index--;
+  }
+  return index;
 }
 
 const toCamelCase = (str) => {

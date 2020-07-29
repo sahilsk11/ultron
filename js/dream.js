@@ -49,8 +49,21 @@ const checkDomainAvailability = async (domainName) => {
   return response;
 }
 
-const controlLights = ({ roomName, commandName }) => {
-    
+const controlLights = async ({ roomName, commandName }) => {
+  const apiKey = process.env.KAPUR_KEY;
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + apiKey,
+      'Content-Type': 'application/json'
+    }
+  }
+  const entity_id = "light." + roomName.replace(" ", "_");
+  const data = { entity_id }
+  console.log(data)
+  const url = "http://remote.kapurs.net:8123/api/services/light/turn_"+commandName;
+  console.log(url)
+  const response = await axios.post(url, data, config);
+  return response.status;
 }
 
 module.exports = {
