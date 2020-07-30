@@ -48,7 +48,7 @@ app.get("/setIntent", async (req, res) => {
       console.log(`stderr: ${stderr}`);
       return;
     }
-    console.log(`generated ${filename} for ${intent}`);
+    console.log(`generated ${fileName} for ${intent}`);
   });
 });
 
