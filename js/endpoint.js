@@ -36,7 +36,6 @@ app.get("/setIntent", async (req, res) => {
     res.json({ code: 400, intent, message: "Unknown intent" });
     return;
   }
-  console.log(intent);
   const body = await speechEngine.intentRouter({ intent, transcript });
   const fileName = generateFileName() + ".wav";
   exec("./mimic -t \"" + body.message + "\" --setf duration_stretch=1.1 -o audio/" + fileName, (error, stdout, stderr) => {
@@ -49,7 +48,7 @@ app.get("/setIntent", async (req, res) => {
       console.log(`stderr: ${stderr}`);
       return;
     }
-    console.log(`stdout: ${stdout}`);
+    console.log(`generated ${filename} for ${intent}`);
   });
 });
 
