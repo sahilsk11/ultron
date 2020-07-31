@@ -1,5 +1,5 @@
 const dream = require("./dream");
-const speechEngine = require("./speechEngine");
+const speechEngine = require("./intentEngine");
 const { exec } = require("child_process");
 const ms = require('mediaserver');
 const fs = require('fs')
@@ -31,15 +31,11 @@ app.get("/addDailyWeight", async (req, res) => {
 
 app.get("/setIntent", async (req, res) => {
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
-  const intent = speechEngine.intentParser({ transcript });
-  if (intent === "unknown") {
-    res.json({ code: 400, intent, message: "Unknown intent" });
-    return;
-  }
-  const body = await speechEngine.intentRouter({ intent, transcript });
+  const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
-  exec("./mimic -t \"" + body.message + "\" --setf duration_stretch=1.1 -o audio/" + fileName, (error, stdout, stderr) => {
-    res.json({ code: 200, intent, ...body, fileName });
+
+  exec("./mimic -t \"" + response.message + "\" --setf duration_stretch=1.1 -o audio/" + fileName, (error, stdout, stderr) => {
+    res.json({ ...response, fileName });
     if (error) {
       console.log(`error: ${error.message}`);
       return;
@@ -72,8 +68,6 @@ app.get('/audioFile', async function async(req, res) {
   await attemptSend();
   if (!sent) {
     console.error("Could not send audio file");
-  } else {
-    
   }
 });
 
