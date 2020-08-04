@@ -1,4 +1,3 @@
-const dream = require("./dream");
 const fs = require('fs');
 
 /**

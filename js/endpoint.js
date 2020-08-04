@@ -33,8 +33,11 @@ app.get("/setIntent", async (req, res) => {
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
   const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
-
-  exec("./mimic -t \"" + response.message + "\" --setf duration_stretch=1.1 -o audio/" + fileName, (error, stdout, stderr) => {
+  const message = response.message.split("'").join("\'");
+  console.log(message);
+  const command = "./mimic -t '" + message + "' --setf duration_stretch=1.1 -o audio/" + fileName
+  console.log(command);
+  exec(command, (error, stdout, stderr) => {
     res.json({ ...response, fileName });
     if (error) {
       console.log(`error: ${error.message}`);
