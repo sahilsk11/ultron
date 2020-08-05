@@ -1,3 +1,6 @@
+const axios = require("axios");
+require('dotenv').config();
+
 class UndefinedFunction extends Error {
   constructor(message) {
     super(message);
@@ -54,6 +57,22 @@ class Intent {
 
   getRandomPhrase(phraseArray) {
     return phraseArray[Math.floor(Math.random() * phraseArray.length)]
+  }
+
+  async httpRequest({ method, url, authKeyName, body }) {
+    const config = {
+      headers: {
+        'Authorization': 'Bearer ' + process.env[authKeyName],
+        'Content-Type': 'application/json'
+      }
+    }
+    if (!method || method.toLowerCase() === "get") {
+      try {
+        return await axios.get(url, config);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 }
 

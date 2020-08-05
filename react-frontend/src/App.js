@@ -112,7 +112,7 @@ function App({
 
 const send = async ({ transcript, setMessage, setIntent }) => {
   const simulateProd = false;
-  const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://192.168.2.97:8080";
+  const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
   const params = "?transcript=" + transcript.toLowerCase();
   fetch(host + endpoint + params)
@@ -124,14 +124,6 @@ const send = async ({ transcript, setMessage, setIntent }) => {
       const audio = new Audio(host+'/audioFile?fileName=' + data.fileName);
       await audio.play();
       console.log('audio done');
-      // if ('speechSynthesis' in window) {
-      //   const msg = new SpeechSynthesisUtterance(message);
-      //   msg.pitch = 0.2;
-      //   msg.rate = 0.9;
-      //   window.speechSynthesis.speak(msg);
-      // } else {
-      //   alert("TTS Not Available");
-      // }
     });
 }
 

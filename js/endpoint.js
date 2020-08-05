@@ -1,4 +1,3 @@
-const dream = require("./dream");
 const speechEngine = require("./intentEngine");
 const { exec } = require("child_process");
 const ms = require('mediaserver');
