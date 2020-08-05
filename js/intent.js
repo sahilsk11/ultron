@@ -59,10 +59,13 @@ class Intent {
   }
 
   async httpRequest({ method, url, authKeyName, body }) {
-    const config = {
-      headers: {
-        'Authorization': 'Bearer ' + process.env[authKeyName],
-        'Content-Type': 'application/json'
+    let config = {};
+    if (authKeyName !== undefined) {
+      config = {
+        headers: {
+          'Authorization': 'Bearer ' + process.env[authKeyName],
+          'Content-Type': 'application/json'
+        }
       }
     }
     if (!method || method.toLowerCase() === "get") {
