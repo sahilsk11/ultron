@@ -17,7 +17,6 @@ const correctTranscript = ({ transcript }) => {
  */
 const intentEngine = async ({ transcript }) => {
   const files = fs.readdirSync("./intents");
-  console.log(transcript);
   for (const file of files) {
     if (file !== ".DS_Store") {
       const className = require("./intents/" + file);

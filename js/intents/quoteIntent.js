@@ -21,6 +21,4 @@ class QuoteIntent extends Intent {
   }
 }
 
-console.log(new QuoteIntent({ transcript: "" }).execute());
-
 module.exports.IntentClass = QuoteIntent;

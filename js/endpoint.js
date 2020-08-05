@@ -33,20 +33,25 @@ app.get("/setIntent", async (req, res) => {
   const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
   const message = response.message.replace(/"/g, '\\"');
-  console.log(message);
-  const command = "./mimic -t \"" + message + "\" --setf duration_stretch=1.1 -o audio/" + fileName
-  console.log(command);
+  const command = "./mimic -t \"" + message + "\" -o audio/" + fileName
+  console.log(new Date());
+  console.log("\t" + transcript);
+  console.log("\t" + response.intent);
+  console.log("\t" + message);
+  console.log("\t" + fileName);
   exec(command, (error, stdout, stderr) => {
     res.json({ ...response, fileName });
     if (error) {
-      console.log(`error: ${error.message}`);
+      console.error(`\terror: ${error.message}`);
       return;
     }
     if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
+      if (!stderr.includes("If audio works ignore messages below  ")) {
+        console.error(`\tstderr: ${stderr}`);
+        return;
+      }
     }
-    console.log(`generated ${fileName} for ${response.intent}`);
+    console.log(`\tsucessfully generated ${fileName}`);
   });
 });
 

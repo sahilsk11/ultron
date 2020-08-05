@@ -21,7 +21,6 @@ class Intent {
   transcriptMatches() {
     for (const utterance of this.intentDefinition.utterances) {
       if (this.transcript.includes(utterance)) {
-        console.log("Matched:", this.intentName)
         return true;
       }
     }
