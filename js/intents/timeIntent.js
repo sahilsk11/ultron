@@ -9,7 +9,7 @@ class TimeIntent extends Intent {
       utterances: ["time", "sunset", "sunrise"],
       intentName: "timeIntent"
     });
-    this.timeOffset = -7; //check for timezone change
+    this.timeOffset = -8 + (moment().isDST() ? 1 : 0); //check for timezone change
   }
 
   async execute() {
