@@ -8,10 +8,15 @@ class TimeIntent extends Intent {
       utterances: ["time", "sunset", "sunrise"],
       intentName: "timeIntent"
     });
+    this.timeZoneOffset = -7;
   }
 
   async execute() {
-    const now = new Date();
+    let now = new Date();
+    now = this.utcToPst(now);
+    console.log(now);
+    console.log(now.getHours());
+
     const timeString = this.constructTimeString(now);
     const { sunrise, sunset } = await this.getDayInformation();
     const snarkyMessage = this.constructMessage(now, sunrise, sunset);
@@ -32,7 +37,7 @@ class TimeIntent extends Intent {
    * @param hour as 0-23 hr time
    */
   constructMessage(now, sunriseTime, sunsetTime) {
-    const hour = now.getHours() + 4;
+    const hour = now.getHours();
     if (hour < 4) {
       return "The night, or should I say day, is young, sir.";
     } else if (hour < 6) {
@@ -57,13 +62,15 @@ class TimeIntent extends Intent {
     return { sunrise: new Date(sunrise), sunset: new Date(sunset) };
   }
 
-  utcToPst(time) {
-    let d = new Date(time);
-    d.setHours(d.getHours() - 7);
+  utcToPst(d) {
+    d = new Date();
+    console.log(d.getHours())
+    d.setHours(d.getHours() + this.timeZoneOffset);
+    console.log(d.getHours())
     return d;
   }
 }
 
-//new TimeIntent({ transcript: "" }).execute();
+new TimeIntent({ transcript: "" }).execute();
 
 module.exports.IntentClass = TimeIntent;
