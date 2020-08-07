@@ -10,26 +10,18 @@ export default function PiApp({
   intentResponse,
   updateState
 }) {
-  const ambient = (
-    <img
-      className="pi-ambient"
-      onClick={() => startSession()}
-      src="pi-ambient.gif"
-      alt=""
-    />
-  );
-  const active = ActionScreen({ closeSession, greeting: "listening...", state, transcript });
-  const processing = ActionScreen({ closeSession, greeting: "thinking...", state });
-  const response = ResponseScreen({ intentResponse, message, updateState });
   let content;
   if (state === "ambient") {
-    content = ambient;
+    content = AmbientScreen({ startSession });
   } else if (state === "listening") {
-    content = active;
+    content = ActionScreen({ closeSession, greeting: "listening...", state, transcript });
   } else if (state === "processing") {
-    content = processing;
+    content = ActionScreen({ closeSession, greeting: "thinking...", state });
+  } else if (state === "sleep") {
+    //alert();
+    return SleepMode({ updateState });
   } else {
-    content = response;
+    content = ResponseScreen({ intentResponse, message, updateState });
   }
   return (
     <div className="pi-wrapper">
@@ -37,6 +29,17 @@ export default function PiApp({
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet" />
     </div>
   )
+}
+
+function AmbientScreen({ startSession }) {
+  return (
+    <img
+      className="pi-ambient"
+      onClick={() => startSession()}
+      src="pi-ambient.gif"
+      alt=""
+    />
+  );
 }
 
 function ActionScreen({ closeSession, greeting, state, transcript }) {
@@ -77,4 +80,12 @@ function Processing() {
     </div>
   );
   return loading;
+}
+
+function SleepMode({ updateState }) {
+  return (
+    <div className="pi-sleep-container" onClick={() => updateState("ambient")}>
+
+    </div>
+  )
 }

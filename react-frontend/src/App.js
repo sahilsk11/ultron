@@ -10,13 +10,22 @@ function Index() {
   const [state, updateState] = useState("ambient");
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
-  const [forceListeningOff, setListeningOverride] = useState(false);
+
   //https://www.npmjs.com/package/react-mic
+
+  console.log(state);
+
   useEffect(() => {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
       alert("Unsupported Browser");
     }
-  }, [])
+  }, []);
+
+  if (state === "sleep" && listening) {
+    SpeechRecognition.stopListening();
+  } else if (state !== "sleep" && !listening) {
+    SpeechRecognition.startListening({ continuous: true });
+  }
 
   const startSession = () => {
     setMessage("Go ahead...");
@@ -31,25 +40,16 @@ function Index() {
   const endSession = async () => {
     setMessage("processing...")
     updateState("processing");
-    await send({ transcript, setMessage, setIntent });
+    SpeechRecognition.stopListening();
+    await send({ transcript, setMessage, setIntent, updateState });
     resetTranscript();
     updateState("response");
-    console.log(state);
     setTimeout(() => {
-      if (stateRef.current === "response") closeSession();
+      if (stateRef.current === "response") updateState("ambient");
     }, 20000);
   }
 
-  const closeSession = () => {
-    setMessage("Hello, Sahil.");
-    updateState("ambient");
-  }
-
   useEffect(() => setUpdateTime(new Date()), [transcript]);
-
-  if (state === "ambient" && !listening && !forceListeningOff) {
-    SpeechRecognition.startListening({ continuous: true });
-  }
 
   if (state !== "listening") {
     if (transcript.toLowerCase().includes("ultron")) {
@@ -58,7 +58,7 @@ function Index() {
     } else if (listening && state === "response") {
       if (transcript.toLowerCase().includes("clear")) {
         resetTranscript();
-        closeSession();
+        updateState("ambient");
       }
     }
   }
@@ -77,7 +77,6 @@ function Index() {
     intentResponse,
     transcript: state === 'listening' ? transcript : '',
     startSession,
-    closeSession,
     state,
     updateState
   }
@@ -113,7 +112,7 @@ function App({
   );
 }
 
-const send = async ({ transcript, setMessage, setIntent }) => {
+const send = async ({ transcript, setMessage, setIntent, updateState }) => {
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
@@ -121,11 +120,13 @@ const send = async ({ transcript, setMessage, setIntent }) => {
   fetch(host + endpoint + params)
     .then(response => response.json())
     .then(async data => {
-      const { intent, message } = actionLauncher({ data, setMessage });
+      const { intent, message } = actionLauncher({ data, updateState });
       setIntent(intent);
       setMessage(message);
-      const audio = new Audio(host+'/audioFile?fileName=' + data.fileName);
+      const audio = new Audio(host + '/audioFile?fileName=' + data.fileName);
       audio.play();
+    }).catch(error => {
+
     });
 }
 
