@@ -5,7 +5,7 @@ class HardwareSleepIntent extends Intent {
     super({
       transcript,
       regex: "",
-      utterances: ["turn off mic", "go to sleep", "disable", "sleep mode"],
+      utterances: ["turn off", "go to sleep", "disable", "sleep mode", "stop listening", "power off"],
       intentName: "hardwareSleepIntent"
     });
   }
