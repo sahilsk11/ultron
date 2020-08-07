@@ -25,16 +25,19 @@ function Index() {
     SpeechRecognition.startListening({ continuous: true });
   }
 
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
   const endSession = async () => {
     setMessage("processing...")
     updateState("processing");
     await send({ transcript, setMessage, setIntent });
     resetTranscript();
     updateState("response");
+    console.log(state);
     setTimeout(() => {
-      if (state === "response") updateState("ambient")
-    }, 10000)
-    //updateIntent
+      if (stateRef.current === "response") closeSession();
+    }, 20000);
   }
 
   const closeSession = () => {
@@ -122,8 +125,7 @@ const send = async ({ transcript, setMessage, setIntent }) => {
       setIntent(intent);
       setMessage(message);
       const audio = new Audio(host+'/audioFile?fileName=' + data.fileName);
-      await audio.play();
-      console.log('audio done');
+      audio.play();
     });
 }
 

@@ -10,7 +10,7 @@ class MakeRandomDecisionIntent extends Intent {
     });
   }
 
-  async execute() {
+  execute() {
     const bool = Math.floor(Math.random() * 2);
     let message = "Sir, I flipped a coin, and I believe the answer is ";
     if (bool == 0) {
@@ -21,5 +21,7 @@ class MakeRandomDecisionIntent extends Intent {
     return { code: 200, message, intent: this.intentName }
   }
 }
+
+console.log(new MakeRandomDecisionIntent({transcript: ""}).execute());
 
 module.exports.IntentClass = MakeRandomDecisionIntent;

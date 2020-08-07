@@ -46,8 +46,8 @@ app.get("/setIntent", async (req, res) => {
       return;
     }
     if (stderr) {
-      if (!stderr.includes("If audio works ignore messages below  ")) {
-        console.error(`\tstderr: ${stderr}`);
+      if (!stderr.includes("If audio works ignore")) {
+        console.error(`\tstderr: '${stderr}'`);
         return;
       }
     }

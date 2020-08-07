@@ -22,7 +22,6 @@ export default function PiApp({
   const processing = ActionScreen({ closeSession, greeting: "thinking...", state });
   const response = ResponseScreen({ intentResponse, message, updateState });
   let content;
-  console.log(state)
   if (state === "ambient") {
     content = ambient;
   } else if (state === "listening") {
@@ -30,7 +29,6 @@ export default function PiApp({
   } else if (state === "processing") {
     content = processing;
   } else {
-    console.log(message);
     content = response;
   }
   return (
@@ -56,7 +54,7 @@ function ActionScreen({ closeSession, greeting, state, transcript }) {
 
 function ResponseScreen({ intentResponse, message, updateState }) {
   return (
-    <div className="pi-active-container" onClick={()=>updateState("ambient")}>
+    <div className="pi-active-container" onClick={() => updateState("ambient")}>
       <h1 className="pi-greeting"><em>{intentResponse}</em></h1>
       <div className="pi-transcript-wrapper">
         <p className="pi-transcript"><em>{message}</em></p>
