@@ -15,7 +15,7 @@ class CloseShopIntent extends Intent {
   async execute() {
     const deathStarResponse = await this.controlLights({ roomName: "death star", commandName: "off" });
     const studyResponse = await this.controlLights({ roomName: "study", commandName: "off" });
-    const laptopSleepResponse = await this.sleepLaptop();
+    //const laptopSleepResponse = await this.sleepLaptop();
 
     const messages = [
       "See you later, sir.",
@@ -43,9 +43,9 @@ class CloseShopIntent extends Intent {
     }
     const entity_id = "light." + roomName.replace(" ", "_");
     const data = { entity_id }
-    console.log(data)
+    //console.log(data)
     const url = "http://remote.kapurs.net:8123/api/services/light/turn_" + commandName;
-    console.log(url)
+    //console.log(url)
     const response = await axios.post(url, data, config);
     return response.status;
   }

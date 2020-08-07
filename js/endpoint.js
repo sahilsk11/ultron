@@ -65,6 +65,7 @@ app.get('/audioFile', async function async(req, res) {
         if (fs.existsSync("./audio/" + filename)) {
           sent = true;
           ms.pipe(req, res, "./audio/" + filename);
+          console.log("\tfile " + filename + " sent");
         }
       } catch (err) {
         console.error(err)
