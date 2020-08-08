@@ -1,4 +1,3 @@
-const axios = require("axios");
 const { Intent } = require("../intent.js");
 
 class WorkoutProgressIntent extends Intent {
@@ -33,6 +32,8 @@ class WorkoutProgressIntent extends Intent {
 
   async getThisWeeksData() {
     const authKeyName = "AIRTABLE_WORKOUT_API_KEY";
+    const apiKey = this.getApiKey(authKeyName)
+    console.log(apiKey);
     const weekNumber = this.getWeekNumber();
     const year = new Date().getFullYear();
     let url = `https://api.airtable.com/v0/appSD8cnaTlpwJwba/summary?filterByFormula=AND(YEAR({Date})=${year}, {Week}=${weekNumber})`;

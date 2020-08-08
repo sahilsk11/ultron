@@ -17,16 +17,42 @@ const correctTranscript = ({ transcript }) => {
  */
 const intentEngine = async ({ transcript }) => {
   const files = fs.readdirSync("./intents");
-  for (const file of files) {
+  const matchedIntents = [];
+  await Promise.all(files.map(file => {
     if (file !== ".DS_Store") {
       const className = require("./intents/" + file);
       const intentObj = new className.IntentClass({ transcript });
       if (intentObj.transcriptMatches()) {
-        return await intentObj.execute();
+        matchedIntents.push(intentObj);
       }
     }
+  }));
+  console.log(matchedIntents);
+  if (matchedIntents.length === 1) {
+    return await matchedIntents[0].execute();
+  } else if (matchedIntents.length > 1) {
+    const matchedIntentsStr = matchedIntentsToString(matchedIntents);
+    console.log(matchedIntentsStr);
+    return { code: 500, message: "Sir, I matched that request to multiple intents. " + matchedIntentsStr };
+  } else {
+    return { code: 400, message: "Unknown Intent" }
   }
-  return { code: 400, message: "Unknown Intent" }
+}
+
+const matchedIntentsToString = (matchedIntents) => {
+  let message = "Did you mean ";
+  for (let i = 0; i < matchedIntents.length; i++) {
+    message += matchedIntents[i].intentName.split(/(?=[A-Z])/).join(" ").toLowerCase();
+
+    if (i === matchedIntents.length - 2) {
+      message += " or ";
+    } else if (i === matchedIntents.length - 1) {
+      message += "?";
+    } else {
+      message += ", ";
+    }
+  }
+  return message;
 }
 
 module.exports = {

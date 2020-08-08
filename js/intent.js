@@ -76,6 +76,10 @@ class Intent {
       }
     }
   }
+
+  getApiKey(name) {
+    return process.env[name];
+  }
 }
 
 module.exports = { Intent };
