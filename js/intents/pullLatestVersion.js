@@ -12,10 +12,10 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
-    const command = "git pull;"
+    const command = "git fetch;"
     const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
-      let message = "";
-      if (stdout.includes("Already up-to-date.")) {
+      let out = stdout.split("\n");
+      if (out.length <= 1) {
         message = "Sir, I am already running the latest version."
       } else {
         let out = await this.getLatestCommitMessage();
@@ -24,7 +24,7 @@ class PullLatestVersion extends Intent {
       }
       resolve({ code: 200, message, intent: this.intentName });
     }));
-    
+
     return response;
   }
 
