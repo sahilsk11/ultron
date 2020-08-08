@@ -20,12 +20,26 @@ class PullLatestVersion extends Intent {
         message = "Sir, I am already running the latest version."
       } else {
         let out = stdout.split("\n");
-        message = "Updated to latest version with update notes: \"" + out[1] + "\"";
+        message = "Updated to latest version with update notes: \"" + out[1] + "\". Restarting service in 3 seconds...";
       }
       console.log("'" + out.split("\n") + "'");
       resolve({ code: 200, message, intent: this.intentName });
     }));
+    if (this.isProduction()) this.restartPm2();
     return response;
+  }
+
+  restartPm2() {
+    setTimeout(() => {
+      const stopCommand = "pm2 stop endpoint;"
+      await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
+
+      }));
+      const startCommand = "pm2 start endpoint.js;";
+      await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
+
+      }));
+    }, 3000);
   }
 }
 

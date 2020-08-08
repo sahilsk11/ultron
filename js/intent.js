@@ -80,6 +80,10 @@ class Intent {
   getApiKey(name) {
     return process.env[name];
   }
+
+  isProduction() {
+    return process.env.NODE_ENV === "production";
+  }
 }
 
 module.exports = { Intent };
