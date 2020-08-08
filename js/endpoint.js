@@ -32,6 +32,7 @@ app.get("/setIntent", async (req, res) => {
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
   const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
+  console.log(response);
   const message = response.message.replace(/"/g, '\\"');
   const command = "./mimic -t \"" + message + "\" -o audio/" + fileName
   console.log(new Date());

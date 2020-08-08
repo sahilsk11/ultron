@@ -27,12 +27,10 @@ const intentEngine = async ({ transcript }) => {
       }
     }
   }));
-  console.log(matchedIntents);
   if (matchedIntents.length === 1) {
     return await matchedIntents[0].execute();
   } else if (matchedIntents.length > 1) {
     const matchedIntentsStr = matchedIntentsToString(matchedIntents);
-    console.log(matchedIntentsStr);
     return { code: 500, message: "Sir, I matched that request to multiple intents. " + matchedIntentsStr };
   } else {
     return { code: 400, message: "Unknown Intent" }

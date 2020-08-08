@@ -22,6 +22,4 @@ class MakeRandomDecisionIntent extends Intent {
   }
 }
 
-console.log(new MakeRandomDecisionIntent({transcript: ""}).execute());
-
 module.exports.IntentClass = MakeRandomDecisionIntent;
