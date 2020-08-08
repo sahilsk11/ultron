@@ -36,7 +36,7 @@ class PullLatestVersion extends Intent {
 
       }));
       const startCommand = "pm2 start endpoint.js;";
-      await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
+      await new Promise(resolve => exec(startCommand, (error, stdout, stderr) => {
 
       }));
     }, 3000);
