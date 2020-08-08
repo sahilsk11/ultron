@@ -14,6 +14,7 @@ class PullLatestVersion extends Intent {
   async execute() {
     const command = "git fetch;"
     const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
+      console.log(stdout);
       let out = stdout.split("\n");
       console.log(out);
       let update = false;
@@ -28,7 +29,6 @@ class PullLatestVersion extends Intent {
       if (update) {
         await this.sleep(3000);
         this.pullLatestVersion();
-        
       }
     }));
 
