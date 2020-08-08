@@ -23,6 +23,7 @@ class PullLatestVersion extends Intent {
         out = out.split("\n");
         message = "Updated to latest version with update notes: \"" + out[0] + "\". Restarting service in 3 seconds...";
       }
+      
       resolve({ code: 200, message, intent: this.intentName });
     }));
 
