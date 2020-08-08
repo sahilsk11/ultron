@@ -13,7 +13,7 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
-    const command = "git pull; git log -1 --pretty=%B;"
+    const command = "git pull;"
     const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
       let message = "";
       if (stdout.includes("Already up-to-date.")) {
@@ -26,12 +26,12 @@ class PullLatestVersion extends Intent {
       resolve({ code: 200, message, intent: this.intentName });
     }));
     if (this.isProduction()) this.restartPm2();
-    
+
     return response;
   }
 
   async getLatestCommitMessage() {
-    return await new Promise(resolve => exec(command, (error, stdout, stderr) => resolve(stdout)));
+    return await new Promise(resolve => exec("git log -1 --pretty=%B;", (error, stdout, stderr) => resolve(stdout)));
   }
 
   async restartPm2() {
