@@ -24,6 +24,7 @@ class PullLatestVersion extends Intent {
       }
       resolve({ code: 200, message, intent: this.intentName });
     }));
+    
     return response;
   }
 
