@@ -18,7 +18,8 @@ class PullLatestVersion extends Intent {
       if (out.length <= 1) {
         message = "Sir, I am already running the latest version."
       } else {
-        let out = await this.getLatestCommitMessage();
+        await this.pullLatestVersion();
+        out = await this.getLatestCommitMessage();
         out = out.split("\n");
         message = "Updated to latest version with update notes: \"" + out[0] + "\". Restarting service in 3 seconds...";
       }
@@ -26,6 +27,10 @@ class PullLatestVersion extends Intent {
     }));
 
     return response;
+  }
+
+  async pullLatestVersion() {
+    return await new Promise(resolve => exec("git pull;", (error, stdout, stderr) => resolve(stdout)));
   }
 
   async getLatestCommitMessage() {
