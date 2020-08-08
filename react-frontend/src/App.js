@@ -18,10 +18,10 @@ function Index() {
       alert("Unsupported Browser");
     }
   }, []);
-
+  console.log(state);
   if (state === "sleep" && listening) {
     SpeechRecognition.stopListening();
-  } else if (!listening) {
+  } else if (state !== "sleep" && !listening) {
     SpeechRecognition.startListening({ continuous: true });
   }
 
@@ -40,11 +40,9 @@ function Index() {
     updateState("processing");
     const onAudioFinish = () => {
       resetTranscript();
-      updateState("response");
-      setTimeout(() => {
-        if (stateRef.current === "response") updateState("ambient");
-      }, 10000);
+      SpeechRecognition.startListening({ continuous: true });
     }
+    SpeechRecognition.stopListening();
     send({ transcript, setMessage, setIntent, updateState, onAudioFinish });
   }
 
@@ -120,7 +118,6 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
     fetch(host + endpoint + params)
       .then(response => {
         if (response.status === 200) {
-          console.log(response);
           return response.json();
         } else {
           setMessage("Error in request");
@@ -128,13 +125,14 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
           throw Error(`Request rejected`)
         }
       }).then(data => {
-        const { intent, message } = actionLauncher({ data, updateState });
+        const { intent, message } = data;
         setIntent(intent);
         setMessage(message);
-        const audio = new Audio(host + '/audioFile?fileName=' + data.fileName);
         updateState("response");
+        actionLauncher({ data, updateState });
+        const audio = new Audio(host + '/audioFile?fileName=' + data.fileName);
         audio.play();
-        audio.addEventListener("ended", onAudioFinish);
+        audio.addEventListener("ended", data => onAudioFinish(data));
       }).catch(error => {
         console.error(error);
         updateState("error");
