@@ -19,7 +19,7 @@ class PullLatestVersion extends Intent {
       if (stdout.includes("Already up-to-date.")) {
         message = "Sir, I am already running the latest version."
       } else {
-        let out = stdout.split("\n");
+        let out = await this.getLatestCommitMessage().split("\n");
         console.log(out);
         message = "Updated to latest version with update notes: \"" + out[1] + "\". Restarting service in 3 seconds...";
       }
@@ -27,6 +27,10 @@ class PullLatestVersion extends Intent {
     }));
     if (this.isProduction()) this.restartPm2();
     return response;
+  }
+
+  async getLatestCommitMessage() {
+    return await new Promise(resolve => exec(command, (error, stdout, stderr) => resolve(stdout)));
   }
 
   async restartPm2() {
