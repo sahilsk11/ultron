@@ -14,7 +14,7 @@ class PullLatestVersion extends Intent {
 
   async execute() {
     const command = "git pull; git log -1 --pretty=%B;"
-    const response = await new Promise(resolve => exec(command, (error, stdout, stderr) => {
+    const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
       let message = "";
       if (stdout.includes("Already up-to-date.")) {
         message = "Sir, I am already running the latest version."
