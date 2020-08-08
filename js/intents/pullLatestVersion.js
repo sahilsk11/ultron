@@ -12,12 +12,11 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
-    const fetchOut = await this.runCommand("git fetch");
-
+    const fetchOut = await this.runCommand("git remote update; git status -uno;");
     let message;
     let update = false;
 
-    if (fetchOut.split("\n").length <= 1) {
+    if (fetchOut.includes("Your branch is up-to-date")) {
       message = "Sir, I am already running the latest version."
     } else {
       message = "Updating to latest version. Restarting service in 3 seconds...";
@@ -30,7 +29,7 @@ class PullLatestVersion extends Intent {
     }
     
     if (update) pull();
-    
+
 
     return { code: 200, message, intent: this.intentName };
   }
