@@ -23,7 +23,7 @@ class PullLatestVersion extends Intent {
         console.log(out);
         out = out.split("\n");
         console.log(out);
-        message = "Updated to latest version with update notes: \"" + out[1] + "\". Restarting service in 3 seconds...";
+        message = "Updated to latest version with update notes: \"" + out[0] + "\". Restarting service in 3 seconds...";
       }
       resolve({ code: 200, message, intent: this.intentName });
     }));
@@ -36,7 +36,6 @@ class PullLatestVersion extends Intent {
   }
 
   async restartPm2() {
-    console.log('here');
     setTimeout(async () => {
       const stopCommand = "pm2 stop endpoint;"
       await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
