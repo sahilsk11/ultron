@@ -11,7 +11,7 @@ class HomieGreetingIntent extends Intent {
   }
 
   async execute() {
-    const regex = /([a-z]+)/;
+    const regex = /([a-z]+)$/;
     const name = regex.exec(this.transcript)[1];
     let messages = [
       "What is good, homie ",
