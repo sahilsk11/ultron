@@ -12,39 +12,34 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
-    const command = "git fetch;"
-    const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
-      console.log(stdout);
-      let out = stdout.split("\n");
-      console.log(out);
-      let update = false;
-      let message;
-      if (out.length <= 1) {
-        message = "Sir, I am already running the latest version."
-      } else {
-        message = "Updating to latest version. Restarting service in 3 seconds...";
-        update = true;
-      }
-      resolve({ code: 200, message, intent: this.intentName });
-      if (update) {
-        await this.sleep(3000);
-        this.pullLatestVersion();
-      }
-    }));
+    const fetchOut = await this.runCommand("git fetch");
 
-    return response;
+    let message;
+    let update = false;
+
+    if (fetchOut.split("\n").length <= 1) {
+      message = "Sir, I am already running the latest version."
+    } else {
+      message = "Updating to latest version. Restarting service in 3 seconds...";
+      update = true;
+    }
+
+    const pull = async () => {
+      await this.sleep(3000);
+      console.log(this.runCommand("git pull;"));
+    }
+    
+    if (update) pull();
+
+    return { code: 200, message, intent: this.intentName };
   }
 
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async pullLatestVersion() {
-    return await new Promise(resolve => exec("git pull;", (error, stdout, stderr) => resolve(stdout)));
-  }
-
-  async getLatestCommitMessage() {
-    return await new Promise(resolve => exec("git log -1 --pretty=%B;", (error, stdout, stderr) => resolve(stdout)));
+  async runCommand(command) {
+    return await new Promise(resolve => exec(command, (error, stdout, stderr) => resolve(stdout)));
   }
 }
 
