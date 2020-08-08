@@ -29,6 +29,7 @@ class PullLatestVersion extends Intent {
   }
 
   async restartPm2() {
+    console.log('here');
     setTimeout(async () => {
       const stopCommand = "pm2 stop endpoint;"
       await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
