@@ -3,8 +3,7 @@ export default function actionLauncher({ data, updateState }) {
 
   if (intent === "launch") {
     window.open(data.url);
-  } else if (intent === "hardwareSleepIntent") {
-    console.log('here');
+  } else if (intent === "hardwareSleepIntent" || intent === "closeShopIntent") {
     updateState("sleep");
   }
 

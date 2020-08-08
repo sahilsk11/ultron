@@ -13,8 +13,6 @@ function Index() {
 
   //https://www.npmjs.com/package/react-mic
 
-  console.log(state);
-
   useEffect(() => {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
       alert("Unsupported Browser");
@@ -23,7 +21,7 @@ function Index() {
 
   if (state === "sleep" && listening) {
     SpeechRecognition.stopListening();
-  } else if (state !== "sleep" && !listening) {
+  } else if (!listening) {
     SpeechRecognition.startListening({ continuous: true });
   }
 
@@ -40,13 +38,14 @@ function Index() {
   const endSession = async () => {
     setMessage("processing...")
     updateState("processing");
-    SpeechRecognition.stopListening();
-    await send({ transcript, setMessage, setIntent, updateState });
-    resetTranscript();
-    updateState("response");
-    setTimeout(() => {
-      if (stateRef.current === "response") updateState("ambient");
-    }, 20000);
+    const onAudioFinish = () => {
+      resetTranscript();
+      updateState("response");
+      setTimeout(() => {
+        if (stateRef.current === "response") updateState("ambient");
+      }, 10000);
+    }
+    send({ transcript, setMessage, setIntent, updateState, onAudioFinish });
   }
 
   useEffect(() => setUpdateTime(new Date()), [transcript]);
@@ -112,22 +111,38 @@ function App({
   );
 }
 
-const send = async ({ transcript, setMessage, setIntent, updateState }) => {
+const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish }) => {
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
   const params = "?transcript=" + transcript.toLowerCase();
-  fetch(host + endpoint + params)
-    .then(response => response.json())
-    .then(async data => {
-      const { intent, message } = actionLauncher({ data, updateState });
-      setIntent(intent);
-      setMessage(message);
-      const audio = new Audio(host + '/audioFile?fileName=' + data.fileName);
-      audio.play();
-    }).catch(error => {
-
-    });
+  try {
+    fetch(host + endpoint + params)
+      .then(response => {
+        if (response.status === 200) {
+          console.log(response);
+          return response.json();
+        } else {
+          setMessage("Error in request");
+          updateState("Error");
+          throw Error(`Request rejected`)
+        }
+      }).then(data => {
+        const { intent, message } = actionLauncher({ data, updateState });
+        setIntent(intent);
+        setMessage(message);
+        const audio = new Audio(host + '/audioFile?fileName=' + data.fileName);
+        updateState("response");
+        audio.play();
+        audio.addEventListener("ended", onAudioFinish);
+      }).catch(error => {
+        console.error(error);
+        updateState("error");
+        setMessage(error);
+      });
+  } catch (error) {
+    alert();
+  }
 }
 
 function useInterval(callback, delay) {

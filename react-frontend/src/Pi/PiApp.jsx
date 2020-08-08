@@ -18,9 +18,8 @@ export default function PiApp({
   } else if (state === "processing") {
     content = ActionScreen({ closeSession, greeting: "thinking...", state });
   } else if (state === "sleep") {
-    //alert();
     return SleepMode({ updateState });
-  } else {
+  } else if (state === "response") {
     content = ResponseScreen({ intentResponse, message, updateState });
   }
   return (
@@ -67,25 +66,23 @@ function ResponseScreen({ intentResponse, message, updateState }) {
 }
 
 function ListeningWaves() {
-  const gif = <img src="./pi-listening.gif" className="pi-listening" alt="" />;
-  return gif;
+  return (
+    <img src="./pi-listening.gif" className="pi-listening" alt="" />
+  );
 }
 
 function Processing() {
-  const loading = (
-    <div class="spinner">
-      <div class="bounce1"></div>
-      <div class="bounce2"></div>
-      <div class="bounce3"></div>
+  return (
+    <div className="spinner">
+      <div className="bounce1"></div>
+      <div className="bounce2"></div>
+      <div className="bounce3"></div>
     </div>
   );
-  return loading;
 }
 
 function SleepMode({ updateState }) {
   return (
-    <div className="pi-sleep-container" onClick={() => updateState("ambient")}>
-
-    </div>
-  )
+    <div className="pi-sleep-container" onClick={() => updateState("ambient")} />
+  );
 }
