@@ -28,6 +28,7 @@ class PullLatestVersion extends Intent {
     const pull = async () => {
       await this.sleep(3000);
       console.log(this.runCommand("git pull;"));
+      
     }
     
     if (update) pull();
