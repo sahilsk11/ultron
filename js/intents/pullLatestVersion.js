@@ -15,15 +15,19 @@ class PullLatestVersion extends Intent {
     const command = "git fetch;"
     const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
       let out = stdout.split("\n");
+      let update = false;
       let message;
       if (out.length <= 1) {
-        message = "Sir, I am already running the latest version!!"
+        message = "Sir, I am already running the latest version!!!"
       } else {
         message = "Updating to latest version. Restarting service in 3 seconds...";
+        update = true;
       }
       resolve({ code: 200, message, intent: this.intentName });
-      await this.sleep(3000);
-      this.pullLatestVersion();
+      if (update) {
+        await this.sleep(3000);
+        this.pullLatestVersion();
+      }
     }));
     return response;
   }
