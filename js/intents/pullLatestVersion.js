@@ -30,6 +30,7 @@ class PullLatestVersion extends Intent {
     }
     
     if (update) pull();
+    
 
     return { code: 200, message, intent: this.intentName };
   }
