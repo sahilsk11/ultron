@@ -1,6 +1,5 @@
 const { Intent } = require("../intent.js");
 const { exec } = require("child_process");
-const { resolve } = require("path");
 
 class PullLatestVersion extends Intent {
   constructor({ transcript }) {
@@ -41,9 +40,13 @@ class PullLatestVersion extends Intent {
       await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
         resolve();
       }));
+      console.log("off");
+      await sleep(5000);
       const startCommand = "pm2 start endpoint.js;";
       await new Promise(resolve => exec(startCommand, (error, stdout, stderr) => {
         resolve();
+        if (error) console.error("error: " + error);
+        if (stderr) console.error("stderr: " + stderr)
       }));
     }, 3000);
   }
