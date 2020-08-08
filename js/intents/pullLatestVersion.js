@@ -22,22 +22,21 @@ class PullLatestVersion extends Intent {
         let out = stdout.split("\n");
         message = "Updated to latest version with update notes: \"" + out[1] + "\". Restarting service in 3 seconds...";
       }
-      console.log("'" + out.split("\n") + "'");
       resolve({ code: 200, message, intent: this.intentName });
     }));
     if (this.isProduction()) this.restartPm2();
     return response;
   }
 
-  restartPm2() {
-    setTimeout(() => {
+  async restartPm2() {
+    setTimeout(async () => {
       const stopCommand = "pm2 stop endpoint;"
       await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
-
+        resolve();
       }));
       const startCommand = "pm2 start endpoint.js;";
       await new Promise(resolve => exec(startCommand, (error, stdout, stderr) => {
-
+        resolve();
       }));
     }, 3000);
   }
