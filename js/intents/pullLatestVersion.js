@@ -19,7 +19,7 @@ class PullLatestVersion extends Intent {
       let update = false;
       let message;
       if (out.length <= 1) {
-        message = "Sir, I am already running the latest version!!!!!!"
+        message = "Sir, I am already running the latest version."
       } else {
         message = "Updating to latest version. Restarting service in 3 seconds...";
         update = true;
