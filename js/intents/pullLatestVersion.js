@@ -25,7 +25,7 @@ class PullLatestVersion extends Intent {
       resolve({ code: 200, message, intent: this.intentName });
     }));
     if (this.isProduction()) this.restartPm2();
-    
+
     return response;
   }
 
@@ -39,13 +39,16 @@ class PullLatestVersion extends Intent {
       await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
         resolve();
       }));
+      console.log('service stopped;')
       const startCommand = "pm2 start endpoint.js;";
       await new Promise(resolve => exec(startCommand, (error, stdout, stderr) => {
         console.log(stdout);
-        resolve();
         if (error) console.error("error: " + error);
         if (stderr) console.error("stderr: " + stderr)
+        console.log('here');
+        resolve();
       }));
+      console.log('service resumed;')
     }, 3000);
   }
 }
