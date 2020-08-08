@@ -13,26 +13,23 @@ class PullLatestVersion extends Intent {
 
   async execute() {
     const fetchOut = await this.runCommand("git remote update; git status -uno;");
-    console.log(fetchOut)
     let message;
     let update = false;
 
     if (fetchOut.includes("Your branch is up-to-date")) {
-      message = "Sir, I am already running the latest version!"
+      message = "Sir, I am already running the latest version."
     } else {
       message = "Updating to latest version. Restarting service in 3 seconds...";
       update = true;
     }
 
-
     const pull = async () => {
       await this.sleep(3000);
       console.log(this.runCommand("git pull;"));
-      
+
     }
     
     if (update) pull();
-
 
     return { code: 200, message, intent: this.intentName };
   }
