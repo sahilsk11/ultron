@@ -24,23 +24,11 @@ class PullLatestVersion extends Intent {
       }
       resolve({ code: 200, message, intent: this.intentName });
     }));
-    if (this.isProduction()) this.restartPm2();
-
     return response;
   }
 
   async getLatestCommitMessage() {
     return await new Promise(resolve => exec("git log -1 --pretty=%B;", (error, stdout, stderr) => resolve(stdout)));
-  }
-
-  async restartPm2() {
-    setTimeout(async () => {
-      const stopCommand = "pm2 stop endpoint; pm2 start endpoint.js";
-      await new Promise(resolve => exec(stopCommand, (error, stdout, stderr) => {
-        resolve();
-      }));
-      console.log('service resumed;')
-    }, 3000);
   }
 }
 
