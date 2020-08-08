@@ -29,14 +29,15 @@ app.get("/addDailyWeight", async (req, res) => {
 });
 
 app.get("/setIntent", async (req, res) => {
+  console.log(new Date());
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
+  console.log("\t" + transcript);
   const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
   console.log(response);
   const message = response.message.replace(/"/g, '\\"');
   const command = "./mimic -t \"" + message + "\" -o audio/" + fileName
-  console.log(new Date());
-  console.log("\t" + transcript);
+  
   console.log("\t" + response.intent);
   console.log("\t" + message);
   console.log("\t" + fileName);

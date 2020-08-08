@@ -1,15 +1,6 @@
-/**
- * This is NOT A REAL INTENT and is used as a sample for what an intent will look like
- * 
- * Note that the pathname for intent.js is relative and will fail if not placed in the
- * intents/ folder.
- * 
- * 
- */
-
 const { Intent } = require("../intent.js")
 
-class SmallTalkIntent extends Intent { // TO-DO change name
+class SmallTalkIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
@@ -41,4 +32,4 @@ class SmallTalkIntent extends Intent { // TO-DO change name
   }
 }
 
-module.exports.IntentClass = SmallTalkIntent; //TO-DO change name
+module.exports.IntentClass = SmallTalkIntent; 
