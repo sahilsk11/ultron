@@ -22,6 +22,7 @@ class PullLatestVersion extends Intent {
       message = "Updating to latest version. Restarting service in 3 seconds...";
       update = true;
     }
+    
 
     const pull = async () => {
       await this.sleep(3000);
