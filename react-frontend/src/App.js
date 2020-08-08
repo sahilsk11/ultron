@@ -32,9 +32,6 @@ function Index() {
     SpeechRecognition.startListening({ continuous: true });
   }
 
-  const stateRef = useRef(state);
-  stateRef.current = state;
-
   const endSession = async () => {
     setMessage("processing...")
     updateState("processing");
@@ -48,7 +45,6 @@ function Index() {
 
   useEffect(() => {
     setUpdateTime(new Date());
-    
   }, [transcript]);
 
   if (state !== "listening") {
@@ -66,7 +62,7 @@ function Index() {
   useInterval(() => {
     if (transcript !== '' && state === "listening") {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
-      let timeTreshold = 2;
+      let timeTreshold = 3;
       if (transcript.includes("add weight")) {
         timeTreshold = 60;
       }

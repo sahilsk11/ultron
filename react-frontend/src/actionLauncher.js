@@ -6,8 +6,9 @@ export default function actionLauncher({ data, updateState }) {
   } else if (intent === "hardwareSleepIntent" || intent === "closeShopIntent") {
     updateState("sleep");
   } else if (intent === "pullLatestVersion") {
-    if (data.update)
+    if (data.update) {
       setTimeout(() => window.location.reload(), 6000);
+    }
   }
 
   return { message, intent };
