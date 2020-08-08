@@ -15,6 +15,7 @@ class PullLatestVersion extends Intent {
     const command = "git fetch;"
     const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
       let out = stdout.split("\n");
+      console.log(out);
       let update = false;
       let message;
       if (out.length <= 1) {
