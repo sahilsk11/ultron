@@ -30,6 +30,7 @@ class PullLatestVersion extends Intent {
         this.pullLatestVersion();
       }
     }));
+    
     return response;
   }
 
