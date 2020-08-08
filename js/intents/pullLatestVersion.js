@@ -18,16 +18,17 @@ class PullLatestVersion extends Intent {
       if (out.length <= 1) {
         message = "Sir, I am already running the latest version."
       } else {
-        await this.pullLatestVersion();
-        out = await this.getLatestCommitMessage();
-        out = out.split("\n");
-        message = "Updated to latest version with update notes: \"" + out[0] + "\". Restarting service in 3 seconds...";
+        message = "Updating to latest version. Restarting service in 3 seconds...";
       }
-      
       resolve({ code: 200, message, intent: this.intentName });
+      await this.sleep(3000);
+      this.pullLatestVersion();
     }));
-
     return response;
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   async pullLatestVersion() {
