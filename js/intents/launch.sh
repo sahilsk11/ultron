@@ -1,0 +1,1 @@
+pm2 start endpoint.js --watch --ignore-watch "audio"
