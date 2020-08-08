@@ -46,7 +46,10 @@ function Index() {
     send({ transcript, setMessage, setIntent, updateState, onAudioFinish });
   }
 
-  useEffect(() => setUpdateTime(new Date()), [transcript]);
+  useEffect(() => {
+    setUpdateTime(new Date());
+    
+  }, [transcript]);
 
   if (state !== "listening") {
     if (transcript.toLowerCase().includes("ultron")) {
@@ -63,7 +66,24 @@ function Index() {
   useInterval(() => {
     if (transcript !== '' && state === "listening") {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
-      if (timeDiff > 2) {
+      let timeTreshold = 2;
+      if (transcript.includes("add weight")) {
+        timeTreshold = 60;
+      }
+      const weightMetrics = ["lb", "bmi", "bone mass", "body fat", "muscle mass", "send"];
+      if (transcript.includes("add weight")) {
+        let allClear = true;
+        for (const metric of weightMetrics) {
+          if (!transcript.toLowerCase().includes(metric)) {
+            console.log("missing " + metric);
+            allClear = false;
+          }
+        }
+        if (allClear) {
+          timeTreshold = 0;
+        }
+      }
+      if (timeDiff > timeTreshold) {
         endSession();
       }
     }
@@ -136,7 +156,7 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
       }).catch(error => {
         console.error(error);
         updateState("error");
-        setMessage(error);
+        setMessage(error.message);
       });
   } catch (error) {
     alert();

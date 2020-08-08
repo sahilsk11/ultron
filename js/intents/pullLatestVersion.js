@@ -6,7 +6,7 @@ class PullLatestVersion extends Intent {
     super({
       transcript,
       regex: "",
-      utterances: ["pull latest version", "pull new", "update", "pull the latest version"],
+      utterances: ["pull latest version", "pull new", "pull the latest version", "download the", "git pull"],
       intentName: "pullLatestVersion"
     });
   }
@@ -26,7 +26,6 @@ class PullLatestVersion extends Intent {
     const pull = async () => {
       await this.sleep(3000);
       console.log(this.runCommand("git pull;"));
-
     }
     
     if (update) pull();
