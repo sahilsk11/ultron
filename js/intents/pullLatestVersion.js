@@ -19,9 +19,7 @@ class PullLatestVersion extends Intent {
         message = "Sir, I am already running the latest version."
       } else {
         let out = await this.getLatestCommitMessage();
-        console.log(out);
         out = out.split("\n");
-        console.log(out);
         message = "Updated to latest version with update notes: \"" + out[0] + "\". Restarting service in 3 seconds...";
       }
       resolve({ code: 200, message, intent: this.intentName });
