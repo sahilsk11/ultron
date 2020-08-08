@@ -16,7 +16,7 @@ class PullLatestVersion extends Intent {
     const response = await new Promise(resolve => exec(command, async (error, stdout, stderr) => {
       let message = "";
       if (stdout.includes("Already up-to-date.")) {
-        message = "Sir, I am already running the latest version!"
+        message = "Sir, I am already running the latest version."
       } else {
         let out = await this.getLatestCommitMessage();
         out = out.split("\n");
