@@ -28,6 +28,7 @@ class PullLatestVersion extends Intent {
       if (update) {
         await this.sleep(3000);
         this.pullLatestVersion();
+        
       }
     }));
     return response;
