@@ -13,7 +13,7 @@ class PullLatestVersion extends Intent {
 
   async execute() {
     const fetchOut = await this.runCommand("git remote update; git status -uno;");
-    console.log(fetchOut);
+    console.log(fetchOut)
     let message;
     let update = false;
 
