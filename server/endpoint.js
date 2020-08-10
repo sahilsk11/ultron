@@ -38,45 +38,55 @@ function idenitifyRequest(incomingApiKey) {
   return keychain[incomingApiKey];
 }
 
-app.get("/addDailyWeight", async (req, res) => {
-  const transcript = req.query.transcript;
-  console.log(req.params);
-  if (!transcript) {
-    res.json({ code: 422 });
-    return;
-  }
-  const { weight, bmi, bodyFat, muscleMass, waterMass, boneMass } = speechEngine.addWeightIntent({ transcript });
-  const response = await dream.addDailyWeightEntry({ weight, bmi, bodyFat, muscleMass, waterMass, boneMass });
-  console.log({ weight, bmi, bodyFat, muscleMass, waterMass, boneMass })
-  res.json({ code: 200 });
-});
-
 app.get("/setIntent", async (req, res) => {
   console.log(new Date());
-  console.log("\t"+req.identity);
-  const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
+  console.log("\t" + req.identity);
+  const identity = req.identity;
+  const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript, identity });
   console.log("\t" + transcript);
-  const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
+  const response = await speechEngine.intentEngine({ transcript, identity }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
   const message = response.message.replace(/"/g, '\\"');
-  const command = "./mimic -t \"" + message + "\" -o audio/" + fileName
+  const command = "./mimic -t \"" + message + "\" -o audio/" + fileName;
 
   console.log("\t" + response.intent);
   console.log("\t" + message);
   console.log("\t" + fileName);
   exec(command, (error, stdout, stderr) => {
     res.json({ ...response, fileName });
+
+    let successfulAudio = false;
     if (error) {
       console.error(`\terror: ${error.message}`);
-      return;
+    } else if (stderr && !stderr.includes("If audio works ignore")) {
+      console.error(`\tstderr: '${stderr}'`);
+    } else {
+      console.log(`\tsucessfully generated audio`);
+      successfulAudio = true;
     }
-    if (stderr) {
-      if (!stderr.includes("If audio works ignore")) {
-        console.error(`\tstderr: '${stderr}'`);
-        return;
+    const log = {
+      timestamp: new Date(),
+      transcript,
+      intent: response.intent,
+      message,
+      successfulAudio,
+      audioFileName: fileName,
+      continueConversation: response.continueConversation
+    }
+
+    let conversation;
+    const conversationFile = "conversations/" + identity + ".json";
+    try {
+      conversation = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        conversation = [];
+      } else {
+        throw err;
       }
     }
-    console.log(`\tsucessfully generated audio`);
+    conversation.push(log);
+    fs.writeFileSync(conversationFile, JSON.stringify(conversation));
   });
 });
 

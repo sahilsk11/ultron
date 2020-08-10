@@ -1,0 +1,18 @@
+[
+  {
+    "timestamp": "2020-08-10T09:21:21.127Z",
+    "transcript": "hello",
+    "intent": "greetingIntent",
+    "message": "Hello Sahil, good to see you.",
+    "successfulAudio": false,
+    "audioFileName": "N640858TF4.wav"
+  },
+  {
+    "timestamp": "2020-08-10T09:22:27.214Z",
+    "transcript": "what's up",
+    "intent": "smallTalkIntent",
+    "message": "I was just calibrating my conscience.",
+    "successfulAudio": true,
+    "audioFileName": "LMCDGQ7OPY.wav"
+  }
+]
