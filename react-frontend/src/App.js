@@ -127,14 +127,27 @@ function App({
   );
 }
 
+const getApiToken = () => {
+  let apiKey = localStorage.getItem('api_key');
+  if (!apiKey) {
+    apiKey = prompt("Enter device api key");
+    localStorage.setItem('api_key', apiKey);
+  }
+  return apiKey;
+}
+
 const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish }) => {
+  let apiKey = getApiToken();
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
   const params = "?transcript=" + transcript.toLowerCase();
   try {
-    fetch(host + endpoint + params)
-      .then(response => {
+    fetch(host + endpoint + params, {
+      headers: {
+        api_key: apiKey
+      }
+    }).then(response => {
         if (response.status === 200) {
           return response.json();
         } else {

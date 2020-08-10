@@ -13,14 +13,14 @@ app.listen(8080, () => {
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  //const endpointApiKey = process.env.ENDPOINT_API_KEY;
-  const incomingRequestApiKey = req.headers.apiKey;
-  console.log(incomingRequestApiKey);
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  const incomingRequestApiKey = req.headers.api_key;
   const identity = idenitifyRequest(incomingRequestApiKey);
-  console.log(identity);
-  if (!identity) {
+
+  if (!identity && req.path !== "/audioFile") {
     res.json({ code: 403, message: "Invalid credentials" });
   } else {
+    req.identity = identity;
     next();
   }
 });
@@ -52,11 +52,11 @@ app.get("/addDailyWeight", async (req, res) => {
 
 app.get("/setIntent", async (req, res) => {
   console.log(new Date());
+  console.log("\t"+req.identity);
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript });
   console.log("\t" + transcript);
   const response = await speechEngine.intentEngine({ transcript }); // {code, intent, message}
   const fileName = generateFileName() + ".wav";
-  console.log(response);
   const message = response.message.replace(/"/g, '\\"');
   const command = "./mimic -t \"" + message + "\" -o audio/" + fileName
 
@@ -75,7 +75,7 @@ app.get("/setIntent", async (req, res) => {
         return;
       }
     }
-    console.log(`\tsucessfully generated ${fileName}`);
+    console.log(`\tsucessfully generated audio`);
   });
 });
 
