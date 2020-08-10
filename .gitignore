@@ -1,4 +1,5 @@
 keychain.json
+gup.sh
 passwords.py
 .env
 node_modules/
