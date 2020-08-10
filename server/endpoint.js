@@ -159,6 +159,7 @@ app.get('/watchResponseScreen', async (req, res) => {
   const lastInteraction = conversationHistory[conversationHistory.length - 1];
   const className = require("./intents/" + lastInteraction.intent);
   const intentObj = new className.IntentClass({ transcript });
+  console.log("Matched intent to " + intentObj.intentName);
   let response;
   if (command === "singleTap") {
     response = await intentObj.watchSingleTap();
