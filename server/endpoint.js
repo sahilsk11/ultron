@@ -147,3 +147,47 @@ function generateFileName() {
   }
   return str;
 }
+
+app.get('/watchResponseScreen', async (req, res) => {
+  if (req.identity !== "watch") {
+    res.json({ code: 403, message: "Invalid credentials" });
+    return;
+  }
+  const command = req.query.command;
+  const conversationHistory = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
+  const lastInteraction = conversationHistory[conversationHistory.length - 1];
+  const className = require("./intents/" + lastInteraction.intent);
+  const intentObj = new className.IntentClass({ transcript });
+  let response;
+  if (command === "singleTap") {
+    response = await intentObj.watchSingleTap();
+  } else if (command === "doubleTap") {
+    response = await intentObj.watchDoubleTap();
+  } else if (command === "longTap") {
+    response = await intentObj.watchLongTap();
+  } else if (command === "swipe") {
+    response = await intentObj.watchSwipe();
+  }
+  res.json(response);
+})
+
+app.get('/watchResponseLongTap', (req, res) => {
+  if (req.identity !== "watch") {
+    res.json({ code: 403, message: "Invalid credentials" });
+    return;
+  }
+})
+
+app.get('/watchResponseDoubleTap', (req, res) => {
+  if (req.identity !== "watch") {
+    res.json({ code: 403, message: "Invalid credentials" });
+    return;
+  }
+})
+
+app.get('/watchResponseSwipe', (req, res) => {
+  if (req.identity !== "watch") {
+    res.json({ code: 403, message: "Invalid credentials" });
+    return;
+  }
+})

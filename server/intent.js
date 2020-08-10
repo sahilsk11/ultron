@@ -27,8 +27,20 @@ class Intent {
     return false;
   }
 
-  execute() {
-    throw new UndefinedFunction("The execute method has not been defined for this class.");
+  async watchSingleTap() {
+    throw new UndefinedFunction("This method has not been defined for this class.");
+  }
+
+  async watchDoubleTap() {
+    throw new UndefinedFunction("This method has not been defined for this class.");
+  }
+
+  async watchLongTap() {
+    throw new UndefinedFunction("This method has not been defined for this class.");
+  }
+
+  async watchSwipe() {
+    throw new UndefinedFunction("This method has not been defined for this class.");
   }
 
   /**

@@ -16,14 +16,15 @@ class TeslaControlIntent extends Intent {
         "battery level of the tesla", "battery level on the car", "battery level on the tesla",
         "flash car light", "flash tesla light", "flash light",
         "lock the car", "lock the tesla", "lock car", "lock tesla",
-        "unlock the car", "unlock the tesla", "unlock car", "unlock tesla"
+        "unlock the car", "unlock the tesla", "unlock car", "unlock tesla",
+        "tesla controller", "car controller"
       ],
       intentName: "teslaControlIntent"
     });
   }
 
   async execute() {
-    let code;
+    let code = 400;
     let message = '';
     if (this.transcript.includes("honk")) {
       const { queryResponseCode } = await this.runQuery("honk");
@@ -49,8 +50,34 @@ class TeslaControlIntent extends Intent {
       const { queryResponseCode } = await this.runQuery("lock");
       code = queryResponseCode;
       message = "Locking the Tesla now, sir.";
+    } else if (this.transcript.includes("controller")) {
+      message = "Controller active. Tap to flash, double tap to unlock, swipe to lock, and long press to honk.";
     }
-    return { code: 200, message, intent: this.intentName }
+    return { code, message, intent: this.intentName };
+  }
+
+  async watchSingleTap() {
+    const { code } = await this.runQuery("flash");
+    message = "Flashing lights now, sir.";
+    return { code, message, intent: this.intentName };
+  }
+
+  async watchDoubleTap() {
+    const { code } = await this.runQuery("unlock");
+    message = "Unlocking the Tesla now, sir.";
+    return { code, message, intent: this.intentName };
+  }
+
+  async watchLongTap() {
+    const { code } = await this.runQuery("honk");
+    message = "Honking now, sir.";
+    return { code, message, intent: this.intentName };
+  }
+
+  async watchSwipe() {
+    const { code } = await this.runQuery("lock");
+    message = "Locking the Tesla now, sir.";
+    return { code, message, intent: this.intentName };
   }
 
   async runQuery(command) {
