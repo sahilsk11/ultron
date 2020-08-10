@@ -19,10 +19,6 @@ function Index() {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
       alert("Unsupported Browser");
     }
-    alert();
-    let apiKey = prompt("Enter device api key");
-    if (!!apiKey && apiKey.length > 5)
-      localStorage.setItem('api_key', apiKey);
   }, []);
   console.log(state);
   if (state === "sleep" && listening) {
@@ -162,9 +158,8 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
       }).then(data => {
         const { intent, message, code } = data;
         if (message === "Invalid credentials") {
-          alert();
           apiKey = prompt("Enter device api key");
-          if (!apiKey && apiKey.length > 5)
+          if (!!apiKey && apiKey.length > 5)
             localStorage.setItem('api_key', apiKey);
         }
         setIntent(intent);
