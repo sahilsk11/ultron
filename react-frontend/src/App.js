@@ -140,10 +140,10 @@ const getApiToken = (override) => {
 
 const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish }) => {
   alert();
-  apiKey = prompt("Enter device api key");
+  let apiKey = prompt("Enter device api key");
   if (!apiKey && apiKey.length > 5)
     localStorage.setItem('api_key', apiKey);
-  let apiKey = getApiToken();
+  apiKey = getApiToken();
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
