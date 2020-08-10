@@ -141,13 +141,11 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
-  const params = "?transcript=" + transcript.toLowerCase();
+  let params = "?transcript=" + transcript.toLowerCase();
+  params += "&api_key=" + apiKey;
   try {
-    fetch(host + endpoint + params, {
-      headers: {
-        api_key: apiKey
-      }
-    }).then(response => {
+    fetch(host + endpoint + params)
+      .then(response => {
         if (response.status === 200) {
           return response.json();
         } else {

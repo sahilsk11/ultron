@@ -15,7 +15,7 @@ app.use((req, res, next) => {
   const allowedOrigin = process.env.NODE_ENV === "production" ? "https://ultron.sahilkapur.com" : "http://localhost:3000";
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Headers', '*');
-  const incomingRequestApiKey = req.headers.api_key;
+  const incomingRequestApiKey = req.query.api_key;
   const identity = idenitifyRequest(incomingRequestApiKey);
 
   if (!identity && req.path !== "/audioFile") {
