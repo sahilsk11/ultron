@@ -17,9 +17,13 @@ class WorkoutProgressIntent extends Intent {
       message = "I don't see any workout data for this week yet.";
     } else {
       const { progress, avgIntensity, totalDays } = await this.calculateWeeklyNumbers(records);
-      message = `You've completed ${progress}% of your weekly goal, with an average intensity of ${avgIntensity}% over ${totalDays} days.`;
+      message = this.constructMessage({ progress, avgIntensity, totalDays });
     }
     return { code: 200, message, intent: this.intentName }
+  }
+
+  constructMessage({ progress, avgIntensity, totalDays }) {
+    return `You've completed ${progress}% of your weekly goal, with an average intensity of ${avgIntensity}% over ${totalDays} day${totalDays !== 1 ? 's' : ''}.`;
   }
 
   getWeekNumber() {
