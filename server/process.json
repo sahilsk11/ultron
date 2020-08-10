@@ -1,7 +1,6 @@
 {
-  "watch": [
-    "endpoint"
-  ],
+  "script": "endpoint.js",
+  "watch": true ,
   "ignore_watch": [
     "node_modules",
     "audio",
@@ -9,5 +8,6 @@
   ],
   "watch_options": {
     "followSymlinks": false
-  }
+  },
+  "name": "ultron-endpoint"
 }
