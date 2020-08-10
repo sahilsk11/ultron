@@ -128,11 +128,12 @@ function App({
   );
 }
 
-const getApiToken = () => {
+const getApiToken = (override) => {
   let apiKey = localStorage.getItem('api_key');
   if (!apiKey) {
     apiKey = prompt("Enter device api key");
-    localStorage.setItem('api_key', apiKey);
+    if (!apiKey && apiKey.length > 5)
+      localStorage.setItem('api_key', apiKey);
   }
   return apiKey;
 }
@@ -155,7 +156,12 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
           throw Error(`Request rejected`)
         }
       }).then(data => {
-        const { intent, message } = data;
+        const { intent, message, code } = data;
+        if (code === 403) {
+          apiKey = prompt("Enter device api key");
+          if (!apiKey && apiKey.length > 5)
+            localStorage.setItem('api_key', apiKey);
+        }
         setIntent(intent);
         setMessage(message);
         updateState("response");

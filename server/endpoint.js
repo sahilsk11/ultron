@@ -38,6 +38,11 @@ function idenitifyRequest(incomingApiKey) {
   return keychain[incomingApiKey];
 }
 
+/**
+ * to-do
+ * 
+ * clean up logging, improve error handling, break up function
+ */
 app.get("/setIntent", async (req, res) => {
   console.log(new Date());
   console.log("\t" + req.identity);
