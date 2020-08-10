@@ -59,7 +59,7 @@ class TeslaControlIntent extends Intent {
     const endpoint = "/prod/falcon";
     const params = "?command=" + command + "&token=" + token;
     const url = host + endpoint + params;
-    console.log(url);
+
     const response = await axios.get(url);
     if (response.status === 200) {
       return { code: 200, data: response.data, message: "success" }
