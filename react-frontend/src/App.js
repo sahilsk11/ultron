@@ -19,6 +19,10 @@ function Index() {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
       alert("Unsupported Browser");
     }
+    alert();
+    let apiKey = prompt("Enter device api key");
+    if (!!apiKey && apiKey.length > 5)
+      localStorage.setItem('api_key', apiKey);
   }, []);
   console.log(state);
   if (state === "sleep" && listening) {
@@ -139,11 +143,7 @@ const getApiToken = (override) => {
 }
 
 const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish }) => {
-  alert();
-  let apiKey = prompt("Enter device api key");
-  if (!apiKey && apiKey.length > 5)
-    localStorage.setItem('api_key', apiKey);
-  apiKey = getApiToken();
+  let apiKey = getApiToken();
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
   const endpoint = "/setIntent";
