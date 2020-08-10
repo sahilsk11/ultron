@@ -28,6 +28,7 @@ function Index() {
   }
 
   const startSession = () => {
+    resetTranscript();
     setMessage("Go ahead...");
     setUpdateTime(new Date());
     updateState("listening");
@@ -64,7 +65,7 @@ function Index() {
   useInterval(() => {
     if (transcript !== '' && state === "listening") {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
-      let timeTreshold = 3;
+      let timeTreshold = 2;
       if (transcript.includes("add weight")) {
         timeTreshold = 60;
       }
@@ -93,7 +94,7 @@ function Index() {
     transcript: state === 'listening' ? transcript : '',
     startSession,
     state,
-    updateState
+    updateState,
   }
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -110,12 +111,12 @@ function App({
   listening,
   stopListening,
   startSession,
-  transcript
+  transcript,
 }) {
   return (
     <div className="app-container">
       <h2 className="greeting">{message}</h2>
-      <div className="voice-icon-wrapper" onClick={() => { listening ? stopListening() : startSession({ continuous: true }) }}>
+      <div className="voice-icon-wrapper" onClick={() => { listening ? stopListening() : startSession() }}>
         <img className="voice-icon"
           src="https://cdn.dribbble.com/users/32512/screenshots/5668419/calm_ai_design_by_gleb.gif"
           alt=""
