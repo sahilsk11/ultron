@@ -128,11 +128,11 @@ function App({
   );
 }
 
-const getApiToken = (override) => {
+const getApiToken = () => {
   let apiKey = localStorage.getItem('api_key');
   if (!apiKey) {
     apiKey = prompt("Enter device api key");
-    if (!apiKey && apiKey.length > 5)
+    if (!!apiKey && apiKey.length > 5)
       localStorage.setItem('api_key', apiKey);
   }
   return apiKey;
