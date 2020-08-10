@@ -11,6 +11,8 @@ function Index() {
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
 
+  const wakeWord = "ultron";
+
   //https://www.npmjs.com/package/react-mic
 
   useEffect(() => {
@@ -48,7 +50,7 @@ function Index() {
   }, [transcript]);
 
   if (state !== "listening") {
-    if (transcript.toLowerCase().includes("ultron")) {
+    if (transcript.toLowerCase().includes(wakeWord)) {
       resetTranscript();
       startSession();
     } else if (listening && state === "response") {

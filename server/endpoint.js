@@ -1,7 +1,8 @@
 const speechEngine = require("./intentEngine");
 const { exec } = require("child_process");
 const ms = require('mediaserver');
-const fs = require('fs')
+const fs = require('fs');
+require('dotenv').config();
 
 const express = require("express");
 const app = express();
@@ -12,8 +13,29 @@ app.listen(8080, () => {
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  next();
+  //const endpointApiKey = process.env.ENDPOINT_API_KEY;
+  const incomingRequestApiKey = req.headers.apiKey;
+  console.log(incomingRequestApiKey);
+  const identity = idenitifyRequest(incomingRequestApiKey);
+  console.log(identity);
+  if (!identity) {
+    res.json({ code: 403, message: "Invalid credentials" });
+  } else {
+    next();
+  }
 });
+
+/**
+ * Determine the identity of the incoming request. Return the device,
+ * or null/undefined if it is an unknown device
+ * 
+ * @param incomingApiKey  the api key from the incoming request
+ */
+function idenitifyRequest(incomingApiKey) {
+  if (!incomingApiKey) return null;
+  const keychain = JSON.parse(fs.readFileSync('keychain.json', 'utf-8'))
+  return keychain[incomingApiKey];
+}
 
 app.get("/addDailyWeight", async (req, res) => {
   const transcript = req.query.transcript;
@@ -37,7 +59,7 @@ app.get("/setIntent", async (req, res) => {
   console.log(response);
   const message = response.message.replace(/"/g, '\\"');
   const command = "./mimic -t \"" + message + "\" -o audio/" + fileName
-  
+
   console.log("\t" + response.intent);
   console.log("\t" + message);
   console.log("\t" + fileName);
