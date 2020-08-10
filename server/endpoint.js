@@ -154,11 +154,10 @@ app.get('/watchResponseScreen', async (req, res) => {
     return;
   }
   const command = req.query.command;
-  console.log("Running watch command ") + command;
-  const conversationHistory = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
+  const conversationHistory = JSON.parse(fs.readFileSync("conversations/watch.json", 'utf-8'));
   const lastInteraction = conversationHistory[conversationHistory.length - 1];
   const className = require("./intents/" + lastInteraction.intent);
-  const intentObj = new className.IntentClass({ transcript });
+  const intentObj = new className.IntentClass({ transcript: '' });
   console.log("Matched intent to " + intentObj.intentName);
   let response;
   if (command === "singleTap") {
@@ -171,6 +170,12 @@ app.get('/watchResponseScreen', async (req, res) => {
     response = await intentObj.watchSwipe();
   }
   res.json(response);
+  const conversation = {
+    timeStamp: new Date(),
+    command,
+    intent: response.intent,
+  };
+  addToConversation(conversation, "watch");
 })
 
 app.get('/watchResponseLongTap', (req, res) => {

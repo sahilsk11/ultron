@@ -59,25 +59,25 @@ class TeslaControlIntent extends Intent {
 
   async watchSingleTap() {
     const { code } = await this.runQuery("flash");
-    message = "Flashing lights now, sir.";
+    const message = "Flashing lights now, sir.";
     return { code, message, intent: this.intentName };
   }
 
   async watchDoubleTap() {
     const { code } = await this.runQuery("unlock");
-    message = "Unlocking the Tesla now, sir.";
+    const message = "Unlocking the Tesla now, sir.";
     return { code, message, intent: this.intentName };
   }
 
   async watchLongTap() {
     const { code } = await this.runQuery("honk");
-    message = "Honking now, sir.";
+    const message = "Honking now, sir.";
     return { code, message, intent: this.intentName };
   }
 
   async watchSwipe() {
     const { code } = await this.runQuery("lock");
-    message = "Locking the Tesla now, sir.";
+    const message = "Locking the Tesla now, sir.";
     return { code, message, intent: this.intentName };
   }
 
