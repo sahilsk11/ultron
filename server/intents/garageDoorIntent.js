@@ -6,14 +6,17 @@ class GarageDoorIntent extends Intent {
     super({
       transcript,
       regex: "",
-      utterances: ["garage"],
+      utterances: ["garage", "barn door"],
       intentName: "garageDoorIntent"
     });
   }
 
   async execute() {
     let message;
-    if (this.transcript.includes("is") || this.transcript.includes("status")) {
+    if (this.transcript.includes("protocol")) {
+      message = "Initiating barn door protocol.";
+      this.makeRequest("close");
+    } else if (this.transcript.includes("is") || this.transcript.includes("status")) {
       let response = await this.makeRequest("status");
       if (response.status) {
         message = "Sir, the garage door is open.";
