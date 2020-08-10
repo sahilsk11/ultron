@@ -52,6 +52,7 @@ class TeslaControlIntent extends Intent {
       message = "Locking the Tesla now, sir.";
     } else if (this.transcript.includes("controller")) {
       message = "Controller active. Tap to flash, double tap to unlock, swipe to lock, and long press to honk.";
+      code = 200;
     }
     return { code, message, intent: this.intentName };
   }

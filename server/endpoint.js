@@ -154,6 +154,7 @@ app.get('/watchResponseScreen', async (req, res) => {
     return;
   }
   const command = req.query.command;
+  console.log("Running watch command ") + command;
   const conversationHistory = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
   const lastInteraction = conversationHistory[conversationHistory.length - 1];
   const className = require("./intents/" + lastInteraction.intent);
