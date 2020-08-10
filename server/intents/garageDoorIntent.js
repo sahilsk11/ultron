@@ -11,9 +11,16 @@ class GarageDoorIntent extends Intent {
     });
   }
 
-  execute() {
+  async execute() {
     let message;
-    if (this.transcript.includes("open")) {
+    if (this.transcript.includes("is") || this.transcript.includes("status")) {
+      let response = await this.makeRequest("status");
+      if (response.status) {
+        message = "Sir, the garage door is open.";
+      } else {
+        message = "The garage door is closed, sir.";
+      }
+    } else if (this.transcript.includes("open")) {
       this.makeRequest("open");
       message = "Opening the garage door now.";
     } else if (this.transcript.includes("close")) {
@@ -34,6 +41,7 @@ class GarageDoorIntent extends Intent {
       }
     });
     console.log(response.data);
+    return response.data;
   }
 }
 
