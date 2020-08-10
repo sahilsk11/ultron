@@ -38,62 +38,78 @@ function idenitifyRequest(incomingApiKey) {
   return keychain[incomingApiKey];
 }
 
-/**
- * to-do
- * 
- * clean up logging, improve error handling, break up function
- */
 app.get("/setIntent", async (req, res) => {
-  console.log(new Date());
-  console.log("\t" + req.identity);
   const identity = req.identity;
   const transcript = speechEngine.correctTranscript({ transcript: req.query.transcript, identity });
-  console.log("\t" + transcript);
-  const response = await speechEngine.intentEngine({ transcript, identity }); // {code, intent, message}
-  const fileName = generateFileName() + ".wav";
+
+  let response;
+  try {
+    response = await speechEngine.intentEngine({ transcript, identity }); // {code, intent, message}
+  } catch (err) {
+    console.error(err);
+    addToConversation({ transcript, identity }, identity);
+    return;
+  }
+
   const message = response.message.replace(/"/g, '\\"');
-  const command = "./mimic -t \"" + message + "\" -o audio/" + fileName;
+  const { audioFileName, successfulAudio, audioError } = await generateAudio(message);
 
-  console.log("\t" + response.intent);
-  console.log("\t" + message);
-  console.log("\t" + fileName);
-  exec(command, (error, stdout, stderr) => {
-    res.json({ ...response, fileName });
+  res.json({ ...response, fileName: audioFileName });
 
-    let successfulAudio = false;
-    if (error) {
-      console.error(`\terror: ${error.message}`);
-    } else if (stderr && !stderr.includes("If audio works ignore")) {
-      console.error(`\tstderr: '${stderr}'`);
-    } else {
-      console.log(`\tsucessfully generated audio`);
-      successfulAudio = true;
-    }
-    const log = {
-      timestamp: new Date(),
-      transcript,
-      intent: response.intent,
-      message,
-      successfulAudio,
-      audioFileName: fileName,
-      continueConversation: response.continueConversation
-    }
-
-    let conversation;
-    const conversationFile = "conversations/" + identity + ".json";
-    try {
-      conversation = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        conversation = [];
-      } else {
-        throw err;
-      }
-    }
-    conversation.push(log);
-    fs.writeFileSync(conversationFile, JSON.stringify(conversation));
-  });
+  const conversationSummary = {
+    timeStamp: new Date(),
+    transcript,
+    intent: response.intent,
+    message,
+    successfulAudio,
+    audioFileName,
+    audioError,
+    continueConversation: response.continueConversation,
+    identity
+  }
+  addToConversation(conversationSummary, identity);
 });
+
+/**
+ * Logs and stores the conversation with the history from the device
+ * 
+ * @param conversationSummary JSON object of conversation
+ */
+function addToConversation(conversationSummary, identity) {
+  console.log(conversationSummary);
+  let conversationHistory;
+  const conversationFile = "conversations/" + identity + ".json";
+  try {
+    conversationHistory = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      conversationHistory = [];
+    } else {
+      throw err;
+    }
+  }
+  conversationHistory.push(conversationSummary);
+  fs.writeFileSync(conversationFile, JSON.stringify(conversationHistory));
+}
+
+function generateAudio(message) {
+  const audioFileName = generateFileName() + ".wav";
+  const command = "./mimic -t \"" + message + "\" -o audio/" + audioFileName;
+  return new Promise(resolve => {
+    exec(command, (err, stdout, stderr) => {
+      let successfulAudio = false;
+      let audioError;
+      if (err) {
+        audioError = err;
+      } else if (stderr && !stderr.includes("If audio works ignore")) {
+        audioError = stderr;
+      } else {
+        successfulAudio = true;
+      }
+      resolve({ audioFileName, successfulAudio, audioError });
+    })
+  });
+}
 
 app.get('/audioFile', async function async(req, res) {
   const filename = req.query.fileName;
@@ -105,7 +121,6 @@ app.get('/audioFile', async function async(req, res) {
         if (fs.existsSync("./audio/" + filename)) {
           sent = true;
           ms.pipe(req, res, "./audio/" + filename);
-          console.log("\tfile " + filename + " sent");
         }
       } catch (err) {
         console.error(err)
@@ -115,7 +130,7 @@ app.get('/audioFile', async function async(req, res) {
   }
   await attemptSend();
   if (!sent) {
-    console.error("Could not send audio file");
+    console.error("Could not send audio file " + filename);
   }
 });
 
