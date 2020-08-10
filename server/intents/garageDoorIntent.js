@@ -33,6 +33,7 @@ class GarageDoorIntent extends Intent {
         password
       }
     });
+    console.log(response.data);
   }
 }
 

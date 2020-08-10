@@ -8,4 +8,3 @@ env/
 conversations/
 __pycache__/
 mimic
-testIntent.js
