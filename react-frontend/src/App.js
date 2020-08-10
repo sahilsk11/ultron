@@ -157,7 +157,7 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
         }
       }).then(data => {
         const { intent, message, code } = data;
-        if (code === 403) {
+        if (message === "Invalid credentials") {
           apiKey = prompt("Enter device api key");
           if (!apiKey && apiKey.length > 5)
             localStorage.setItem('api_key', apiKey);
