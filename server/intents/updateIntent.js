@@ -50,7 +50,12 @@ class PullLatestVersion extends Intent {
 
   async runCommand(command) {
     console.log("> " + command);
-    return await new Promise(resolve => exec(command, (error, stdout, stderr) => resolve(stdout)));
+    return await new Promise(resolve => exec(command, (error, stdout, stderr) => {
+      if (!error) console.error(error);
+      if (!stdout) console.error(stdout);
+      console.log(stdout);
+      resolve(stdout);
+    }));
   }
 }
 
