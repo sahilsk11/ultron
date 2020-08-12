@@ -42,7 +42,7 @@ class PullLatestVersion extends Intent {
     }
 
     if (update) pull();
-    return { code: 200, message, intent: this.intentName, update };
+    return { code: 200, message, intent: this.intentName, update, externalRepo };
   }
 
   sleep(ms) {
