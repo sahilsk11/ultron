@@ -12,24 +12,35 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
+    const externalRepo = false;
+    let repoName;
+    if (this.transcript.includes(" on ") || this.transcript.includes(" of ")) {
+      const regex = /([a-z]+)$/;
+      repoName = regex.exec(this.transcript)[1];
+      await this.runCommand("cd ../../" + repoName);
+      externalRepo = true;
+    } else {
+      await this.runCommand("cd ..");
+    }
     const fetchOut = await this.runCommand("git remote update; git status -uno;");
     let message;
     let update = false;
 
     if (fetchOut.includes("Your branch is up-to-date")) {
-      message = "Sir, I am already running the latest version."
+      const persona = externalRepo ? repoName + " is" : "I am"
+      message = `Sir, ${persona} already running the latest version.`
     } else {
-      message = "Updating to latest version. Restarting service in 3 seconds...";
+      const persona = externalRepo ? repoName + " " : ""
+      message = `Updating ${persona}to latest version. Restarting service in 3 seconds...`;
       update = true;
     }
 
     const pull = async () => {
       await this.sleep(3000);
-      console.log(await this.runCommand("cd ..; git pull; cd server;"));
+      console.log(await this.runCommand("git pull; cd -;"));
     }
-    
-    if (update) pull();
 
+    if (update) pull();
     return { code: 200, message, intent: this.intentName, update };
   }
 
