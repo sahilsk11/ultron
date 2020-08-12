@@ -12,7 +12,7 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
-    const externalRepo = false;
+    let externalRepo = false;
     let repoName;
     if (this.transcript.includes(" on ") || this.transcript.includes(" of ")) {
       const regex = /([a-z]+)$/;
