@@ -14,15 +14,16 @@ class PullLatestVersion extends Intent {
   async execute() {
     let externalRepo = false;
     let repoName;
+    let path;
     if (this.transcript.includes(" on ") || this.transcript.includes(" of ")) {
       const regex = /([a-z]+)$/;
       repoName = regex.exec(this.transcript)[1];
-      await this.runCommand("cd ../../" + repoName);
+      path = "cd ../../" + repoName+"; pwd;";
       externalRepo = true;
     } else {
-      await this.runCommand("cd ..");
+     path = "cd ..; pwd;";
     }
-    const fetchOut = await this.runCommand("git remote update; git status -uno;");
+    const fetchOut = await this.runCommand(path+"git remote update; git status -uno;");
     let message;
     let update = false;
 
@@ -37,7 +38,7 @@ class PullLatestVersion extends Intent {
 
     const pull = async () => {
       await this.sleep(3000);
-      console.log(await this.runCommand("git pull; cd -;"));
+      console.log(await this.runCommand(path+"git pull; cd -; pwd;"));
     }
 
     if (update) pull();
