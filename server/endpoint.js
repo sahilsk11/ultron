@@ -12,7 +12,15 @@ app.listen(8080, () => {
 });
 
 app.use((req, res, next) => {
-  const allowedOrigin = process.env.NODE_ENV === "production" ? "https://ultron.sahilkapur.com" : "http://localhost:3000";
+  const isProduction = process.env.NODE_ENV === "production";
+  if (isProduction) {
+    res.setHeader('Access-Control-Allow-Origin', "http://localhost:3000");
+  } else {
+    const allowedOrigins = ["https://ultron.sh", "https://www.ultron.sh", "https://ultron.sahilkapur.com"];
+    if (allowedOrigins.indexOf(req.headers.origin) > -1) {
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+    }
+  }
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Headers', '*');
   const incomingRequestApiKey = req.query.api_key;
