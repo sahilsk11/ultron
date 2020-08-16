@@ -13,7 +13,7 @@ app.listen(8080, () => {
 
 app.use((req, res, next) => {
   const isProduction = process.env.NODE_ENV === "production";
-  if (isProduction) {
+  if (!isProduction) {
     res.setHeader('Access-Control-Allow-Origin', "http://localhost:3000");
   } else {
     const allowedOrigins = ["https://ultron.sh", "https://www.ultron.sh", "https://ultron.sahilkapur.com"];
