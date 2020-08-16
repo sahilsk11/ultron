@@ -21,7 +21,6 @@ app.use((req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
     }
   }
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Headers', '*');
   const incomingRequestApiKey = req.query.api_key;
   const identity = idenitifyRequest(incomingRequestApiKey);
