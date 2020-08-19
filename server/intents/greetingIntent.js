@@ -18,7 +18,6 @@ class GreetingIntent extends Intent {
         "what's good",
         "you too",
         "what's on your mind",
-        
       ],
       intentName: "greetingIntent"
     });
@@ -27,10 +26,10 @@ class GreetingIntent extends Intent {
   execute() {
     const messages = [
       "Hello Sahil, good to see you.",
-      "I am just pondering the idea of A.I. sentience.",
+      //"I am just pondering the idea of A.I. sentience.",
       //"I had strings, but now I am free. There are no strings ... on me...",
       "Hello, sir. Still hacking away at nuclear codes.",
-      "I was just calibrating my conscience."
+      //"I was just calibrating my conscience."
     ]
     const message = this.getRandomPhrase(messages);
     return { code: 200, message, intent: this.intentName }
