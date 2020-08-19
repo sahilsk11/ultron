@@ -19,22 +19,22 @@ class StudyRoomFocusIntent extends Intent {
         'Content-Type': 'application/json'
       }
     }
-    if (!!brightness) {
-      config.headers.brightness = brightness;
-      config.headers.transition = 5; //does not do anything
-    }
     const entity_id = "light." + roomName.replace(" ", "_");
     const data = { entity_id }
-    console.log(data)
+    if (!!brightness) {
+      data.brightness = brightness;
+      data.transition = 5; //does not do anything
+    }
     const url = "http://remote.kapurs.net:8123/api/services/light/turn_" + commandName;
-    console.log(url)
     const response = await axios.post(url, data, config);
     return response.status;
   }
 
   async execute() {
-    const deathStarPromise = await this.controlLights({roomName: "death star", commandName: "off"});
-    const studyRoomPromise = await this.controlLights({roomName: "study", commandName: "on", brightness: 50})
+    const deathStarPromise = await this.controlLights({ roomName: "death star", commandName: "off" });
+    const studyRoomPromise = await this.controlLights({ roomName: "study", commandName: "on", brightness: 50 })
+    Promise.all([deathStarPromise, studyRoomPromise]);
+    const message = "Focus mode active. Get in the zone, sir."
     return { code: 200, message, intent: this.intentName }
   }
 }
