@@ -11,7 +11,7 @@ function Index() {
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
 
-  const wakeWord = "ultron";
+  const wakeWord = "hey ultron";
 
   //https://www.npmjs.com/package/react-mic
 
