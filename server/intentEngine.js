@@ -18,15 +18,22 @@ const correctTranscript = ({ transcript }) => {
 const intentEngine = async ({ transcript }) => {
   const files = fs.readdirSync("./intents");
   const matchedIntents = [];
+  let clearIntent = false;
   await Promise.all(files.map(file => {
     if (file !== ".DS_Store" && file !== "sampleIntent.js") {
       const className = require("./intents/" + file);
       const intentObj = new className.IntentClass({ transcript });
       if (intentObj.transcriptMatches()) {
+        if (intentObj.intentName == "clearIntent") {
+          clearIntent = intentObj;
+        }
         matchedIntents.push(intentObj);
       }
     }
   }));
+  if (clearIntent) {
+    return await clearIntent.execute();
+  }
   if (matchedIntents.length === 1) {
     return await matchedIntents[0].execute();
   } else if (matchedIntents.length > 1) {

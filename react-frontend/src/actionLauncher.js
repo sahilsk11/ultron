@@ -1,6 +1,6 @@
-export default function actionLauncher({ data, updateState }) {
+export default function actionLauncher({ data, updateState, resetTranscript }) {
   const { message, intent } = data;
-
+  resetTranscript();
   if (intent === "launch") {
     window.open(data.url);
   } else if (intent === "hardwareSleepIntent" || intent === "closeShopIntent") {
@@ -9,6 +9,8 @@ export default function actionLauncher({ data, updateState }) {
     if (data.update) {
       setTimeout(() => window.location.reload(), 6000);
     }
+  } else if (intent == "clearIntent") {
+    updateState("ambient");
   }
 
   return { message, intent };

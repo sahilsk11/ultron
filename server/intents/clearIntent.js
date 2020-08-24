@@ -1,29 +1,18 @@
-/**
- * This is NOT A REAL INTENT and is used as a sample for what an intent will look like
- * 
- * Note that the pathname for intent.js is relative and will fail if not placed in the
- * intents/ folder.
- * 
- * 
- */
-
 const { Intent } = require("../intent.js");
 
-class SampleIntent extends Intent { // TO-DO change name
+class ClearIntent extends Intent {
   constructor({ transcript }) {
-    // TO-DO edit regex, utterances, and name
     super({
       transcript,
       regex: "",
-      utterances: ["give me a sample intent"],
-      intentName: "sampleIntent"
+      utterances: ["clear", "stop", "shut up", "stop"],
+      intentName: "clearIntent"
     });
   }
 
   async execute() {
-    // TO-DO implmement
-    return { code: 200, message, intent: this.intentName }
+    return { code: 200, message: "", intent: this.intentName, action: "reset" }
   }
 }
 
-module.exports.IntentClass = SampleIntent; //TO-DO change name
+module.exports.IntentClass = ClearIntent;

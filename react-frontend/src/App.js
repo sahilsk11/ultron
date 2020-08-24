@@ -43,7 +43,7 @@ function Index() {
       SpeechRecognition.startListening({ continuous: true });
     }
     SpeechRecognition.stopListening();
-    send({ transcript, setMessage, setIntent, updateState, onAudioFinish });
+    send({ transcript, resetTranscript, setMessage, setIntent, updateState, onAudioFinish });
   }
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const getApiToken = () => {
   return apiKey;
 }
 
-const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish }) => {
+const send = ({ transcript, resetTranscript, setMessage, setIntent, updateState, onAudioFinish }) => {
   let apiKey = getApiToken();
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
@@ -165,7 +165,7 @@ const send = ({ transcript, setMessage, setIntent, updateState, onAudioFinish })
         setIntent(intent);
         setMessage(message);
         updateState("response");
-        actionLauncher({ data, updateState });
+        actionLauncher({ data, updateState, resetTranscript });
         const audio = new Audio(host + '/audioFile?fileName=' + data.fileName);
         audio.play();
         audio.addEventListener("ended", data => onAudioFinish(data));
