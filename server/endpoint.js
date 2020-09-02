@@ -4,7 +4,7 @@ const ms = require('mediaserver');
 const fs = require('fs');
 require('dotenv').config();
 const bodyParser = require("body-parser");
-
+const axios = require('axios');
 
 const express = require("express");
 const app = express();
@@ -228,6 +228,7 @@ app.post('/handleSmsReply', async (req, res) => {
       addToConversation({ transcript, identity }, identity);
       return;
     }
+    res.json(response);
     message = response.message;
     const conversationSummary = {
       timeStamp: new Date(),
