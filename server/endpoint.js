@@ -213,7 +213,6 @@ app.get('/watchResponseSwipe', (req, res) => {
 
 app.post('/handleSmsReply', async (req, res) => {
   const body = req.body;
-  console.log(body);
   const number = body.fromNumber;
   let message;
   if (number == '+14088870718') {
@@ -229,25 +228,30 @@ app.post('/handleSmsReply', async (req, res) => {
       return;
     }
     res.json(response);
+
     message = response.message;
+    const smsResponse = await axios.post('https://textbelt.com/text', {
+      phone: number,
+      message,
+      key: process.env.TEXT_KEY,
+      replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
+    });
+
+    const { success, quotaRemaining } = smsResponse; //TO-DO store this somewhere
+    if (!success) {
+      console.error(smsResponse);
+    }
+
     const conversationSummary = {
       timeStamp: new Date(),
       transcript,
       intent: response.intent,
       message,
       continueConversation: response.continueConversation,
-      identity
+      identity,
+      textMessageSuccess: success,
+      textQuoteRemaining: quotaRemaining
     }
     addToConversation(conversationSummary, identity);
-  } else {
-    message = "Unauthenticated device";
   }
-  axios.post('https://textbelt.com/text', {
-    phone: number,
-    message,
-    key: process.env.TEXT_KEY,
-    replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
-  }).then(response => {
-    console.log(response.data);
-  });
 })
