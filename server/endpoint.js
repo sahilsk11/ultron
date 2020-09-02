@@ -215,28 +215,38 @@ app.post('/handleSmsReply', async (req, res) => {
   const body = req.body;
   console.log(body);
   const number = body.fromNumber;
-  let identity = "text";
-  const transcript = speechEngine.correctTranscript({ transcript: body.text });
+  let message;
+  if (number == '+14088870718') {
+    let identity = "text";
+    const transcript = speechEngine.correctTranscript({ transcript: body.text });
 
-  let response;
-  try {
-    response = await speechEngine.intentEngine({ transcript, identity }); // {code, intent, message}
-  } catch (err) {
-    console.error(err);
-    addToConversation({ transcript, identity }, identity);
-    return;
+    let response;
+    try {
+      response = await speechEngine.intentEngine({ transcript, identity }); // {code, intent, message}
+    } catch (err) {
+      console.error(err);
+      addToConversation({ transcript, identity }, identity);
+      return;
+    }
+    message = response.message;
+    const conversationSummary = {
+      timeStamp: new Date(),
+      transcript,
+      intent: response.intent,
+      message,
+      continueConversation: response.continueConversation,
+      identity
+    }
+    addToConversation(conversationSummary, identity);
+  } else {
+    message = "Unauthenticated device";
   }
-  const { message } = response;
-
-  res.json(response);
-
-  const conversationSummary = {
-    timeStamp: new Date(),
-    transcript,
-    intent: response.intent,
+  axios.post('https://textbelt.com/text', {
+    phone: number,
     message,
-    continueConversation: response.continueConversation,
-    identity
-  }
-  addToConversation(conversationSummary, identity);
+    key: process.env.TEXT_KEY,
+    replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
+  }).then(response => {
+    console.log(response.data);
+  });
 })
