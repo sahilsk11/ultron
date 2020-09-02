@@ -3,6 +3,8 @@ const { exec } = require("child_process");
 const ms = require('mediaserver');
 const fs = require('fs');
 require('dotenv').config();
+const bodyParser = require("body-parser");
+
 
 const express = require("express");
 const app = express();
@@ -10,6 +12,9 @@ const app = express();
 app.listen(8080, () => {
   console.log("Server running on port 8080");
 });
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use((req, res, next) => {
   const isProduction = process.env.NODE_ENV === "production";
@@ -25,7 +30,7 @@ app.use((req, res, next) => {
   const incomingRequestApiKey = req.query.api_key;
   const identity = idenitifyRequest(incomingRequestApiKey);
 
-  if (!identity && req.path !== "/audioFile") {
+  if (!identity && req.path !== "/audioFile" && req.path !== "/handleSmsReply") {
     res.json({ code: 403, message: "Invalid credentials" });
   } else {
     req.identity = identity;
@@ -204,4 +209,34 @@ app.get('/watchResponseSwipe', (req, res) => {
     res.json({ code: 403, message: "Invalid credentials" });
     return;
   }
+})
+
+app.post('/handleSmsReply', async (req, res) => {
+  const body = req.body;
+  console.log(body);
+  const number = body.fromNumber;
+  let identity = "text";
+  const transcript = speechEngine.correctTranscript({ transcript: body.text });
+
+  let response;
+  try {
+    response = await speechEngine.intentEngine({ transcript, identity }); // {code, intent, message}
+  } catch (err) {
+    console.error(err);
+    addToConversation({ transcript, identity }, identity);
+    return;
+  }
+  const { message } = response;
+
+  res.json(response);
+
+  const conversationSummary = {
+    timeStamp: new Date(),
+    transcript,
+    intent: response.intent,
+    message,
+    continueConversation: response.continueConversation,
+    identity
+  }
+  addToConversation(conversationSummary, identity);
 })

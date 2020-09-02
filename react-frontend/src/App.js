@@ -3,6 +3,12 @@ import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognitio
 import actionLauncher from "./actionLauncher";
 import "./App.css"
 import PiApp from "./Pi/PiApp";
+import Chat from "./Chat/Chat";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 
 function Index() {
   const [lastTranscriptUpdate, setUpdateTime] = useState(null);
@@ -106,6 +112,10 @@ function Index() {
     startSession,
     state,
     updateState,
+    updateMessage: setMessage
+  }
+  const sendProps = {
+    resetTranscript, setMessage, setIntent, updateState, onAudioFinish: () => resetTranscript()
   }
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -113,16 +123,18 @@ function Index() {
   if (device === "pi") {
     return PiApp(props)
   } else {
-    return App(props);
+    return App({ ...props, sendProps });
   }
 }
 
 function App({
   message,
+  updateMessage,
   listening,
   stopListening,
   startSession,
   transcript,
+  sendProps
 }) {
   return (
     <div className="app-container">
@@ -137,6 +149,17 @@ function App({
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet" />
     </div>
   );
+}
+
+const MessageInput = ({ message, updateMessage, sendProps }) => {
+  const handleSubmit = (e) => {
+    if (e.charCode == 13) {
+      send({ transcript: message, ...sendProps });
+    }
+  }
+  return (
+    <input className="transcript-input" value={message} onChange={e => updateMessage(e.target.value)} onKeyPress={(e) => handleSubmit(e)} />
+  )
 }
 
 const getApiToken = () => {
@@ -210,4 +233,19 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-export default Index;
+function AppWrapper() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/chat">
+          <Chat />
+        </Route>
+        <Route path="/">
+          <Index />
+        </Route>
+      </Switch>
+    </Router>
+  )
+}
+
+export default AppWrapper;

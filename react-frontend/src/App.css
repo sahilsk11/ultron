@@ -38,6 +38,20 @@ body {
   margin-bottom: 0px;
 }
 
+.transcript-input {
+  display: block;
+  margin: 0px auto;
+  width: 200px;
+  text-align: center;
+  color: rgb(142, 139, 161);
+  font-family: 'Montserrat', sans-serif;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  font-size: 12px;
+  margin-bottom: 0px;
+  outline: none;
+}
+
 .transcript {
   text-align: center;
   color: rgb(142, 139, 161);
