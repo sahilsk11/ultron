@@ -11,7 +11,7 @@ function Index() {
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
 
-  const wakeWord = "hey ultron";
+  const wakeWords = ["okay ultron", "jarvis"];
 
   //https://www.npmjs.com/package/react-mic
 
@@ -20,6 +20,7 @@ function Index() {
       alert("Unsupported Browser");
     }
   }, []);
+
   console.log(state);
   if (state === "sleep" && listening) {
     SpeechRecognition.stopListening();
@@ -32,7 +33,6 @@ function Index() {
     setMessage("Go ahead...");
     setUpdateTime(new Date());
     updateState("listening");
-    SpeechRecognition.startListening({ continuous: true });
   }
 
   const endSession = async () => {
@@ -50,8 +50,19 @@ function Index() {
     setUpdateTime(new Date());
   }, [transcript]);
 
+  const wakeWordSpoken = (cleanTranscript) => {
+    console.log(cleanTranscript)
+    for (const word of wakeWords) {
+      if (cleanTranscript.includes(word)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   if (state !== "listening") {
-    if (transcript.toLowerCase().includes(wakeWord)) {
+    console.log('hi')
+    if (wakeWordSpoken(transcript.toLocaleLowerCase())) {
       resetTranscript();
       startSession();
     } else if (listening && state === "response") {
