@@ -3,7 +3,6 @@ gup.sh
 passwords.py
 .env
 node_modules/
-audio/
 env/
 conversations/
 __pycache__/
