@@ -19,65 +19,81 @@ class AddWeightIntent extends Intent {
         'Content-Type': 'application/json'
       }
     }
-    const { weight, bmi, bodyFat, muscleMass, boneMass, success, missingEntry } = this.extractMeasurements();
+    const { weight, bmi, bodyFat, muscleMass, boneMass } = this.extractMeasurements();
 
-    let message;
-    if (!success) {
-      message = "Invalid weight entry - " + missingEntry + " data missing";
-    } else {
-      const data = {
-        records: [
-          {
-            fields: {
-              "weight (lbs)": weight,
-              "bmi": bmi,
-              "body fat": bodyFat / 100,
-              "muscle mass": muscleMass / 100,
-              "bone mass": boneMass / 100,
-              "date": new Date()
-            }
+    const data = {
+      records: [
+        {
+          fields: {
+            "weight (lbs)": weight,
+            "bmi": bmi,
+            "body fat": bodyFat / 100,
+            "muscle mass": muscleMass / 100,
+            "bone mass": boneMass / 100,
+            "date": new Date()
           }
-        ]
-      }
-      console.log(data);
-      const url = "https://api.airtable.com/v0/appL5UFlN4QSFyjSo/weight"
-      let response;
-      try {
-        response = await axios.post(url, data, config);
-      } catch (err) {
-        console.error(err.message)
-      }
-
-      if (response.status === 200) {
-        message = "Weight entry successfully added.";
-      } else {
-        message = "There was an error while processing.";
-      }
+        }
+      ]
     }
+    const url = "https://api.airtable.com/v0/appL5UFlN4QSFyjSo/weight";
+
+    let response = await axios.post(url, data, config);
+    let message;
+    if (response.status === 200) {
+      message = "Weight entry successfully added.";
+    } else {
+      message = "There was an error while processing.";
+    }
+
     return { code: 200, message, intent: this.intentName }
   }
 
   extractMeasurements() {
     const cleanedTranscript = this.cleanTranscript();
-    const regexValues = {
-      weight: /weight[a-z]* (1[0-9]+\.*[0-9]*) lb/g,
-      bmi: /bmi (1[0-9]+\.*[0-9])/g,
-      muscleMass: /muscle mass ([0-9]+\.*[0-9]*)/g,
-      boneMass: /bone mass ([0-9]+\.*[0-9]*)/g,
-      bodyFat: /body fat ([0-9]+\.*[0-9]*)/g,
-    }
-    const values = {};
-    let success = true;
-    let missingEntry;
-    for (const valueName in regexValues) {
-      const value = this.extract(regexValues[valueName], cleanedTranscript);
-      if (value === null) {
-        success = false;
-        missingEntry = valueName;
+    const splitScript = cleanedTranscript.split(" ");
+    return this.attemptRangeRead(splitScript);
+  }
+
+  attemptRangeRead(splitScript) {
+    const measurements = {
+      weight: {
+        fieldName: "weight (lbs)",
+        min: 100,
+        max: 200
+      },
+      bmi: {
+        fieldName: "bmi",
+        min: 15,
+        max: 25
+      },
+      bodyFat: {
+        fieldName: "body fat",
+        min: 6.3,
+        max: 20
+      },
+      muscleMass: {
+        fieldName: "muscle mass",
+        min: 45,
+        max: 70,
+      },
+      boneMass: {
+        fieldName: "bone mass",
+        min: 3,
+        max: 6
       }
-      values[valueName] = value;
     }
-    return { ...values, success, missingEntry };
+    const out = {}
+    for (const word of splitScript) {
+      if (!isNaN(word)) {
+        const measurement = Number(word);
+        for (const [key, value] of Object.entries(measurements)) {
+          if (measurement >= value.min && measurement <= value.max) {
+            out[key] = measurement;
+          }
+        }
+      }
+    }
+    return out;
   }
 
   extract(regex, cleanedTranscript) {
