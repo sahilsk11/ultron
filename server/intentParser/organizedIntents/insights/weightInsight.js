@@ -77,6 +77,7 @@ class AddWeightIntent extends Intent {
       }
       values[valueName] = value;
     }
+    console.log(values);
     return { ...values, success, missingEntry };
   }
 
@@ -101,4 +102,4 @@ class AddWeightIntent extends Intent {
   }
 }
 
-module.exports.IntentClass = AddWeightIntent;
+module.exports.IntentClass = AddWeightIntent; //TO-DO change name
