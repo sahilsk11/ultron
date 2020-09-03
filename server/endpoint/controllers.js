@@ -3,6 +3,7 @@ const { run } = require("../intentParser/intentParser");
 const { exec } = require("child_process");
 const ms = require('mediaserver');
 const fs = require('fs');
+const axios = require('axios');
 
 
 //functions for corresponding routes
@@ -19,9 +20,16 @@ async function setIntent(req, res) {
     const cleanedMessage = actionResponse.message.replace(/"/g, '\\"');
     // even if there is an error generating audio, we will simply log it and return
     // gracefully
+    //var hrstart = process.hrtime()
     const audioResponse = await generateAudio(cleanedMessage);
+    //let hrend = process.hrtime(hrstart)
+    //console.info('Execution time (audio gen): %ds %dms', hrend[0], hrend[1] / 1000000)
     audioError = audioResponse.error;
+    //hrstart = process.hrtime()
     res.json({ ...actionResponse, fileName: audioResponse.fileName });
+    //hrend = process.hrtime(hrstart)
+    //console.info('Execution time (sending json): %ds %dms', hrend[0], hrend[1] / 1000000)
+
   }
   logInteraction({ transcript, identity, actionResponse, audioError });
 }
@@ -53,17 +61,17 @@ async function getAudioFile(req, res) {
 
 
 async function handleSmsReply(req, res) {
-  const { body, transcript } = req;
-  // const number = body.fromNumber;
+  // const number = req.body.fromNumber;
+  const transcript = req.body.text;
   const identity = "text";
   let smsError;
 
   const actionResponse = await executeAction(transcript);
-  if (!!actionResponse.error) {
+  if (!actionResponse.error) {
     res.json({ success: true }); //non-descriptive message because it sends back to the SMS provider
-    const message = response.message;
-    const smsResponse = sendSms("+14088870718", message);
-    smsError = smsResponse.error;
+    const message = actionResponse.message;
+    const smsResponse = await sendSms("+14088870718", message);
+    smsError = smsResponse.error; //critical error - store stack trace
   } else {
     res.json({ success: false });
   }
@@ -88,7 +96,12 @@ async function generateAudio(message) {
   const fileName = generateFileName() + ".wav";
   const command = "./mimic --setf duration_stretch=0.9 -t \"" + message + "\" -o out/audio/" + fileName;
   return new Promise(resolve => {
+    //var hrstart = process.hrtime()
+
     exec(command, (err, stdout, stderr) => {
+      //let hrend = process.hrtime(hrstart)
+      //console.info('Execution time (mimic): %ds %dms', hrend[0], hrend[1] / 1000000)
+
       let successfulAudio = false;
       let audioError;
       if (err) {
@@ -114,15 +127,25 @@ function generateFileName() {
 }
 
 async function sendSms(number, message) {
-  // TO-DO add error handling to this call
-  const smsResponse = await axios.post('https://textbelt.com/text', {
-    phone: number,
-    message,
-    key: process.env.TEXT_KEY,
-    replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
-  });
-  const { success, quotaRemaining } = smsResponse.data; //TO-DO store this somewhere
-  return { error: null };
+  let smsResponseData;
+  try {
+    const smsResponse = await axios.post('https://textbelt.com/text', {
+      phone: number,
+      message,
+      key: process.env.TEXT_KEY,
+      replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
+    });
+    smsResponseData = smsResponse.data
+    const { success, quotaRemaining } = smsResponseData; //TO-DO store this somewhere
+    if (success) {
+      return { error: null };
+    } else {
+      return { error: new Error(`Issue with sending SMS. Response from textbelt: ${JSON.stringify(smsResponseData)}`) };
+    }
+  } catch (err) {
+    // This error does not return a stack trace. It only returns config. https://github.com/axios/axios/issues/1086
+    return { error: err };
+  }
 }
 
 function sleep(ms) {

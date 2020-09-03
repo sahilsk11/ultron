@@ -89,7 +89,4 @@ class WeightInsights extends Intent {
   }
 }
 
-
 module.exports.IntentClass = WeightInsights;
-
-console.log(new WeightInsights({ transcript: '' }).execute());
