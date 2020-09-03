@@ -86,7 +86,7 @@ async function executeAction(transcript) {
 
 async function generateAudio(message) {
   const fileName = generateFileName() + ".wav";
-  const command = "./mimic -t \"" + message + "\" -o out/audio/" + fileName;
+  const command = "./mimic --setf duration_stretch=0.9 -t \"" + message + "\" -o out/audio/" + fileName;
   return new Promise(resolve => {
     exec(command, (err, stdout, stderr) => {
       let successfulAudio = false;
