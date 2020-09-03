@@ -1,4 +1,3 @@
-
 const { logInteraction } = require("./loggers");
 const { run } = require("../intentParser/intentParser");
 const { exec } = require("child_process");
@@ -28,6 +27,7 @@ async function setIntent(req, res) {
 }
 
 async function getAudioFile(req, res) {
+  //To-do fix logging here
   const filename = req.query.fileName;
   let sent = false;
   let tries = 0;
@@ -39,6 +39,7 @@ async function getAudioFile(req, res) {
           ms.pipe(req, res, "./out/audio/" + filename);
         }
       } catch (err) {
+        console.error('audio error');
         console.error(err)
       }
       await sleep(100);
@@ -50,9 +51,6 @@ async function getAudioFile(req, res) {
   }
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function handleSmsReply(req, res) {
   const { body, transcript } = req;
@@ -125,6 +123,10 @@ async function sendSms(number, message) {
   });
   const { success, quotaRemaining } = smsResponse.data; //TO-DO store this somewhere
   return { error: null };
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {
