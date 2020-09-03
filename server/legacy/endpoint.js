@@ -35,7 +35,7 @@ app.use((req, res, next) => {
   } else {
     req.identity = identity;
     next();
-  }
+  } 
 });
 
 /**
@@ -237,7 +237,7 @@ app.post('/handleSmsReply', async (req, res) => {
       replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
     });
 
-    const { success, quotaRemaining } = smsResponse; //TO-DO store this somewhere
+    const { success, quotaRemaining } = smsResponse.data; //TO-DO store this somewhere
     if (!success) {
       console.error(smsResponse);
     }
