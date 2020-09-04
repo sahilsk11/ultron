@@ -7,3 +7,5 @@ node_modules/
 env/
 __pycache__/
 mimic
+conversations/
+error.json

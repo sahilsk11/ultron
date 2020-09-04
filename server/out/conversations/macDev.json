@@ -1,1 +1,1 @@
-[]
+[{"transcript":"add weight 125 17.6 53.2 75.5 7.0 5.5 send","identity":"macDev","actionResponse":{"code":200,"message":"Weight entry successfully added.","intent":"addWeightIntent"},"date":"2020-09-04T06:39:30.658Z"}]

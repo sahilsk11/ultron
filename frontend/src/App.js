@@ -67,7 +67,6 @@ function Index() {
   }
 
   if (state !== "listening") {
-    console.log('hi')
     if (wakeWordSpoken(transcript.toLocaleLowerCase())) {
       resetTranscript();
       startSession();
@@ -83,21 +82,8 @@ function Index() {
     if (transcript !== '' && state === "listening") {
       const timeDiff = (new Date() - lastTranscriptUpdate) / 1000;
       let timeTreshold = 2;
-      if (transcript.includes("add weight")) {
+      if (transcript.includes("add weight") && !transcript.includes("send")) {
         timeTreshold = 60;
-      }
-      const weightMetrics = ["lb", "bmi", "bone mass", "body fat", "muscle mass", "send"];
-      if (transcript.includes("add weight")) {
-        let allClear = true;
-        for (const metric of weightMetrics) {
-          if (!transcript.toLowerCase().includes(metric)) {
-            console.log("missing " + metric);
-            allClear = false;
-          }
-        }
-        if (allClear) {
-          timeTreshold = 0;
-        }
       }
       if (timeDiff > timeTreshold) {
         endSession();

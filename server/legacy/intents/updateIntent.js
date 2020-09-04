@@ -31,6 +31,7 @@ class PullLatestVersion extends Intent {
       const persona = externalRepo ? repoName + " is" : "I am"
       message = `Sir, ${persona} already running the latest version.`
     } else {
+      // TO-DO: check fetchOut for errors
       const persona = externalRepo ? repoName + " " : ""
       message = `Updating ${persona}to latest version. Restarting service in 3 seconds...`;
       update = true;
@@ -38,7 +39,7 @@ class PullLatestVersion extends Intent {
 
     const pull = async () => {
       await this.sleep(3000);
-      console.log(await this.runCommand(path+"git pull; cd -; pwd;"));
+      await this.runCommand(path+"git pull; cd -; pwd;");
     }
 
     if (update) pull();
@@ -50,11 +51,15 @@ class PullLatestVersion extends Intent {
   }
 
   async runCommand(command) {
-    console.log("> " + command);
     return await new Promise(resolve => exec(command, (error, stdout, stderr) => {
-      if (!error) console.error(error);
-      if (!stdout) console.error(stdout);
-      console.log(stdout);
+      if (!!error || !!stderr) {
+        console.error({
+          location: "updateIntent.js",
+          date: new Date(),
+          stderr,
+          error
+        })
+      }
       resolve(stdout);
     }));
   }
