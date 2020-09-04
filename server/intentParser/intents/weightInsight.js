@@ -14,7 +14,7 @@ class WeightInsights extends Intent {
   async execute() {
     const thirtyDayData = await this.getThirtyDayData();
     const cleanedData = this.cleanRecords(thirtyDayData);
-    const calculations = this.parseData(cleanedData);
+    const calculations = await this.parseData(cleanedData);
     const message = this.constructMessage(calculations);
     return { code: 200, message, intent: this.intentName }
   }
@@ -45,10 +45,10 @@ class WeightInsights extends Intent {
     return cleanedData;
   }
 
-  parseData(cleanedData) {
+  async parseData(cleanedData) {
     let minWeight = 200;
     let maxWeight = 0;
-    Promise.all(cleanedData.map(entry => {
+    await Promise.all(cleanedData.map(entry => {
       minWeight = Math.min(minWeight, entry[1]);
       maxWeight = Math.max(maxWeight, entry[1]);
     }));
@@ -67,7 +67,7 @@ class WeightInsights extends Intent {
     let message = `Your most recent weight is ${todayWeight} pounds, which is `;
     if (netIncrease > diffThreshold) {
       isDiff = true;
-      message += `up ${Math.round(netIncrease*10)/10} pounds from the thirty day max`
+      message += `up ${Math.round(netIncrease*10)/10} pounds from the thirty day minimum`
       if (netDecrease < -diffThreshold) {
         message += ", and ";
       } else {
@@ -76,16 +76,12 @@ class WeightInsights extends Intent {
     }
     if (netDecrease < -diffThreshold) {
       isDiff = true;
-      message += `down ${Math.round(netDecrease * 10) / 10} pounds from the thirty day minimum.`
+      message += `down ${Math.round(netDecrease * 10) / 10} pounds from the thirty day max.`
     }
     if (!isDiff) {
       message += "largely unchanged over the past thirty days."
     }
     return message;
-  }
-
-  async listSum(list) {
-    return await list.reduce((a, b) => a + b, 0);
   }
 }
 
