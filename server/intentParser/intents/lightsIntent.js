@@ -45,9 +45,8 @@ class LightsIntent extends Intent {
     }
     const entity_id = "light." + roomName.replace(" ", "_");
     const data = { entity_id }
-    console.log(data)
     const url = "http://remote.kapurs.net:8123/api/services/light/turn_" + commandName;
-    console.log(url)
+    
     const response = await axios.post(url, data, config);
     return response.status;
   }

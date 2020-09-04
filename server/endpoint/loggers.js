@@ -1,20 +1,19 @@
+const fs = require('fs');
+
+/**
+ * @param { identity, transcript, actionResponse, smsError, audioError } interactionProps 
+ */
 function logInteraction(interactionProps) {
-  const {
-    transcript,
-    identity,
-    actionResponse,
-    smsError,
-    audioError,
-  } = interactionProps;
+  interactionProps = { ...interactionProps, date: new Date() }
   const errorInRequest = checkForErrors(interactionProps);
   if (errorInRequest) {
     logError(interactionProps);
-  } else {
-    //save to conversation history
   }
+  saveConversation(interactionProps.identity, interactionProps);
 }
 
 function checkForErrors(interactionProps) {
+  //consider checking for errors within actionResponse
   const {
     actionResponse,
     smsError,
@@ -23,8 +22,28 @@ function checkForErrors(interactionProps) {
   return !(!smsError && !audioError && !actionResponse.error);
 }
 
+function saveConversation(identity, log) {
+  appendToFile(`conversations/${identity}.json`, log);
+}
+
 function logError(interactionProps) {
-  console.error({ ...interactionProps, date: new Date() });
+  console.error(JSON.stringify(interactionProps));
+  appendToFile("error.json", interactionProps);
+}
+
+function appendToFile(filename, log) {
+  const conversationFile = `out/${filename}`;
+  try {
+    conversationHistory = JSON.parse(fs.readFileSync(conversationFile, 'utf-8'));
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      conversationHistory = [];
+    } else {
+      throw err;
+    }
+  }
+  conversationHistory.push(log);
+  fs.writeFileSync(conversationFile, JSON.stringify(conversationHistory));
 }
 
 module.exports = {

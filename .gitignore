@@ -5,6 +5,5 @@ passwords.py
 audio/
 node_modules/
 env/
-conversations/
 __pycache__/
 mimic

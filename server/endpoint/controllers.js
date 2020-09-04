@@ -76,7 +76,7 @@ async function handleSmsReply(req, res) {
     res.json({ success: false });
   }
 
-  logInteraction({ transcript, actionResponse, smsError });
+  logInteraction({ transcript, identity, actionResponse, smsError });
 }
 
 // define controllers
