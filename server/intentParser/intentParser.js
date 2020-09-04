@@ -22,7 +22,7 @@ const run = async ({ transcript }) => {
   const matchedIntents = [];
   let clearIntent = false;
   await Promise.all(files.map(file => {
-    if (file !== ".DS_Store" && file !== "sampleIntent.js") {
+    if (file[0] !== "." && file !== "sampleIntent.js") {
       const className = require("./intents/" + file);
       const intentObj = new className.IntentClass({ transcript });
       if (intentObj.transcriptMatches()) {
