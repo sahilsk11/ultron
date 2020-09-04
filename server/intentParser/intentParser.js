@@ -42,7 +42,7 @@ const run = async ({ transcript }) => {
     //hrstart = process.hrtime()
     const r = await matchedIntents[0].execute();
     //hrend = process.hrtime(hrstart)
-    console.info('Execution time (execute): %ds %dms', hrend[0], hrend[1] / 1000000)
+    // console.info('Execution time (execute): %ds %dms', hrend[0], hrend[1] / 1000000)
     return r;
   } else if (matchedIntents.length > 1) {
     const matchedIntentsStr = matchedIntentsToString(matchedIntents);

@@ -46,29 +46,27 @@ class WeightInsights extends Intent {
   }
 
   parseData(cleanedData) {
-    const runningAvg = [];
-    let minWeight, minMuscle = 200;
-    let maxWeight, maxMuscle = 0;
-    for (let i = 0; i < cleanedData.length; i++) {
-      // if (i >= 2) {
-      //   runningAvg.push([
-      //     listSum([cleanedData[i - 2][1], cleanedData[i - 1][1], cleanedData[i][1]]) / 3, //3-day moving avg for weight
-      //     listSum([cleanedData[i - 2][2], cleanedData[i - 1][2], cleanedData[i][2]]) / 3 //3-day moving avg for muscle
-      //   ]);
-      minWeight = Math.min(minWeight, cleanedData[i][1]);
-      maxWeight = Math.max(maxWeight, cleanedData[i][1]);
-    }
+    let minWeight = 200;
+    let maxWeight = 0;
+    Promise.all(cleanedData.map(entry => {
+      minWeight = Math.min(minWeight, entry[1]);
+      maxWeight = Math.max(maxWeight, entry[1]);
+    }));
 
     const todayWeight = cleanedData[cleanedData.length - 1][1];
+
     const netIncrease = todayWeight - minWeight;
     const netDecrease = todayWeight - maxWeight;
+
     return { todayWeight, netIncrease, netDecrease };
   }
 
   constructMessage({ todayWeight, netIncrease, netDecrease }) {
     const diffThreshold = 1;
-    let message = `Your most recent weight entry was ${todayWeight} pounds, which is `;
+    let isDiff = false;
+    let message = `Your most recent weight is ${todayWeight} pounds, which is `;
     if (netIncrease > diffThreshold) {
+      isDiff = true;
       message += `up ${Math.round(netIncrease*10)/10} pounds from the thirty day max`
       if (netDecrease < -diffThreshold) {
         message += ", and ";
@@ -77,8 +75,10 @@ class WeightInsights extends Intent {
       }
     }
     if (netDecrease < -diffThreshold) {
+      isDiff = true;
       message += `down ${Math.round(netDecrease * 10) / 10} pounds from the thirty day minimum.`
-    } else {
+    }
+    if (!isDiff) {
       message += "largely unchanged over the past thirty days."
     }
     return message;
