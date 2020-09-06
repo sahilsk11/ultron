@@ -2,10 +2,7 @@ keychain.json
 gup.sh
 passwords.py
 .env
-audio/
 node_modules/
 env/
 __pycache__/
 mimic
-conversations/
-server/out/error.json
