@@ -1,13 +1,6 @@
 const fs = require('fs');
-const { MongoClient } = require('mongodb');
-require('dotenv').config();
 
-
-const dbPassword = process.env["MONGO_DB_ULTRON_PASSWORD"];
-const dbName = "ultron";
-const uri = `mongodb+srv://mac-dev:${dbPassword}@cluster0.i7jmt.mongodb.net/${dbName}?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-client.connect();
+//TO-DO fix this file
 
 /**
  * Convert raw string input to corrected text based on known errors in STT
@@ -24,7 +17,7 @@ const correctTranscript = ({ transcript }) => {
  * 
  * @return body to send back to client; typically {code, message, intent}
  */
-const run = async ({ transcript }) => {
+const run = async ({ transcript, mongoClient }) => {
   //var hrstart = process.hrtime()
   transcript = correctTranscript({ transcript });
   const files = fs.readdirSync("./intentParser/intents");
@@ -33,7 +26,7 @@ const run = async ({ transcript }) => {
   await Promise.all(files.map(file => {
     if (file[0] !== "." && file !== "sampleIntent.js") {
       const className = require("./intents/" + file);
-      const intentObj = new className.IntentClass({ transcript, mongoClient: client });
+      const intentObj = new className.IntentClass({ transcript, mongoClient });
       if (intentObj.transcriptMatches()) {
         if (intentObj.intentName == "clearIntent") {
           clearIntent = intentObj;

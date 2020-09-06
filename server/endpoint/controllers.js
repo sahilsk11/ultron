@@ -1,4 +1,5 @@
 const { logInteraction } = require("./loggers");
+const database = require("./models");
 const { run } = require("../intentParser/intentParser");
 const { exec } = require("child_process");
 const ms = require('mediaserver');
@@ -73,11 +74,12 @@ async function handleSmsReply(req, res) {
 // define controllers
 
 async function executeAction(transcript) {
+  const mongoClient = await database.getClient();
   try {
     // this block may have errors from the intent that will be present when the function returns
     // however, critical errors should only be handled here (API call failed, service did not respond)
     // typical structure may include {code, intent, message}
-    return await run({ transcript });
+    return await run({ transcript, mongoClient });
   } catch (error) {
     console.error(error);
     return { error };
@@ -130,6 +132,7 @@ async function sendSms(number, message) {
     smsResponseData = smsResponse.data
     const { success, quotaRemaining } = smsResponseData; //TO-DO store this somewhere
     if (success) {
+      database.updateSmsQuota(quotaRemaining);
       return { error: null };
     } else {
       return { error: new Error(`Issue with sending SMS. Response from textbelt: ${JSON.stringify(smsResponseData)}`) };
