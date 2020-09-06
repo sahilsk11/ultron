@@ -1,4 +1,6 @@
 const fs = require('fs');
+const { serializeError, deserializeError } = require('serialize-error');
+const database = require("./models");
 
 /**
  * @param { identity, transcript, actionResponse, smsError, audioError } interactionProps 
@@ -27,8 +29,10 @@ function saveConversation(identity, log) {
 }
 
 function logError(interactionProps) {
+  interactionProps.actionResponse.error = serializeError(interactionProps.actionResponse.error);
   console.error(JSON.stringify(interactionProps));
-  appendToFile("error.json", interactionProps);
+  // appendToFile("error.json", interactionProps);
+  database.addToErrorLog(interactionProps);
 }
 
 function appendToFile(filename, log) {

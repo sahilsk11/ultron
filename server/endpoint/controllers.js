@@ -81,7 +81,6 @@ async function executeAction(transcript) {
     // typical structure may include {code, intent, message}
     return await run({ transcript, mongoClient });
   } catch (error) {
-    console.error(error);
     return { error };
   }
 }

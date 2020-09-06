@@ -29,13 +29,25 @@ class DomainLookupIntent extends Intent {
   }
 
   async checkDomainAvailability(domainName) {
-    const url = "https://domain-availability.whoisxmlapi.com/api/v1";
+    const url = "https://domain-availability.whoisxmlapi.coom/api/v1";
     const params = `?apiKey=${process.env.WHOIS_API_KEY}&domainName=${domainName}`;
-    console.log(url + params)
-    let response = await axios.get(url + params);
-    response = response.data;
-    console.log(response);
-    return response;
+    const logParams = `?apiKey=<KEY HIDDEN>&domainName=${domainName}`;
+    try {
+      let response = await axios.get(url + params);
+      response = response.data;
+      return response;
+    } catch (err) {
+      if (err.response) {
+        // client received an error response (5xx, 4xx)
+        throw new Error(`Client error with GET to ${url + logParams}. Originted in domainLookupIntent.`);
+      } else if (err.request) {
+        // client never received a response, or request never left
+        throw new Error(`HTTP error with GET to ${url + logParams}. Originted in domainLookupIntent. Axios error: ${err.toString()} (${err.code})`);
+      } else {
+        // anything else
+        throw new Error(`Unknown request error with GET to ${url + logParams}. Originted in domainLookupIntent. Axios error: ${err.toString()} (${err.code})`);
+      }
+    }
   }
 }
 

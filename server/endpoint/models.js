@@ -15,18 +15,35 @@ async function getClient() {
   if (isConnected()) {
     return client;
   } else {
-    return await client.connect();
+    await client.connect();
+    return client;
   }
 }
 
-async function updateSmsQuota(remaining) {
+async function getCollection(collection) {
   const dbClient = await getClient();
-  const result = await dbClient.db("ultron").collection("metadata")
-    .updateOne({ name: "remainingSms" }, { $set: { value: remaining } });
-  //TO-DO log this entry
+  return dbClient.db("ultron").collection(collection);
+}
+
+async function updateSmsQuota(remaining) {
+  const result = await getCollection("metadata").updateOne({ name: "remainingSms" }, { $set: { value: remaining } });
+  confirmSuccessfulRequest(result);
+}
+
+async function addToErrorLog(error) {
+  const isProd = process.env.NODE_ENV === "production";
+  const collectionName = isProd ? "errorProd" : "errorDev";
+  const collection = await getCollection(collectionName);
+  const result = await collection.insertOne(error);
+  confirmSuccessfulRequest(result);
+}
+
+async function confirmSuccessfulRequest(result) {
+  console.log(Object.keys(result));
 }
 
 module.exports = {
   getClient,
-  updateSmsQuota
+  updateSmsQuota,
+  addToErrorLog
 }
