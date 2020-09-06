@@ -6,3 +6,8 @@ node_modules/
 env/
 __pycache__/
 mimic
+
+# out/
+server/out/audio/
+server/out/conversations/
+server/out/error.json
