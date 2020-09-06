@@ -1,23 +1,37 @@
 const { Intent } = require("../intent.js")
-const fs = require('fs');
+// const { MongoClient } = require('mongodb');
 
 class QuoteIntent extends Intent {
-  constructor({ transcript }) {
+  constructor({ transcript, mongoClient }) {
     super({
       transcript,
       regex: "",
-      utterances: ["me a quote"],
-      intentName: "quoteIntent"
+      utterances: ["give me a quote", "show me a quote"],
+      intentName: "quoteIntent",
+      mongoClient
     });
   }
 
-  execute() {
-    let rawdata = fs.readFileSync('./out.json');
-    let lines = JSON.parse(rawdata);
-    const line = lines[Math.floor(Math.random() * lines.length)];
-    //let q = '"Writing is the most scalable professional networking activity - stay home, don’t go to events/conferences, and just put ideas down. Building your network, your audience, and your ideas will be something you’ll want to do over your entire career. Think of your writing like a multi-decade project." - perell.com (Linus on Entrepreneurship, Business, Design, and Life )';
-    let q = line.quote + " (" + line.category + ")";
-    return { code: 200, message: q , intent: this.intentName };
+  async execute() {
+    const [quote, category] = await this.getQuoteFromDb();
+    const message = this.constructMessage(quote, category);
+    return { code: 200, message, intent: this.intentName };
+  }
+
+  async getQuoteFromDb() {
+    const collection = await this.getMongoCollection("quotes");
+    const result = await collection.aggregate([{ $sample: { size: 1 } }]).toArray();
+    return [result[0].quote, result[0].category];
+  }
+
+  constructMessage(quote, category) {
+    let message = quote;
+    const lastChar = quote[quote.length-1];
+    if (lastChar !== "." && lastChar !== "!" && lastChar !== "?") {
+      message += ". "
+    }
+    message += " From " + category;
+    return message;
   }
 }
 

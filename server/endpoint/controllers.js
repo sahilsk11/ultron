@@ -18,18 +18,9 @@ async function setIntent(req, res) {
     res.json({ code: 400, message: "Sir, there was an error while executing the request." })
   } else {
     const cleanedMessage = actionResponse.message.replace(/"/g, '\\"');
-    // even if there is an error generating audio, we will simply log it and return
-    // gracefully
-    //var hrstart = process.hrtime()
     const audioResponse = await generateAudio(cleanedMessage);
-    //let hrend = process.hrtime(hrstart)
-    //console.info('Execution time (audio gen): %ds %dms', hrend[0], hrend[1] / 1000000)
     audioError = audioResponse.error;
-    //hrstart = process.hrtime()
     res.json({ ...actionResponse, fileName: audioResponse.fileName });
-    //hrend = process.hrtime(hrstart)
-    //console.info('Execution time (sending json): %ds %dms', hrend[0], hrend[1] / 1000000)
-
   }
   logInteraction({ transcript, identity, actionResponse, audioError });
 }
@@ -88,6 +79,7 @@ async function executeAction(transcript) {
     // typical structure may include {code, intent, message}
     return await run({ transcript });
   } catch (error) {
+    console.error(error);
     return { error };
   }
 }

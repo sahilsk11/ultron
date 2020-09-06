@@ -9,9 +9,10 @@ class UndefinedFunction extends Error {
 }
 
 class Intent {
-  constructor({ intentName, transcript, regex, utterances }) {
+  constructor({ intentName, transcript, regex, utterances, mongoClient }) {
     this.intentName = intentName;
-    this.transcript = transcript
+    this.transcript = transcript;
+    this.mongoClient = mongoClient;
     this.intentDefinition = {
       regex,
       utterances
@@ -27,20 +28,8 @@ class Intent {
     return false;
   }
 
-  async watchSingleTap() {
-    throw new UndefinedFunction("This method has not been defined for this class.");
-  }
-
-  async watchDoubleTap() {
-    throw new UndefinedFunction("This method has not been defined for this class.");
-  }
-
-  async watchLongTap() {
-    throw new UndefinedFunction("This method has not been defined for this class.");
-  }
-
-  async watchSwipe() {
-    throw new UndefinedFunction("This method has not been defined for this class.");
+  async getMongoCollection(collection) {
+   return await this.mongoClient.db("ultron").collection(collection);
   }
 
   /**
