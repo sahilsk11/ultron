@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 
-const dbPassword = "test";
+const dbPassword = process.env["MONGO_DB_ULTRON_PASSWORD"];
 const dbName = "ultron";
 const uri = `mongodb+srv://mac-dev:${dbPassword}@cluster0.i7jmt.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
