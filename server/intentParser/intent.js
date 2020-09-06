@@ -85,6 +85,21 @@ class Intent {
   isProduction() {
     return process.env.NODE_ENV === "production";
   }
+
+  handleAxiosError(err, method, url) {
+    let errorType;
+    if (err.response) {
+      // client received an error response (5xx, 4xx)
+      errorType = "Client"
+    } else if (err.request) {
+      errorType = "HTTP"
+      // client never received a response, or request never left
+    } else {
+      // anything else
+      errorType = "Unkown request";
+    }
+    return new Error(`${errorType} error with ${method} to ${url}. Originted in ${this.intentName}. Axios error: ${err.toString()} (${err.code})`);
+  }
 }
 
 module.exports = { Intent };

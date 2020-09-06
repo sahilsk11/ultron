@@ -52,14 +52,14 @@ function generateFileName() {
 async function sendSms(number, message) {
   let smsResponseData;
   try {
-    const smsResponse = await axios.post('https://textbelt.com/text', {
+    const smsResponse = await axios.post('https://textbelt.coom/text', {
       phone: number,
       message,
       key: process.env.TEXT_KEY,
       replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
     });
     smsResponseData = smsResponse.data
-    const { success, quotaRemaining } = smsResponseData; //TO-DO store this somewhere
+    const { success, quotaRemaining } = smsResponseData;
     if (success) {
       database.updateSmsQuota(quotaRemaining);
       return { error: null };
@@ -68,12 +68,19 @@ async function sendSms(number, message) {
     }
   } catch (err) {
     // This error does not return a stack trace. It only returns config. https://github.com/axios/axios/issues/1086
-    return { error: err };
+    let error;
+    if (err.response) {
+      // client received an error response (5xx, 4xx)
+      error = new Error(`Client error in sendSms (controller.js) with POST to https://textbelt.com/text: ${err.toString()} (${err.code})`);
+    } else if (err.request) {
+      // client never received a response, or request never left
+      error = new Error(`HTTP error in sendSms (controller.js) with POST to https://textbelt.com/text: ${err.toString()} (${err.code})`);
+    } else {
+      // anything else
+      error = new Error(`Unknown request error in sendSms (controller.js) with POST to https://textbelt.com/text: ${err.toString()} (${err.code})`);
+    }
+    return { error };
   }
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {

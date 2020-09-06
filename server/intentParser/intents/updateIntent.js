@@ -12,6 +12,7 @@ class PullLatestVersion extends Intent {
   }
 
   async execute() {
+    // TO-DO: fix error handling
     let externalRepo = false;
     let repoName;
     let path;
@@ -38,7 +39,7 @@ class PullLatestVersion extends Intent {
 
     const pull = async () => {
       await this.sleep(3000);
-      console.log(await this.runCommand(path+"git pull; cd -; pwd;"));
+      await this.runCommand(path+"git pull; cd -; pwd;");
     }
 
     if (update) pull();

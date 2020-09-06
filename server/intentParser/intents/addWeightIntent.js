@@ -36,15 +36,14 @@ class AddWeightIntent extends Intent {
       ]
     }
     const url = "https://api.airtable.com/v0/appL5UFlN4QSFyjSo/weight";
-
-    let response = await axios.post(url, data, config);
-    let message;
-    if (response.status === 200) {
-      message = "Weight entry successfully added.";
-    } else {
-      message = "There was an error while processing.";
+    
+    let response;
+    try {
+      response = await axios.post(url, data, config);
+    } catch(err) {
+      throw this.handleAxiosError(err, "POST", url);
     }
-
+    const message = "Weight entry successfully added.";
     return { code: 200, message, intent: this.intentName }
   }
 
@@ -112,7 +111,6 @@ class AddWeightIntent extends Intent {
     for (const replacement in replacements) {
       cleanTranscript = cleanTranscript.split(replacement).join(replacements[replacement]);
     }
-    console.log(cleanTranscript);
     return cleanTranscript;
   }
 }

@@ -58,6 +58,10 @@ app.get("/audioFile", async (req, res) => {
   }
 });
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 app.post("/handleSmsReply", async (req, res) => {
   // const number = req.body.fromNumber;
   const transcript = req.body.text;

@@ -29,7 +29,7 @@ class DomainLookupIntent extends Intent {
   }
 
   async checkDomainAvailability(domainName) {
-    const url = "https://domain-availability.whoisxmlapi.coom/api/v1";
+    const url = "https://domain-availability.whoisxmlapi.com/api/v1";
     const params = `?apiKey=${process.env.WHOIS_API_KEY}&domainName=${domainName}`;
     const logParams = `?apiKey=<KEY HIDDEN>&domainName=${domainName}`;
     try {

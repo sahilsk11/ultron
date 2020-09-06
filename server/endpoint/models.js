@@ -5,7 +5,7 @@ const dbPassword = process.env["MONGO_DB_ULTRON_PASSWORD"];
 const dbName = "ultron";
 const uri = `mongodb+srv://mac-dev:${dbPassword}@cluster0.i7jmt.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-client.connect();
+client.connect(); // TO-DO: find a better way to handle connection
 
 function isConnected() {
   return !!client && !!client.topology && client.topology.isConnected()
@@ -39,7 +39,7 @@ async function addToErrorLog(error) {
 }
 
 async function confirmSuccessfulRequest(result) {
-  console.log(Object.keys(result));
+  // TO-DO: handle errors when operating on DB
 }
 
 module.exports = {

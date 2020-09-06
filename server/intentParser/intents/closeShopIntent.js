@@ -57,6 +57,7 @@ class CloseShopIntent extends Intent {
   }
 
   async controlLights({ roomName, commandName }) {
+    // TO-DO: determine the errors from this request
     const apiKey = this.getApiKey("KAPUR_KEY");
     const config = {
       headers: {
@@ -69,23 +70,12 @@ class CloseShopIntent extends Intent {
     const data = { entity_id }
     const url = "http://remote.kapurs.net:8123/api/services/light/turn_" + commandName;
 
-    let code;
-    let message;
     try {
-      const response = await axios.post(url, data, config);
-      if (response.status === 200 && response.data !== undefined && response.data.length !== 0) {
-        code = 200;
-      } else {
-        code = 400;
-        if (!response.data) message = "response from " + roomName + " lights endpoint is undefined";
-        if (response.data.length === 0) message = "response from " + roomName + " lights endpoint is empty";
-      }
+      await axios.post(url, data, config);
     } catch (err) {
-      console.error("\t" + err.message + " for url " + url);
-      code = 500;
-      message = err.message + " for " + roomName + " lights endpoint.";
+      throw this.handleAxiosError(err, "POST", url);
     }
-    return { code, errorMessage: message };
+    return { code: 200, errorMessage: "" };
   }
 }
 

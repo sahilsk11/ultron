@@ -57,11 +57,10 @@ class AddInterviewQuestionIntent extends Intent {
     let response;
     try {
       response = await axios.post(url, data, config);
+      return response.status;
     } catch (err) {
-      console.error(err.message)
+      throw this.handleAxiosError(err, "POST", url);
     }
-
-    return response.status;
   }
 }
 
