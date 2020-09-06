@@ -52,7 +52,7 @@ function generateFileName() {
 async function sendSms(number, message) {
   let smsResponseData;
   try {
-    const smsResponse = await axios.post('https://textbelt.coom/text', {
+    const smsResponse = await axios.post('https://textbelt.com/text', {
       phone: number,
       message,
       key: process.env.TEXT_KEY,
