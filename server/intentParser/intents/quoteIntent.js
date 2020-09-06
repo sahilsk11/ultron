@@ -21,7 +21,7 @@ class QuoteIntent extends Intent {
   async getQuoteFromDb() {
     const collection = await this.getMongoCollection("quotes");
     const result = await collection.aggregate([{ $sample: { size: 1 } }]).toArray();
-    return [result[0].quote, result[0].category];
+    return [result[0].quote.trim(), result[0].category];
   }
 
   constructMessage(quote, category) {

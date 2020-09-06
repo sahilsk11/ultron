@@ -9,4 +9,3 @@ __pycache__/
 mimic
 conversations/
 server/out/error.json
-server/test.json
