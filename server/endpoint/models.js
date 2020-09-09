@@ -15,8 +15,11 @@ async function getClient() {
   if (isConnected()) {
     return client;
   } else {
-    await client.connect();
-    return client;
+    // console.log("waiting for client");
+    // await client.connect();
+    // console.log("client connected");
+    // return client;
+    return null;
   }
 }
 
@@ -32,10 +35,11 @@ async function updateSmsQuota(remaining) {
 
 async function addToErrorLog(error) {
   const isProd = process.env.NODE_ENV === "production";
-  const collectionName = isProd ? "errorProd" : "errorDev";
-  const collection = await getCollection(collectionName);
-  const result = await collection.insertOne(error);
-  confirmSuccessfulRequest(result);
+  if (isProd) {
+    const collection = await getCollection("errorProd");
+    const result = await collection.insertOne(error);
+    confirmSuccessfulRequest(result);
+  }
 }
 
 async function confirmSuccessfulRequest(result) {

@@ -29,6 +29,7 @@ function saveConversation(identity, log) {
 }
 
 function logError(interactionProps) {
+  console.error(interactionProps.actionResponse.error);
   interactionProps.actionResponse.error = serializeError(interactionProps.actionResponse.error);
   interactionProps.smsError = serializeError(interactionProps.smsError);
   console.error(JSON.stringify(interactionProps));
