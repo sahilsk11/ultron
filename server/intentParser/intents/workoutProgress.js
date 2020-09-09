@@ -5,7 +5,7 @@ class WorkoutProgressIntent extends Intent {
     super({
       transcript,
       regex: "",
-      utterances: ["workout progress", "workouts", "gym"],
+      utterances: ["workout progress", "workout stats"],
       intentName: "workoutProgressIntent"
     });
   }
