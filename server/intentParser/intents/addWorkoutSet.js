@@ -44,7 +44,7 @@ class AddWorkoutSet extends Intent {
             "intensity",
             "weight",
           ];
-          let minIndex = this.transcript.length;
+          let minIndex = this.transcript.length + 1;
           const remainder = this.transcript.substring(i + "workout".length);
           for (let termination of terminations) {
             if (remainder.indexOf(termination) >= 0) {
