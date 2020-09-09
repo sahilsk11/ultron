@@ -15,11 +15,9 @@ async function getClient() {
   if (isConnected()) {
     return client;
   } else {
-    // console.log("waiting for client");
-    // await client.connect();
-    // console.log("client connected");
-    // return client;
-    return null;
+    await client.connect();
+    return client;
+    //return null;
   }
 }
 
