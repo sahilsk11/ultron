@@ -6,7 +6,7 @@ class GarageDoorIntent extends Intent {
     super({
       transcript,
       regex: "",
-      utterances: ["garage", "barn door"],
+      utterances: ["garage door", "barn door"],
       intentName: "garageDoorIntent"
     });
   }
