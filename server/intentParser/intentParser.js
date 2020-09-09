@@ -7,7 +7,7 @@ const fs = require('fs');
  * @param {transcript: str} 
  */
 const correctTranscript = ({ transcript }) => {
-  return transcript.toLowerCase();
+  return transcript.toLowerCase().replace("-", " ");
 }
 
 /**

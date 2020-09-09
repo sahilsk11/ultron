@@ -52,6 +52,7 @@ class AddWorkoutSet extends Intent {
             }
           }
           valEndIndex = minIndex - 1;
+          console.log(this.transcript.substring(valStartIndex, valEndIndex))
         } else {
           valEndIndex = this.indexOfNextSpace(valStartIndex, this.transcript);
         }
