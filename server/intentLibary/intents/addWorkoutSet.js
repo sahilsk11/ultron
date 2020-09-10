@@ -48,7 +48,7 @@ class AddWorkoutSet extends Intent {
             }
           }
           valEndIndex = minIndex - 1;
-          console.log(this.transcript.substring(valStartIndex, valEndIndex))
+          // console.log(this.transcript.substring(valStartIndex, valEndIndex))
         } else {
           valEndIndex = this.indexOfNextSpace(valStartIndex, this.transcript);
         }
@@ -84,6 +84,11 @@ class AddWorkoutSet extends Intent {
   async getMuscleGroups(workout) {
     const collection = await this.dbHandler.getCollection("gym", "exerciseDefinitions");
     const result = await collection.findOne({ name: workout });
+    if (result == null) {
+      const err = new Error(`Workout ${workout} was not found in excerciseDefinitions`);
+      err.ultronMessage = `Sir, ${workout} was not found in excerciseDefinitions.`;
+      throw err;
+    }
     return result.muscles;
   }
 
@@ -95,24 +100,30 @@ class AddWorkoutSet extends Intent {
     for (let muscle of muscleGroups) {
       expressions.push({ muscle });
     }
+    const totalVolume = await this.getTotalMuscles();
     const result = await collection.find({ $or: expressions }).toArray();
     for (let muscleGoal of result) {
-      weeklyProgress += (1 / muscleGoal.weeklySetGoal);
+      weeklyProgress += (1 / muscleGoal.weeklySetGoal) / totalVolume;
       muscleContributions[muscleGoal.muscle] = (1 / muscleGoal.weeklySetGoal);
     }
     return { weeklyProgress, muscleContributions };
   }
 
   async getMuscleGoals(muscleGroups) {
-    const collection = await this.getMongoCollection("weeklyMuscleGoals");
+    const collection = await this.dbHandler.getCollection("gym", "weeklyMuscleGoals");
     const result = await collection.findOne({ muscle: muscleGroups[0] });
     return result.weeklySetGoal;
   }
-  
+
   getDate(offset) {
     let date = moment().tz('America/Los_Angeles');
     date.subtract(offset, 'hours');
     return date._d;
+  }
+
+  async getTotalMuscles() {
+    const collection = await this.dbHandler.getCollection("gym", "weeklyMuscleGoals");
+    return collection.countDocuments();
   }
 }
 

@@ -13,27 +13,22 @@ class WorkoutProgressIntent extends Intent {
   }
 
   async execute() {
-    let matchSelector
+    let startDay;
+    let isToday = false;
     if (this.transcript.includes("current") || this.transcript.includes("today")) {
-      const today = this.getDate(-4)
+      const today = this.getDate()
       today.setHours(0, 0, 0, 0);
-      matchSelector = {
-        date: {
-          $gte: today
-        }
-      }
+      startDay = today;
+      isToday = true;
     } else {
-      matchSelector = {
-        week: 30
-      }
+      startDay = this.getPrevMonday();
     }
-    const summary = await this.getSummary(matchSelector);
-    console.log(summary);
-    const message = this.constructMessage(summary);
+    const summary = await this.getSummary(startDay);
+    const message = this.constructMessage(summary, isToday);
     return { code: 200, message, intent: this.intentName }
   }
 
-  async getSummary(matchSelector) {
+  async getSummary(startDay) {
     const collection = await this.dbHandler.getCollection("gym", "exerciseHistory");
     const today = this.getDate(-4);
     today.setHours(0, 0, 0, 0);
@@ -41,7 +36,11 @@ class WorkoutProgressIntent extends Intent {
     const muscleAggregators = this.constructMuscleAggregator(muscleGroups);
     const result = await collection.aggregate([
       {
-        $match: matchSelector
+        $match: {
+          date: {
+            $gte: startDay
+          }
+        }
       }, {
         $group: {
           _id: today,
@@ -55,15 +54,15 @@ class WorkoutProgressIntent extends Intent {
         }
       }
     ]).toArray();
-    console.log(result);
+    if (result.length == 0) return {};
     return result[0];
   }
 
   constructMuscleAggregator(muscleGroups) {
     const aggregators = {};
     for (let muscle of muscleGroups) {
-      aggregators[muscle+"Progress"] = {
-        $sum: "$muscleContributions."+muscle
+      aggregators[muscle + "Progress"] = {
+        $sum: "$muscleContributions." + muscle
       }
     }
     return aggregators;
@@ -79,15 +78,22 @@ class WorkoutProgressIntent extends Intent {
     return muscles;
   }
 
-  constructMessage() {
-    return "hi";
+  constructMessage(summary, isToday) {
+    return `You've completed ${Math.round(summary.weeklyProgress*100) }% of your weekly goal, with an average intensity of ${Math.round(summary.avgIntensity * 100) }%.`;
   }
 
   getDate(offset) {
-    const tzOffset = -8 + (moment().isDST() ? 0 : 1);
-    let now = new Date();
-    now.setHours(now.getHours() + tzOffset + offset);
-    return now;
+    let date = moment().tz('America/Los_Angeles');
+    date.subtract(offset, 'hours');
+    return date._d;
+  }
+
+  getPrevMonday() {
+    var date = this.getDate(4);
+    var day = date.getDay();
+    date.setDate(date.getDate() - day + 1);
+    date.setHours(0, 0, 0, 0);
+    return date;
   }
 }
 

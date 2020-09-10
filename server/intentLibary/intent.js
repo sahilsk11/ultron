@@ -28,10 +28,6 @@ class Intent {
     return false;
   }
 
-  async getMongoCollection(collection) {
-   return await this.mongoClient.db("ultron").collection(collection);
-  }
-
   /**
    * Finds the index of the next " ", or returns str.length if not found
    */

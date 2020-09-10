@@ -1,5 +1,4 @@
 const { Intent } = require("../intent.js");
-const dbHandler = require("../../dbHandler.js");
 
 class TestIntent extends Intent {
   constructor({ transcript, dbHandler }) {
@@ -13,9 +12,10 @@ class TestIntent extends Intent {
   }
 
   async execute() {
-    let message = "";
+    let message = "done";
     return { code: 200, message: message.toString(), intent: this.intentName }
   }
+
 }
 
 module.exports.IntentClass = TestIntent;

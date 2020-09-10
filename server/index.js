@@ -84,9 +84,15 @@ async function executeAction(transcript) {
       response = { code: 500, message: "Sir, I matched that request to " + matchedIntentStr + "." }
     }
   } catch (err) {
-    response = { code: 400, message: "Sir, there was an error while executing the request." };
+    let message = "Sir, there was an error while executing the request.";
+    if (!!err.ultronMessage) {
+      console.log('hi')
+      message = err.ultronMessage;
+    }
+    response = { code: 400, message };
     responseErr = err;
   }
+  console.log(response);
   return { response, responseErr };
 }
 
