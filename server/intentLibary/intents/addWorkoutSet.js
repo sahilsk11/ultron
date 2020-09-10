@@ -71,7 +71,7 @@ class AddWorkoutSet extends Intent {
     const result = await collection.insertOne({
       workout,
       reps,
-      intensity,
+      intensity: intensity / 100,
       weight,
       muscleGroups,
       weeklyProgress,

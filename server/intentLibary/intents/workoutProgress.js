@@ -30,7 +30,7 @@ class WorkoutProgressIntent extends Intent {
 
   async getSummary(startDay) {
     const collection = await this.dbHandler.getCollection("gym", "exerciseHistory");
-    const today = this.getDate(-4);
+    const today = this.getDate(4);
     today.setHours(0, 0, 0, 0);
     const muscleGroups = await this.getMuscleGroups();
     const muscleAggregators = this.constructMuscleAggregator(muscleGroups);
