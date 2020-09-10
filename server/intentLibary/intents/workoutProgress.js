@@ -43,6 +43,7 @@ class WorkoutProgressIntent extends Intent {
     if (!!scannedMuscle) {
       matchSelector.muscleGroups = [scannedMuscle];
     }
+    console.log(matchSelector);
     const result = await collection.aggregate([
       {
         $match: matchSelector
@@ -59,6 +60,7 @@ class WorkoutProgressIntent extends Intent {
         }
       }
     ]).toArray();
+    console.log(result);
     if (result.length == 0) return {};
     return result[0];
   }
@@ -84,7 +86,19 @@ class WorkoutProgressIntent extends Intent {
   }
 
   constructMessage(summary, isToday, scannedMuscle) {
-    return `You've completed ${Math.round(summary[scannedMuscle + "Progress"] * 100)}% of your weekly ${scannedMuscle} goal, with an average intensity of ${Math.round(summary.avgIntensity * 100) }%.`;
+    let muscleStr = '';
+    let val = Math.round(summary.weeklyProgress * 100);
+    if (!!scannedMuscle) {
+      muscleStr = scannedMuscle + " ";
+      val = Math.round(summary[scannedMuscle + "Progress"] * 100);
+    }
+    let message = `You've completed ${val}% of your weekly ${muscleStr}goal`;
+    if (isNaN(summary.avgIntensity)) {
+      message += '.';
+    } else {
+      message += `, with an average intensity of ${Math.round(summary.avgIntensity * 100)}%.`;
+    }
+    return message
   }
 
   getDate(offset) {
