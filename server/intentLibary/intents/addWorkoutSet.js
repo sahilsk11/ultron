@@ -1,5 +1,6 @@
 const { Intent } = require("../intent.js");
 const axios = require('axios');
+const moment = require("moment");
 
 class AddWorkoutSet extends Intent {
   constructor({ transcript, dbHandler }) {
@@ -15,8 +16,7 @@ class AddWorkoutSet extends Intent {
   async execute() {
     const { workout, reps, intensity, weight, muscleGroup } = this.parseSet();
     const workoutEntry = await this.createWorkout({ workout, reps, intensity, weight, muscleGroup });
-    //const summaryEntry = await this.addToSummary({ workout, reps, intensity, weight, muscleGroup });
-    let message = "hi";
+    let message = "Set added, sir.";
     return { code: 200, message, intent: this.intentName }
   }
 
@@ -65,83 +65,6 @@ class AddWorkoutSet extends Intent {
     return values;
   }
 
-  async addToAirtable({ workout, reps, intensity, weight, muscleGroup }) {
-    const config = {
-      headers: {
-        'Authorization': 'Bearer ' + this.getApiKey("AIRTABLE_WORKOUT_API_KEY"),
-        'Content-Type': 'application/json'
-      }
-    }
-    const muscles = await this.getMuscleGroup(workout);
-    let modifiedDate = new Date();
-    modifiedDate.setHours(modifiedDate.getHours() - 4);
-    let modifiedDateStr = modifiedDate.toLocaleDateString();
-    const data = {
-      records: [
-        {
-          fields: {
-            reps,
-            workout,
-            intensity: Number(intensity / 100),
-            weight,
-            date: modifiedDateStr,
-            muscles
-          }
-        }
-      ]
-    }
-    let url = "https://api.airtable.com/v0/appSD8cnaTlpwJwba/exercises";
-    let response;
-    try {
-      response = await axios.post(url, data, config);
-      return response.data;
-    } catch (err) {
-      throw this.handleAxiosError(err, "POST", url);
-    }
-  }
-
-  async getMuscleGroup(workout) {
-    const config = {
-      headers: {
-        'Authorization': 'Bearer ' + this.getApiKey("AIRTABLE_WORKOUT_API_KEY"),
-        'Content-Type': 'application/json'
-      }
-    }
-    const url = `https://api.airtable.com/v0/appSD8cnaTlpwJwba/workouts?filterByFormula=(Name='${workout}')`;
-    try {
-      const response = await axios.get(url, config);
-      return response.data.records[0].muscles;
-    } catch (err) {
-      console.error(err);
-      throw this.handleAxiosError(err, "GET", url);
-    }
-
-  }
-
-  async getSummaryId(recordId) {
-    let modifiedDate = new Date();
-    modifiedDate.setHours(modifiedDate.getHours() - 4);
-    let modifiedDateStr = modifiedDate.toLocaleDateString();
-
-    const config = {
-      headers: {
-        'Authorization': 'Bearer ' + this.getApiKey("AIRTABLE_WORKOUT_API_KEY"),
-        'Content-Type': 'application/json'
-      }
-    }
-    const url = `https://api.airtable.com/v0/appSD8cnaTlpwJwba/summary?filterByFormula=({date-string}='${modifiedDateStr}')`;
-    let currentWorkouts;
-    try {
-      const response = await axios.get(url, config);
-      workouts = response.data.records[0].get('Workouts');
-
-      return response.data.records[0].muscles;
-    } catch (err) {
-      console.error(err);
-      throw this.handleAxiosError(err, "GET", url);
-    }
-  }
-
   async createWorkout({ workout, reps, intensity, weight, muscleGroup }) {
     const muscleGroups = await this.getMuscleGroups(workout);
     const { weeklyProgress, muscleContributions } = await this.getProgressContributions(muscleGroups);
@@ -154,7 +77,7 @@ class AddWorkoutSet extends Intent {
       muscleGroups,
       weeklyProgress,
       muscleContributions,
-      date: new Date()
+      date: this.getDate(-4)
     });
     return result;
   }
@@ -186,36 +109,14 @@ class AddWorkoutSet extends Intent {
     const result = await collection.findOne({ muscle: muscleGroups[0] });
     return result.weeklySetGoal;
   }
-  /*
-  async addToWeeklySummary(workoutEntry) {
-    const summaryEntry = await this.getSummaryEntry();
-    let intensityTotal = summaryEntry.avgIntensity * summaryEntry.exercises.length;
-    intensityTotal += workoutEntry.intensity;
-    const newIntensityAvg = (intensityTotal / summaryEntry.exercises.length + 1);
-    let excersises = summaryEntry.excersises;
-    excersises.push(workoutEntry)
+  
+  getDate(offset) {
+    const isProduction = this.isProduction();
+    const tzOffset = isProduction ? -8 + (moment().isDST() ? 0 : 1) : 0;
+    let now = new Date();
+    now.setHours(now.getHours() + tzOffset + offset);
+    return now;
   }
-
-  async getWeeklySummaryEntry() {
-    const weekNumber = 31;
-    const year = 2020;
-    const collection = await this.dbHandler.getCollection("gym", "weeklySummaries");
-    const result = await collection.findOne({ week: weekNumber, year });
-    if (result === null) {
-      // create new entry
-      return {
-        week: weekNumber,
-        year,
-        avgIntensity: null,
-        weeklyProgress: 0.0,
-        progress: {},
-      }
-    }
-    console.log(result);
-    return result;
-  }
-*/
-
 }
 
 module.exports.IntentClass = AddWorkoutSet;
