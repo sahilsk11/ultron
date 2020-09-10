@@ -86,13 +86,11 @@ async function executeAction(transcript) {
   } catch (err) {
     let message = "Sir, there was an error while executing the request.";
     if (!!err.ultronMessage) {
-      console.log('hi')
       message = err.ultronMessage;
     }
     response = { code: 400, message };
     responseErr = err;
   }
-  console.log(response);
   return { response, responseErr };
 }
 
