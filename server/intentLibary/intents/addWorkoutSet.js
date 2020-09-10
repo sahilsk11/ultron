@@ -1,5 +1,4 @@
 const { Intent } = require("../intent.js");
-const axios = require('axios');
 const moment = require("moment");
 
 class AddWorkoutSet extends Intent {
