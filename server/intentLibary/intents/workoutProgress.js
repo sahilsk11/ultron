@@ -84,7 +84,7 @@ class WorkoutProgressIntent extends Intent {
   }
 
   getDate(offset) {
-    const tzOffset = -8 + (moment().isDST() ? 1 : 0);
+    const tzOffset = -8 + (moment().isDST() ? 0 : 1);
     let now = new Date();
     now.setHours(now.getHours() + tzOffset + offset);
     return now;
