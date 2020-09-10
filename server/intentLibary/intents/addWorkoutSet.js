@@ -1,5 +1,5 @@
 const { Intent } = require("../intent.js");
-const moment = require("moment");
+const moment = require('moment-timezone');
 
 class AddWorkoutSet extends Intent {
   constructor({ transcript, dbHandler }) {
@@ -76,7 +76,7 @@ class AddWorkoutSet extends Intent {
       muscleGroups,
       weeklyProgress,
       muscleContributions,
-      date: this.getDate(-4)
+      date: this.getDate(4)
     });
     return result;
   }
@@ -110,10 +110,9 @@ class AddWorkoutSet extends Intent {
   }
   
   getDate(offset) {
-    const tzOffset = -8 + (moment().isDST() ? 0 : 1);
-    let now = new Date();
-    now.setHours(now.getHours() + tzOffset + offset);
-    return now;
+    let date = moment().tz('America/Los_Angeles');
+    date.subtract(offset, 'hours');
+    return date._d;
   }
 }
 
