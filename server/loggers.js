@@ -1,40 +1,45 @@
 const fs = require('fs');
 const { serializeError, deserializeError } = require('serialize-error');
-const database = require("./models");
+// const database = require("./models");
 
 /**
- * @param { identity, transcript, actionResponse, smsError, audioError } interactionProps 
+ * @param { identity, transcript, response, responseErr, smsError, audioError } interactionProps 
  */
-function logInteraction(interactionProps) {
+function logInteraction(interactionProps, dbHandler) {
   interactionProps = { ...interactionProps, date: new Date() }
-  const errorInRequest = checkForErrors(interactionProps);
+  const errorInRequest = containsError(interactionProps);
   if (errorInRequest) {
-    logError(interactionProps);
+    logError(interactionProps, dbHandler);
   }
-  saveConversation(interactionProps.identity, interactionProps);
+  saveConversation(interactionProps.identity, interactionProps, dbHandler);
 }
 
-function checkForErrors(interactionProps) {
-  //consider checking for errors within actionResponse
+function containsError(interactionProps) {
   const {
-    actionResponse,
+    responseErr,
     smsError,
     audioError,
   } = interactionProps;
-  return !(!smsError && !audioError && !actionResponse.error);
+  return !(!smsError && !audioError && !responseErr);
 }
 
 function saveConversation(identity, log) {
   appendToFile(`conversations/${identity}.json`, log);
 }
 
-function logError(interactionProps) {
-  console.error(interactionProps.actionResponse.error);
-  interactionProps.actionResponse.error = serializeError(interactionProps.actionResponse.error);
+function logError(interactionProps, dbHandler) {
+  const {
+    responseErr,
+    smsError,
+    audioError,
+  } = interactionProps;
+  if (!!responseErr) {
+    console.error(responseErr);
+  }
+  interactionProps.responseErr = serializeError(interactionProps.responseErr);
   interactionProps.smsError = serializeError(interactionProps.smsError);
-  console.error(JSON.stringify(interactionProps));
   console.error("\n\n")
-  database.addToErrorLog(interactionProps);
+  dbHandler.addToErrorLog(interactionProps);
 }
 
 function appendToFile(filename, log) {

@@ -16,25 +16,23 @@ async function executeAction(transcript) {
 }
 
 async function generateAudio(message) {
+  message = message.replace(/"/g, '\\"');
   const fileName = generateFileName() + ".wav";
   const command = "./mimic --setf duration_stretch=0.9 -t \"" + message + "\" -o out/audio/" + fileName;
+  let audioErr;
   return new Promise(resolve => {
-    //var hrstart = process.hrtime()
-
+    // TO-DO monitor the output of this and determine best way to handle
     exec(command, (err, stdout, stderr) => {
-      //let hrend = process.hrtime(hrstart)
-      //console.info('Execution time (mimic): %ds %dms', hrend[0], hrend[1] / 1000000)
-
-      let successfulAudio = false;
-      let audioError;
+      console.log('AUDIO GEN ERR: ' + err);
+      console.log('AUDIO GEN STDOUT: ' + stdout);
+      console.log('AUDIO GEN STDERR: ' + stderr);
       if (err) {
-        audioError = err;
-      } else if (stderr && !stderr.includes("If audio works ignore")) {
-        audioError = stderr;
-      } else {
-        successfulAudio = true;
+        console.error("Audio Error");
+        console.error(err);
+        audioErr = err;
+        fileName = undefined;
       }
-      resolve({ fileName, audioError });
+      resolve({ fileName, audioErr });
     })
   });
 }

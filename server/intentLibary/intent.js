@@ -9,10 +9,10 @@ class UndefinedFunction extends Error {
 }
 
 class Intent {
-  constructor({ intentName, transcript, regex, utterances, mongoClient }) {
+  constructor({ intentName, transcript, regex, utterances, dbHandler }) {
     this.intentName = intentName;
     this.transcript = transcript;
-    this.mongoClient = mongoClient;
+    this.dbHandler = dbHandler;
     this.intentDefinition = {
       regex,
       utterances

@@ -1,12 +1,13 @@
-const { Intent } = require("./intent.js");
+const { Intent } = require("../intent.js");
 
 class SampleIntent extends Intent {
-  constructor({ transcript }) {
+  constructor({ transcript, dbHandler }) {
     super({
       transcript,
       regex: "",
       utterances: [],
-      intentName: "sampleIntent"
+      intentName: "sampleIntent",
+      dbHandler
     });
   }
 

@@ -2,24 +2,21 @@ const { Intent } = require("../intent.js");
 const axios = require('axios');
 
 class AddWorkoutSet extends Intent {
-  constructor({ transcript }) {
+  constructor({ transcript, dbHandler }) {
     super({
       transcript,
       regex: "",
       utterances: ['add workout', 'log set', 'add set', 'workout set'],
-      intentName: "addWorkoutSet"
+      intentName: "addWorkoutSet",
+      dbHandler
     });
   }
 
   async execute() {
     const { workout, reps, intensity, weight, muscleGroup } = this.parseSet();
-    const response = await this.addToAirtable({ workout, reps, intensity, weight, muscleGroup });
-    let message;
-    if (response.records && response.records[0].createdTime) {
-      message = "Set added sir.";
-    } else {
-      message = "Sir, I believe there was an error in the request."
-    }
+    const workoutEntry = await this.createWorkout({ workout, reps, intensity, weight, muscleGroup });
+    //const summaryEntry = await this.addToSummary({ workout, reps, intensity, weight, muscleGroup });
+    let message = "hi";
     return { code: 200, message, intent: this.intentName }
   }
 
@@ -57,7 +54,7 @@ class AddWorkoutSet extends Intent {
           valEndIndex = this.indexOfNextSpace(valStartIndex, this.transcript);
         }
         if (valStartIndex < valEndIndex && (metric == "workout") || !isNaN(this.transcript.substring(valStartIndex, valEndIndex))) {
-          if (metric == "workout") {
+          if (metric == "workout" || metric == "set") {
             values[metric] = this.transcript.substring(valStartIndex, valEndIndex)
           } else {
             values[metric] = Number(this.transcript.substring(valStartIndex, valEndIndex));
@@ -114,15 +111,11 @@ class AddWorkoutSet extends Intent {
     try {
       const response = await axios.get(url, config);
       return response.data.records[0].muscles;
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       throw this.handleAxiosError(err, "GET", url);
     }
-    
-  }
 
-  async addToSummary() {
-    
   }
 
   async getSummaryId(recordId) {
@@ -148,6 +141,81 @@ class AddWorkoutSet extends Intent {
       throw this.handleAxiosError(err, "GET", url);
     }
   }
+
+  async createWorkout({ workout, reps, intensity, weight, muscleGroup }) {
+    const muscleGroups = await this.getMuscleGroups(workout);
+    const { weeklyProgress, muscleContributions } = await this.getProgressContributions(muscleGroups);
+    const collection = await this.dbHandler.getCollection("gym", "exerciseHistory");
+    const result = await collection.insertOne({
+      workout,
+      reps,
+      intensity,
+      weight,
+      muscleGroups,
+      weeklyProgress,
+      muscleContributions,
+      date: new Date()
+    });
+    return result;
+  }
+
+  async getMuscleGroups(workout) {
+    const collection = await this.dbHandler.getCollection("gym", "exerciseDefinitions");
+    const result = await collection.findOne({ name: workout });
+    return result.muscles;
+  }
+
+  async getProgressContributions(muscleGroups) {
+    const collection = await this.dbHandler.getCollection("gym", "weeklyMuscleGoals");
+    let weeklyProgress = 0;
+    const muscleContributions = {};
+    const expressions = [];
+    for (let muscle of muscleGroups) {
+      expressions.push({ muscle });
+    }
+    const result = await collection.find({ $or: expressions }).toArray();
+    for (let muscleGoal of result) {
+      weeklyProgress += (1 / muscleGoal.weeklySetGoal);
+      muscleContributions[muscleGoal.muscle] = (1 / muscleGoal.weeklySetGoal);
+    }
+    return { weeklyProgress, muscleContributions };
+  }
+
+  async getMuscleGoals(muscleGroups) {
+    const collection = await this.getMongoCollection("weeklyMuscleGoals");
+    const result = await collection.findOne({ muscle: muscleGroups[0] });
+    return result.weeklySetGoal;
+  }
+  /*
+  async addToWeeklySummary(workoutEntry) {
+    const summaryEntry = await this.getSummaryEntry();
+    let intensityTotal = summaryEntry.avgIntensity * summaryEntry.exercises.length;
+    intensityTotal += workoutEntry.intensity;
+    const newIntensityAvg = (intensityTotal / summaryEntry.exercises.length + 1);
+    let excersises = summaryEntry.excersises;
+    excersises.push(workoutEntry)
+  }
+
+  async getWeeklySummaryEntry() {
+    const weekNumber = 31;
+    const year = 2020;
+    const collection = await this.dbHandler.getCollection("gym", "weeklySummaries");
+    const result = await collection.findOne({ week: weekNumber, year });
+    if (result === null) {
+      // create new entry
+      return {
+        week: weekNumber,
+        year,
+        avgIntensity: null,
+        weeklyProgress: 0.0,
+        progress: {},
+      }
+    }
+    console.log(result);
+    return result;
+  }
+*/
+
 }
 
 module.exports.IntentClass = AddWorkoutSet;
