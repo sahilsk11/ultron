@@ -5,12 +5,17 @@ class DBConnection {
   constructor(dbNames) {
     this.clients = {};
     const dbPassword = process.env["MONGO_DB_ULTRON_PASSWORD"];
-    Promise.all(dbNames.map(async dbName => {
+    for (let dbName of dbNames) {
       const uri = `mongodb+srv://mac-dev:${dbPassword}@cluster0.i7jmt.mongodb.net/${dbName}?retryWrites=true&w=majority`;
       const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-      client.connect();
       this.clients[dbName] = client;
-    }));
+    }
+  }
+
+  async initClients() {
+    for (let dbName in this.clients) {
+      await this.clients[dbName].connect();
+    }
   }
 
   getClient(dbName) {

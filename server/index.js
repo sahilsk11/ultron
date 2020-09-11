@@ -9,12 +9,18 @@ const fs = require('fs');
 const intentEngine = require("./intentMatcher");
 const { DBConnection } = require("./dbHandler");
 
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
-})
 
 //configure databases
 const dbHandler = new DBConnection(["ultron", "gym"]);
+
+// ensures DB clients are initialized before serving
+async function main() {
+  await dbHandler.initClients();
+  app.listen(8080, () => {
+    console.log("Server running on port 8080");
+  })
+}
+main();
 
 //configure middleware
 app.use(bodyParser.urlencoded({ extended: false }));
