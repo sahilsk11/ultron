@@ -161,7 +161,7 @@ const getApiToken = () => {
 const send = ({ transcript, resetTranscript, setMessage, setIntent, updateState, onAudioFinish }) => {
   let apiKey = getApiToken();
   const simulateProd = false;
-  const host = simulateProd || process.env.NODE_ENV === "production" ? "https://api.sahilkapur.com" : "http://localhost:8080";
+  const host = simulateProd || process.env.NODE_ENV === "production" ? "https://www.ultron.sh/server" : "http://localhost:8080";
   const endpoint = "/setIntent";
   let params = "?transcript=" + transcript.toLowerCase();
   params += "&api_key=" + apiKey;

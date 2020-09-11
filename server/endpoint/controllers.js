@@ -54,7 +54,7 @@ async function sendSms(number, message) {
       phone: number,
       message,
       key: process.env.TEXT_KEY,
-      replyWebhookUrl: 'https://api.sahilkapur.com/handleSmsReply'
+      replyWebhookUrl: 'https://www.ultron.sh/server/handleSmsReply'
     });
     smsResponseData = smsResponse.data
     const { success, quotaRemaining } = smsResponseData;
