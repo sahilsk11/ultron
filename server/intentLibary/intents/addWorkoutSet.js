@@ -15,7 +15,7 @@ class AddexerciseSet extends Intent {
   async execute() {
     const { reps, intensity, weight } = this.parseSet();
     let muscleGroups;
-    const exercise = await this.scanForMatch(await this.getAllExerciseAliases());
+    const exercise = await this.scanForExercise();
     if (!exercise) {
       muscleGroups = [await this.scanForMatch(await this.getAllMuscleNames())];
     }
@@ -155,29 +155,17 @@ class AddexerciseSet extends Intent {
   /**
    * Generate a list with all known exercise names
    */
-  async getAllExerciseAliases() {
+  async scanForExercise() {
     const collection = await this.dbHandler.getCollection("gym", "exerciseDefinitions");
-    const result = await collection.aggregate([
-      {
-        $group: {
-          _id: 0,
-          muscleCount: { $sum: 1 },
-          aliases: { $addToSet: "$aliases" }
-        }
-      },
-      {
-        $addFields: {
-          aliases: {
-            $reduce: {
-              input: "$aliases",
-              initialValue: [],
-              in: { $setUnion: ["$$value", "$$this"] }
-            }
-          }
+    const result = await collection.find().toArray();
+    for (let exercise of result) {
+      for (let alias of exercise.aliases) {
+        if (this.transcript.search(alias) >= 0) {
+          return exercise.name;
         }
       }
-    ]).toArray();
-    return result[0].aliases;
+    }
+    return null;
   }
 
   /**
