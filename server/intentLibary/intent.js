@@ -13,14 +13,15 @@ class Intent {
     this.intentName = intentName;
     this.transcript = transcript;
     this.dbHandler = dbHandler;
-    this.intentDefinition = {
-      regex,
-      utterances
-    }
+    this.regex = regex;
+    this.utterances = utterances;
   }
 
   transcriptMatches() {
-    for (const utterance of this.intentDefinition.utterances) {
+    if (this.regex !== "" && this.transcript.search(this.regex) >= 0) {
+      return true;
+    }
+    for (const utterance of this.utterances) {
       if (this.transcript.includes(utterance)) {
         return true;
       }

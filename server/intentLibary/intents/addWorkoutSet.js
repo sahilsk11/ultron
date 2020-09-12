@@ -1,62 +1,53 @@
 const { Intent } = require("../intent.js");
 const moment = require('moment-timezone');
 
-class AddWorkoutSet extends Intent {
+class AddexerciseSet extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
       regex: "",
-      utterances: ['add workout', 'log set', 'add set', 'workout set'],
-      intentName: "addWorkoutSet",
+      utterances: ['add exercise', 'log set', 'add set', 'exercise set'],
+      intentName: "addexerciseSet",
       dbHandler
     });
   }
 
   async execute() {
-    const { workout, reps, intensity, weight, muscleGroup } = this.parseSet();
-    const workoutEntry = await this.createWorkout({ workout, reps, intensity, weight, muscleGroup });
-    let message = "Set added, sir.";
+    const { reps, intensity, weight } = this.parseSet();
+    let muscleGroups;
+    const exercise = await this.scanForMatch(await this.getAllExerciseAliases());
+    if (!exercise) {
+      muscleGroups = [await this.scanForMatch(await this.getAllMuscleNames())];
+    }
+    const exerciseEntry = await this.addExerciseEntry({ exercise, reps, intensity, weight, muscleGroups });
+    const workoutName = exercise || muscleGroups[0];
+    let message = `${workoutName.substring(0, 1).toUpperCase() + workoutName.substring(1)} set added, sir.`
     return { code: 200, message, intent: this.intentName }
   }
 
   parseSet() {
     const metrics = [
-      "workout",
-      "muscle",
       "reps",
       "intensity",
       "weight",
     ];
     const values = {};
     for (let metric of metrics) {
+      if (metric == "intensity") {
+        const iParse = this.parseIntensity();
+        if (iParse !== null) {
+          values["intensity"] = iParse;
+          continue;
+        }
+      }
       const i = this.transcript.lastIndexOf(metric);
       if (i >= 0) {
         const valStartIndex = this.indexOfNextSpace(i, this.transcript) + 1;
-        let valEndIndex;
-        if (metric === "workout") {
-          const terminations = [
-            "muscle",
-            "reps",
-            "intensity",
-            "weight",
-          ];
-          let minIndex = this.transcript.length + 1;
-          const remainder = this.transcript.substring(i + "workout".length);
-          for (let termination of terminations) {
-            if (remainder.indexOf(termination) >= 0) {
-              minIndex = Math.min(minIndex, remainder.indexOf(termination) + i + "workout".length);
-            }
-          }
-          valEndIndex = minIndex - 1;
-          // console.log(this.transcript.substring(valStartIndex, valEndIndex))
-        } else {
-          valEndIndex = this.indexOfNextSpace(valStartIndex, this.transcript);
-        }
-        if (valStartIndex < valEndIndex && (metric == "workout") || !isNaN(this.transcript.substring(valStartIndex, valEndIndex))) {
-          if (metric == "workout" || metric == "set") {
-            values[metric] = this.transcript.substring(valStartIndex, valEndIndex)
-          } else {
-            values[metric] = Number(this.transcript.substring(valStartIndex, valEndIndex));
+        let valEndIndex = this.indexOfNextSpace(valStartIndex, this.transcript);
+        if (valStartIndex < valEndIndex && !isNaN(this.transcript.substring(valStartIndex, valEndIndex))) {
+          values[metric] = Number(this.transcript.substring(valStartIndex, valEndIndex));
+          if (metric == "intensity") {
+            values[metric] /= 100;
           }
         }
       }
@@ -64,14 +55,32 @@ class AddWorkoutSet extends Intent {
     return values;
   }
 
-  async createWorkout({ workout, reps, intensity, weight, muscleGroup }) {
-    const muscleGroups = await this.getMuscleGroups(workout);
+  parseIntensity() {
+    const percentageIndex = this.transcript.lastIndexOf("%");
+    if (percentageIndex > 2) {
+      const intensity = this.transcript.substring(percentageIndex - 2, percentageIndex);
+      if (!isNaN(intensity)) {
+        return Number(intensity) / 100;
+      }
+    }
+    return null;
+  }
+
+  async addExerciseEntry({ exercise, reps, intensity, weight, muscleGroups }) {
+    if ((!muscleGroups || !muscleGroups[0]) && !exercise) {
+      const err = new Error("Missing exercise name and muscle name");
+      err.ultronMessage = "Sir, the exercise name and muscle name are missing.";
+      throw err;
+    }
+    if (!muscleGroups) {
+      muscleGroups = await this.getMuscleGroups(exercise);
+    }
     const { weeklyProgress, muscleContributions } = await this.getProgressContributions(muscleGroups);
     const collection = await this.dbHandler.getCollection("gym", "exerciseHistory");
     const result = await collection.insertOne({
-      workout,
+      exercise,
       reps,
-      intensity: intensity / 100,
+      intensity,
       weight,
       muscleGroups,
       weeklyProgress,
@@ -81,17 +90,29 @@ class AddWorkoutSet extends Intent {
     return result;
   }
 
-  async getMuscleGroups(workout) {
+  /**
+   * Finds the muscles used in the particular exercise
+   * 
+   * @param exercise name of the exercise
+   * 
+   * @return an array with the muscles used in the exercise
+   */
+  async getMuscleGroups(exercise) {
     const collection = await this.dbHandler.getCollection("gym", "exerciseDefinitions");
-    const result = await collection.findOne({ name: workout });
+    const result = await collection.findOne({ name: exercise });
     if (result == null) {
-      const err = new Error(`Workout ${workout} was not found in excerciseDefinitions`);
-      err.ultronMessage = `Sir, ${workout} was not found in excerciseDefinitions.`;
+      const err = new Error(`Exercise ${exercise} was not found in excerciseDefinitions`);
+      err.ultronMessage = `Sir, ${exercise} was not found in excerciseDefinitions.`;
       throw err;
     }
     return result.muscles;
   }
 
+  /**
+   * Calculates the progress of the set towards the weekly goal
+   * 
+   * @param muscleGroups the array of muscles used in the exercise
+   */
   async getProgressContributions(muscleGroups) {
     const collection = await this.dbHandler.getCollection("gym", "weeklyMuscleGoals");
     let weeklyProgress = 0;
@@ -121,10 +142,65 @@ class AddWorkoutSet extends Intent {
     return date._d;
   }
 
+  /**
+   * Counts the number of defined muscle groups
+   * 
+   * Used to calculate the weighted average of a particular set
+   */
   async getTotalMuscles() {
     const collection = await this.dbHandler.getCollection("gym", "weeklyMuscleGoals");
     return collection.countDocuments();
   }
+
+  /**
+   * Generate a list with all known exercise names
+   */
+  async getAllExerciseAliases() {
+    const collection = await this.dbHandler.getCollection("gym", "exerciseDefinitions");
+    const result = await collection.aggregate([
+      {
+        $group: {
+          _id: 0,
+          muscleCount: { $sum: 1 },
+          aliases: { $addToSet: "$aliases" }
+        }
+      },
+      {
+        $addFields: {
+          aliases: {
+            $reduce: {
+              input: "$aliases",
+              initialValue: [],
+              in: { $setUnion: ["$$value", "$$this"] }
+            }
+          }
+        }
+      }
+    ]).toArray();
+    return result[0].aliases;
+  }
+
+  /**
+   * Generate a list with all defined muscle groups
+   */
+  async getAllMuscleNames() {
+    const collection = await this.dbHandler.getCollection("gym", "weeklyMuscleGoals");
+    const result = await collection.find().toArray();
+    const muscles = [];
+    for (let muscleEntry of result) {
+      muscles.push(muscleEntry.muscle);
+    }
+    return muscles;
+  }
+
+  async scanForMatch(scanList) {
+    for (let item of scanList) {
+      if (this.transcript.includes(item.replace("-", " "))) {
+        return item;
+      }
+    }
+    return null;
+  }
 }
 
-module.exports.IntentClass = AddWorkoutSet;
+module.exports.IntentClass = AddexerciseSet;

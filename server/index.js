@@ -39,6 +39,16 @@ app.get("/setIntent", async (req, res) => {
   logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
 });
 
+app.post("/", async (req, res) => {
+  const transcript = req.body.transcript;
+  const identity = req.identity;
+  let { response, responseErr } = await executeAction(transcript);
+  let { fileName, audioErr } = await generateAudio(response.message);
+  response = { ...response, fileName };
+  res.json(response);
+  logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
+});
+
 app.get("/audioFile", async (req, res) => {
   const filename = req.query.fileName;
   if (!filename) return; //could send a more appropriate response
@@ -144,5 +154,5 @@ function generateFileName() {
 }
 
 async function updateSmsQuota(remaining) {
-  const result = await getCollection("metadata").updateOne({ name: "remainingSms" }, { $set: { value: remaining } });
+  const result = await dbHandler.getCollection("ultron", "metadata").updateOne({ name: "remainingSms" }, { $set: { value: remaining } });
 }

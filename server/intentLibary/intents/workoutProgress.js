@@ -17,10 +17,7 @@ class WorkoutProgressIntent extends Intent {
     let isToday = false;
     const scannedMuscle = await this.scanForMuscle();
     if (this.transcript.includes("current") || this.transcript.includes("today")) {
-      const today = this.getDate()
-      today.setHours(0, 0, 0, 0);
-      startDay = today;
-      isToday = true;
+      startDay = this.getDate(4, true);
     } else {
       startDay = this.getPrevMonday();
     }
@@ -31,8 +28,8 @@ class WorkoutProgressIntent extends Intent {
 
   async getSummary(startDay, scannedMuscle) {
     const collection = await this.dbHandler.getCollection("gym", "exerciseHistory");
-    const today = this.getDate(4);
-    today.setHours(0, 0, 0, 0);
+    // const today = this.getDate(4);
+    // today.setHours(0, 0, 0, 0);
     const muscleGroups = await this.getMuscleGroups();
     const muscleAggregators = this.constructMuscleAggregator(muscleGroups);
     const matchSelector = {
@@ -43,13 +40,13 @@ class WorkoutProgressIntent extends Intent {
     if (!!scannedMuscle) {
       matchSelector.muscleGroups = [scannedMuscle];
     }
-    console.log(matchSelector);
+
     const result = await collection.aggregate([
       {
         $match: matchSelector
       }, {
         $group: {
-          _id: today,
+          _id: 0,
           weeklyProgress: {
             $sum: "$weeklyProgress"
           },
@@ -60,7 +57,6 @@ class WorkoutProgressIntent extends Intent {
         }
       }
     ]).toArray();
-    console.log(result);
     if (result.length == 0) return {};
     return result[0];
   }
@@ -92,6 +88,9 @@ class WorkoutProgressIntent extends Intent {
       muscleStr = scannedMuscle + " ";
       val = Math.round(summary[scannedMuscle + "Progress"] * 100);
     }
+    if (isNaN(val)) {
+      return `Sir, I don't see any workout data from today.`;
+    }
     let message = `You've completed ${val}% of your weekly ${muscleStr}goal`;
     if (isNaN(summary.avgIntensity)) {
       message += '.';
@@ -101,24 +100,26 @@ class WorkoutProgressIntent extends Intent {
     return message
   }
 
-  getDate(offset) {
+  getDate(offset, getStart) {
     let date = moment().tz('America/Los_Angeles');
     date.subtract(offset, 'hours');
+    if (getStart) {
+      date.startOf('day');
+    }
     return date._d;
   }
 
   getPrevMonday() {
-    var date = this.getDate(4);
+    var date = this.getDate(4, true);
     var day = date.getDay();
-    date.setDate(date.getDate() - day + 1);
-    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - day);
     return date;
   }
 
   async scanForMuscle() {
     const muscles = await this.getMuscleGroups();
     for (let muscle of muscles) {
-      if (this.transcript.includes(muscle)) {
+      if (this.transcript.includes(muscle.replace("-", " "))) {
         return muscle;
       }
     }

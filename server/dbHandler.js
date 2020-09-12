@@ -29,7 +29,7 @@ class DBConnection {
   async addToErrorLog(error) {
     const isProd = process.env.NODE_ENV === "production";
     if (isProd) {
-      const collection = await getCollection("ultron", "errorProd");
+      const collection = await this.getCollection("ultron", "errorProd");
       const result = await collection.insertOne(error);
     }
   }

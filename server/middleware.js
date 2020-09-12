@@ -12,7 +12,7 @@ function configureAuth(req, res, next) {
     }
   }
   res.setHeader('Access-Control-Allow-Headers', '*');
-  const incomingRequestApiKey = req.query.api_key;
+  const incomingRequestApiKey = req.query.api_key || req.body.api_key;
   const identity = idenitifyRequest(incomingRequestApiKey);
 
   if (!identity && req.path !== "/audioFile" && req.path !== "/handleSmsReply") {
@@ -27,7 +27,7 @@ function configureAuth(req, res, next) {
  * Determine the identity of the incoming request. Return the device,
  * or null/undefined if it is an unknown device
  * 
- * @param incomingApiKey  the api key from the incoming request
+ * @param incomingApiKey the api key from the incoming request
  */
 function idenitifyRequest(incomingApiKey) {
   if (!incomingApiKey) return null;
