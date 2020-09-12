@@ -21,7 +21,7 @@ class AddexerciseSet extends Intent {
     }
     const exerciseEntry = await this.addExerciseEntry({ exercise, reps, intensity, weight, muscleGroups });
     const workoutName = exercise || muscleGroups[0];
-    let message = `${workoutName.substring(0, 1).toUpperCase() + workoutName.substring(1)} set added, sir.`
+    let message = `${workoutName.substring(0, 1).toUpperCase() + workoutName.substring(1)} set added.`
     return { code: 200, message, intent: this.intentName }
   }
 
@@ -157,15 +157,21 @@ class AddexerciseSet extends Intent {
    */
   async scanForExercise() {
     const collection = await this.dbHandler.getCollection("gym", "exerciseDefinitions");
+    let exerciseName = null;
     const result = await collection.find().toArray();
     for (let exercise of result) {
       for (let alias of exercise.aliases) {
         if (this.transcript.search(alias) >= 0) {
-          return exercise.name;
+          if (!exerciseName) {
+            exerciseName = exercise.name;
+          }
+          if (exercise.name.length > exerciseName.length) {
+            exerciseName = exercise.name;
+          }
         }
       }
     }
-    return null;
+    return exerciseName;
   }
 
   /**

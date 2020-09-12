@@ -19,15 +19,18 @@ class ExercisePRIntent extends Intent {
   }
 
   constructMessage(pr, exerciseName) {
-    if (pr == null) {
+    if (pr == null || (!pr.reps && !pr.weight)) {
       return `Sir, I couldn't find a P.R. on ${exerciseName}.`;
     }
     let message = `Your P.R. on ${exerciseName} is`;
     if (pr.reps) {
-      message += ` ${pr.reps} reps at`;
+      message += ` ${pr.reps} reps`;
     }
-    message += ` ${pr.weight} pounds.`;
-    return message;
+    if (pr.weight) {
+      if (pr.weight) message += ` at`;
+      message += ` ${pr.weight} pounds`;
+    }
+    return message + ".";
   }
 
   async findPr(exerciseName) {
@@ -51,9 +54,6 @@ class ExercisePRIntent extends Intent {
       return null;
     }
     const pr = result[0];
-    if (pr.weight == null) {
-      return null;
-    }
     return pr;
   }
 
