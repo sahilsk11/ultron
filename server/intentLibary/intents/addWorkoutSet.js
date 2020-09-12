@@ -108,7 +108,6 @@ class AddexerciseSet extends Intent {
     return result.muscles;
   }
 
-  
   /**
    * Calculates the progress of the set towards the weekly goal
    * 
