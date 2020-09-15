@@ -1,5 +1,5 @@
 const { Intent } = require("../intent.js");
-const moment = require("moment");
+const moment = require('moment-timezone');
 
 class WorkoutProgressIntent extends Intent {
   constructor({ transcript, dbHandler }) {
@@ -17,7 +17,8 @@ class WorkoutProgressIntent extends Intent {
     let isToday = false;
     const scannedMuscle = await this.scanForMuscle();
     if (this.transcript.includes("current") || this.transcript.includes("today")) {
-      startDay = this.getDate(4, true);
+      startDay = this.getDateToday();
+      isToday = true;
     } else {
       startDay = this.getPrevMonday();
     }
@@ -32,6 +33,7 @@ class WorkoutProgressIntent extends Intent {
     // today.setHours(0, 0, 0, 0);
     const muscleGroups = await this.getMuscleGroups();
     const muscleAggregators = this.constructMuscleAggregator(muscleGroups);
+    console.log(startDay);
     const matchSelector = {
       date: {
         $gte: startDay
@@ -89,7 +91,7 @@ class WorkoutProgressIntent extends Intent {
       val = Math.round(summary[scannedMuscle + "Progress"] * 100);
     }
     if (isNaN(val)) {
-      return `Sir, I don't see any workout data from today.`;
+      return `Sir, I don't see any workout data from ${ isToday ? "today." : "this week."}`;
     }
     let message = `You've completed ${val}% of your weekly ${muscleStr}goal`;
     if (isNaN(summary.avgIntensity)) {
@@ -100,20 +102,12 @@ class WorkoutProgressIntent extends Intent {
     return message
   }
 
-  getDate(offset, getStart) {
-    let date = moment().tz('America/Los_Angeles');
-    date.subtract(offset, 'hours');
-    if (getStart) {
-      date.startOf('day');
-    }
-    return date._d;
+  getDateToday() {
+    return moment().tz('America/Los_Angeles').subtract(4, 'hours').startOf('day').utc()._d;
   }
 
   getPrevMonday() {
-    var date = this.getDate(4, true);
-    var day = date.getDay();
-    date.setDate(date.getDate() - day);
-    return date;
+    return moment().tz('America/Los_Angeles').subtract(4, 'hours').startOf('week').add(1, 'day').utc()._d;
   }
 
   async scanForMuscle() {

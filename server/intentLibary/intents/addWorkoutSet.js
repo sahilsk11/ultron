@@ -85,7 +85,8 @@ class AddexerciseSet extends Intent {
       muscleGroups,
       weeklyProgress,
       muscleContributions,
-      date: this.getDate(4)
+      localDate: moment().tz('America/Los_Angeles').subtract(4, 'hours').format('MM/DD/YYYY'),
+      date: new Date(),
     });
     return result;
   }
