@@ -44,7 +44,7 @@ main();
 // });
 
 app.post("/", async (req, res) => {
-  const transcript = req.body.transcript;
+  const transcript = req.body.transcript || req.query.transcript;
   const identity = req.identity;
   let fileName, audioErr;
   let { response, responseErr } = await executeAction(transcript);
