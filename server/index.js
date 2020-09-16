@@ -28,22 +28,30 @@ async function main() {
 main();
 
 //define routes
-app.get("/setIntent", async (req, res) => {
-  const identity = req.identity;
-  const transcript = req.query.transcript;
-  let { response, responseErr } = await executeAction(transcript);
-  let { fileName, audioErr } = await generateAudio(response.message);
-  response = { ...response, fileName };
-  res.json(response);
-  logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
-});
+// app.get("/setIntent", async (req, res) => {
+//   const identity = req.identity;
+//   const transcript = req.query.transcript;
+//   let fileName, audioErr;
+
+//   let { response, responseErr } = await executeAction(transcript);
+//   if (req.body.generateAudio != false) {
+//     ({ fileName, audioErr } = await generateAudio(response.message));
+//     response = { ...response, fileName };
+//   }
+//   console.log(response);
+//   res.json(response);
+//   logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
+// });
 
 app.post("/", async (req, res) => {
   const transcript = req.body.transcript;
   const identity = req.identity;
+  let fileName, audioErr;
   let { response, responseErr } = await executeAction(transcript);
-  let { fileName, audioErr } = await generateAudio(response.message);
-  response = { ...response, fileName };
+  if (req.body.generateAudio != "false") {
+    ({ fileName, audioErr } = await generateAudio(response.message));
+    response = { ...response, fileName };
+  }
   res.json(response);
   logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
 });
