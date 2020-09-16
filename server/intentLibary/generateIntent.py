@@ -5,12 +5,12 @@ intent_name = input("Enter the intent name (lowerCamelCase): ")
 
 last_in = None
 print("Enter sample utterances, and enter -1 when done.")
-utterances = []
+utterance_set = set()
 while last_in != "-1":
   last_in = input("> ")
   if last_in != "-1":
-    utterances.append(last_in)
-
+    utterance_set.add(last_in)
+utterances = list(utterance_set)
 f = open("sampleIntent.js")
 file_contents = f.read()
 f.close()

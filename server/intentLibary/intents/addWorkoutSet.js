@@ -13,7 +13,7 @@ class AddexerciseSet extends Intent {
   }
 
   async execute() {
-    const { reps, intensity, weight } = this.parseSet();
+    const { reps, intensity, weight } = this.parseSet(); //intensity is returned as float
     let muscleGroups;
     const exercise = await this.scanForExercise();
     if (!exercise) {
@@ -21,8 +21,21 @@ class AddexerciseSet extends Intent {
     }
     const exerciseEntry = await this.addExerciseEntry({ exercise, reps, intensity, weight, muscleGroups });
     const workoutName = exercise || muscleGroups[0];
-    let message = `${workoutName.substring(0, 1).toUpperCase() + workoutName.substring(1)} set added.`
+    const message = this.constructMessage({ workoutName, intensity, weight, reps });
     return { code: 200, message, intent: this.intentName }
+  }
+
+  constructMessage({ workoutName, weight, intensity, reps }) {
+    let message = `${workoutName.substring(0, 1).toUpperCase() + workoutName.substring(1)} set added`;
+    if (reps) {
+      message += ` for ${reps} reps`
+    } if (weight) {
+      message += ` at ${weight} pounds`
+    } if (intensity) {
+      message += ` with ${Math.round(intensity * 100)}% intensity`
+    }
+    message += ".";
+    return message;
   }
 
   parseSet() {

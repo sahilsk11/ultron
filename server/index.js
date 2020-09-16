@@ -8,7 +8,12 @@ const ms = require('mediaserver');
 const fs = require('fs');
 const intentEngine = require("./intentMatcher");
 const { DBConnection } = require("./dbHandler");
+const axios = require('axios');
 
+//configure middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(configureAuth);
 
 //configure databases
 const dbHandler = new DBConnection(["ultron", "gym"]);
@@ -21,12 +26,6 @@ async function main() {
   })
 }
 main();
-
-//configure middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(configureAuth);
-
 
 //define routes
 app.get("/setIntent", async (req, res) => {
@@ -61,7 +60,7 @@ app.get("/audioFile", async (req, res) => {
 
 app.post("/handleSmsReply", async (req, res) => {
   // const number = req.body.fromNumber;
-  const number = "+14088870718"
+  const number = "+14088870718";
   const transcript = req.body.text;
   const identity = "text";
   let smsErr;
@@ -78,15 +77,22 @@ app.post("/handleSmsReply", async (req, res) => {
     updateSmsQuota(quotaRemaining);
     if (!success) smsErr = smsResponse.data; // Not sure what this will return
   } catch (err) {
+    console.error(err);
     smsErr = err;
   }
-  logger.logInteraction({ transcript, identity, response, responseErr, smsError });
+  res.json({});
+  logger.logInteraction({ transcript, identity, response, responseErr, smsErr });
 });
 
 
 // define helper functions
 
 async function executeAction(transcript) {
+  if (transcript == undefined) {
+    const e = new Error("Undefined transcript");
+    e.ultronMessage = "I did not find a transcript, sir."
+    throw e;
+  }
   transcript = transcript.toLowerCase().replace(/-/g, " ");
   let response;
   let responseErr;
@@ -155,5 +161,6 @@ function generateFileName() {
 }
 
 async function updateSmsQuota(remaining) {
-  const result = await dbHandler.getCollection("ultron", "metadata").updateOne({ name: "remainingSms" }, { $set: { value: remaining } });
+  const collection = await dbHandler.getCollection("ultron", "metadata");
+  const result = await collection.updateOne({ name: "remainingSms" }, { $set: { value: remaining, date: new Date() } });
 }
