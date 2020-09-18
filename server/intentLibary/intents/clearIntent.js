@@ -4,7 +4,7 @@ class ClearIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["clear", "stop", "shut up", "stop"],
       intentName: "clearIntent"
     });

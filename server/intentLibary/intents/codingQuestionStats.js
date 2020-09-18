@@ -13,7 +13,7 @@ class InterviewPrepTracker extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["leetcode stats", "hackerrank stats"],
       intentName: "interviewPrepTracker"
     });

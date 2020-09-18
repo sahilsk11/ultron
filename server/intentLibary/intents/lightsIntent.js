@@ -6,7 +6,7 @@ class LightsIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: [
         "lights"
       ],

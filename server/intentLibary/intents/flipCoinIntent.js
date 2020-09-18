@@ -4,7 +4,7 @@ class FlipCoinIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: [
         "flip a coin",
         "heads or tails",

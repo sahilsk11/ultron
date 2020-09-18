@@ -5,7 +5,7 @@ class AddexerciseSet extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ['add exercise', 'log set', 'add set', 'exercise set'],
       intentName: "addexerciseSet",
       dbHandler

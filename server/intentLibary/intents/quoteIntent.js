@@ -4,7 +4,7 @@ class QuoteIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["give me a quote", "show me a quote"],
       intentName: "quoteIntent",
       dbHandler,

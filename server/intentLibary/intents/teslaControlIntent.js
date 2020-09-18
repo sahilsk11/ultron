@@ -5,7 +5,7 @@ class TeslaControlIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: [
         "unlock car", "unlock the car", "unlock tesla",
         "honk",

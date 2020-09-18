@@ -18,8 +18,12 @@ class Intent {
   }
 
   transcriptMatches() {
-    if (this.regex !== "" && this.transcript.search(this.regex) >= 0) {
-      return true;
+    if (this.regex.length > 0) {
+      for (let regex of this.regex) {
+        if (this.transcript.search(regex) >= 0) {
+          return true;
+        }
+      }
     }
     for (const utterance of this.utterances) {
       if (this.transcript.includes(utterance)) {

@@ -4,7 +4,7 @@ class DeleteSetIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ['delete set', 'delete last set', 'delete the last set', 'remove last set', 'remove the last set','remove recent set', 'delete the last set'],
       intentName: "deleteSetIntent",
       dbHandler

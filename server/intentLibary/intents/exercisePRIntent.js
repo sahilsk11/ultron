@@ -4,7 +4,7 @@ class ExercisePRIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: /pr$/,
+      regex: [/pr$/],
       utterances: [' my pr '],
       intentName: "exercisePRIntent",
       dbHandler

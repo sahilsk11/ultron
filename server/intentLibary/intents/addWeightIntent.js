@@ -5,7 +5,7 @@ class AddWeightIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["add weight"],
       intentName: "addWeightIntent"
     });

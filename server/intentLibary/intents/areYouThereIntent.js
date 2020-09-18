@@ -4,7 +4,7 @@ class AreYouThereIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: [
         "hey dummy",
         "you there",

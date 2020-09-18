@@ -4,7 +4,7 @@ class MakeRandomDecisionIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["should i"],
       intentName: "makeRandomDecisionIntent",
     });

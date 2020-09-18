@@ -5,7 +5,7 @@ class AddInterviewQuestionIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["leetcode", "hackerrank"],
       // I just completed a leetcode hard
       // add a leetcode hard to interview prep

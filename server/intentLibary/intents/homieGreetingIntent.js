@@ -4,7 +4,7 @@ class HomieGreetingIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["say hi to", "say what's up to", "say what's good to", "holla at the homie", "to the homie"],
       intentName: "homieGreetingIntent",
     });

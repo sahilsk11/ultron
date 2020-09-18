@@ -5,7 +5,7 @@ class CloseShopIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["close shop", "done for the day", "shut everything down", "shut down the study", "wrap up here"],
       intentName: "closeShopIntent"
     });

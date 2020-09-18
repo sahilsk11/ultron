@@ -6,7 +6,7 @@ class GithubCommitsIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+			regex: [],
       utterances: [
         "github commits",
         "git commit",

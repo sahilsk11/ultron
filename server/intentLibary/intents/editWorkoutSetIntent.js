@@ -4,7 +4,7 @@ class EditWorkoutSetIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ['edit set', 'set previous', 'change last set', 'edit the last set', 'edit last set', 'set last set', 'update set', 'update last set', 'update the last set'],
       intentName: "editWorkoutSetIntent",
       dbHandler

@@ -5,7 +5,7 @@ class GarageDoorIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["garage door", "barn door"],
       intentName: "garageDoorIntent"
     });

@@ -5,7 +5,7 @@ class WeightInsights extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["weight stats", "weight insights", "tell me about my weight", "how is my weight", "how's my weight"],
       intentName: "weightInsights"
     });

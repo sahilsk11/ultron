@@ -5,7 +5,7 @@ class TimeIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["time", "sunset", "sunrise"],
       intentName: "timeIntent"
     });

@@ -6,7 +6,7 @@ class DomainLookupIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: [
         "domain lookup",
       ],

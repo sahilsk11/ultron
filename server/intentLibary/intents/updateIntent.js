@@ -5,7 +5,7 @@ class PullLatestVersion extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["pull latest version", "pull new", "pull the latest version", "download the", "git pull", "run update", "download latest version", "run download", "system update", "update system"],
       intentName: "pullLatestVersion"
     });

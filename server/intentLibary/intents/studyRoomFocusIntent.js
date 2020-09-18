@@ -5,7 +5,7 @@ class StudyRoomFocusIntent extends Intent {
   constructor({ transcript }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["focus mode", "dim "],
       intentName: "studyRoomFocusIntent"
     });

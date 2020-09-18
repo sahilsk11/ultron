@@ -5,7 +5,7 @@ class WorkoutProgressIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ["workout progress", "workout stats"],
       intentName: "workoutProgressIntent",
       dbHandler

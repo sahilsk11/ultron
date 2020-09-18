@@ -4,7 +4,7 @@ class CapabilitiesIntent extends Intent {
   constructor({ transcript, dbHandler, user }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: ['what can you do', 'what do you do', 'tell me about yourself'],
       intentName: "capabilitiesIntent",
       dbHandler
