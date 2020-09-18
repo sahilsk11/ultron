@@ -27,22 +27,6 @@ async function main() {
 }
 main();
 
-//define routes
-// app.get("/setIntent", async (req, res) => {
-//   const identity = req.identity;
-//   const transcript = req.query.transcript;
-//   let fileName, audioErr;
-
-//   let { response, responseErr } = await executeAction(transcript);
-//   if (req.body.generateAudio != false) {
-//     ({ fileName, audioErr } = await generateAudio(response.message));
-//     response = { ...response, fileName };
-//   }
-//   console.log(response);
-//   res.json(response);
-//   logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
-// });
-
 app.post("/", async (req, res) => {
   const transcript = req.body.transcript || req.query.transcript;
   const { device, user } = req.identity;
