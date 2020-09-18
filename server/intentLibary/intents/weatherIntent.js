@@ -9,6 +9,7 @@ class WeatherIntent extends Intent {
       intentName: "weatherIntent",
       dbHandler
     });
+    this.authorizedForGuest = true;
   }
 
   async execute() {

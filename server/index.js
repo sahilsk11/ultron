@@ -20,7 +20,7 @@ const dbHandler = new DBConnection(["ultron", "gym"]);
 
 // ensures DB clients are initialized before serving
 async function main() {
-  //await dbHandler.initClients();
+  await dbHandler.initClients();
   app.listen(8080, () => {
     console.log("Server running on port 8080");
   })
