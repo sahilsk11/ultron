@@ -21,7 +21,7 @@ file_contents = file_contents.replace("sampleIntent", intent_name)
 upper_camel = intent_name[0].upper() + intent_name[1:]
 
 file_contents = file_contents.replace("SampleIntent", upper_camel)
-file_contents = file_contents.replace("[]", str(utterances))
+file_contents = file_contents.replace("['sample utterance']", str(utterances))
 
 f = open("./intents/"+intent_name+".js", "w")
 f.write(file_contents)

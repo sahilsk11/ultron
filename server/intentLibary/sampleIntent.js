@@ -5,7 +5,7 @@ class SampleIntent extends Intent {
     super({
       transcript,
       regex: [],
-      utterances: [],
+      utterances: ['sample utterance'],
       intentName: "sampleIntent",
       dbHandler
     });
