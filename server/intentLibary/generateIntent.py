@@ -2,6 +2,8 @@
 CLI script used to generate a new intent
 """
 intent_name = input("Enter the intent name (lowerCamelCase): ")
+if ('.js' in intent_name):
+  intent_name.replace('.js', '')
 
 last_in = None
 print("Enter sample utterances, and enter -1 when done.")
