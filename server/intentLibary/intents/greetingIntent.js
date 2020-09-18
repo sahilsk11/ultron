@@ -4,19 +4,15 @@ class GreetingIntent extends Intent {
   constructor({ transcript, user }) {
     super({
       transcript,
-      regex: "",
+      regex: /^hi/,
       utterances: [
         "hello",
-        "good evening",
-        "morning",
-        "rise and shine",
         "good to see you",
         "what's new",
         "how are you",
         "have you been",
         "what's up",
         "what's good",
-        "you too",
         "what's on your mind",
       ],
       intentName: "greetingIntent",

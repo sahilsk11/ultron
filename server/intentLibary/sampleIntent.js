@@ -4,7 +4,7 @@ class SampleIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: "",
+      regex: [],
       utterances: [],
       intentName: "sampleIntent",
       dbHandler

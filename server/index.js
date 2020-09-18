@@ -20,7 +20,7 @@ const dbHandler = new DBConnection(["ultron", "gym"]);
 
 // ensures DB clients are initialized before serving
 async function main() {
-  await dbHandler.initClients();
+  //await dbHandler.initClients();
   app.listen(8080, () => {
     console.log("Server running on port 8080");
   })
@@ -37,7 +37,7 @@ app.post("/", async (req, res) => {
     response = { ...response, fileName };
   }
   res.json(response);
-  logger.logInteraction({ transcript, device, response, responseErr, audioErr }, dbHandler);
+  logger.logInteraction({ transcript, identity: req.identity, response, responseErr, audioErr }, dbHandler);
 });
 
 app.get("/audioFile", async (req, res) => {
