@@ -6,8 +6,9 @@ class HomieGreetingIntent extends Intent {
       transcript,
       regex: "",
       utterances: ["say hi to", "say what's up to", "say what's good to", "holla at the homie", "to the homie"],
-      intentName: "homieGreetingIntent"
+      intentName: "homieGreetingIntent",
     });
+    this.authorizedForGuest = true;
   }
 
   async execute() {

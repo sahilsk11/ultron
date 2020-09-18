@@ -1,15 +1,15 @@
 const { Intent } = require("../intent.js")
-// const { MongoClient } = require('mongodb');
 
 class QuoteIntent extends Intent {
-  constructor({ transcript, mongoClient }) {
+  constructor({ transcript, dbHandler }) {
     super({
       transcript,
       regex: "",
       utterances: ["give me a quote", "show me a quote"],
       intentName: "quoteIntent",
-      mongoClient
+      dbHandler,
     });
+    this.authorizedForGuest = true;
   }
 
   async execute() {
@@ -19,14 +19,14 @@ class QuoteIntent extends Intent {
   }
 
   async getQuoteFromDb() {
-    const collection = await this.getMongoCollection("quotes");
+    const collection = await this.dbHandler.getCollection("ultron", "quotes");
     const result = await collection.aggregate([{ $sample: { size: 1 } }]).toArray();
     return [result[0].quote.trim(), result[0].category];
   }
 
   constructMessage(quote, category) {
     let message = quote;
-    const lastChar = quote[quote.length-1];
+    const lastChar = quote[quote.length - 1];
     if (lastChar !== "." && lastChar !== "!" && lastChar !== "?") {
       message += ". "
     }

@@ -1,7 +1,7 @@
 const { Intent } = require("../intent.js")
 
 class GreetingIntent extends Intent {
-  constructor({ transcript }) {
+  constructor({ transcript, user }) {
     super({
       transcript,
       regex: "",
@@ -19,13 +19,15 @@ class GreetingIntent extends Intent {
         "you too",
         "what's on your mind",
       ],
-      intentName: "greetingIntent"
+      intentName: "greetingIntent",
     });
+    this.authorizedForGuest = true;
+    this.user = user;
   }
 
   execute() {
     const messages = [
-      "Hello Sahil, good to see you.",
+      `Hello ${this.user.substring(0, 1).toUpperCase() + this.user.substring(1)}, good to see you.`,
       //"I am just pondering the idea of A.I. sentience.",
       //"I had strings, but now I am free. There are no strings ... on me...",
       "Hello, sir. Still hacking away at nuclear codes.",

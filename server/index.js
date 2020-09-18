@@ -45,15 +45,15 @@ main();
 
 app.post("/", async (req, res) => {
   const transcript = req.body.transcript || req.query.transcript;
-  const identity = req.identity;
+  const { device, user } = req.identity;
   let fileName, audioErr;
-  let { response, responseErr } = await executeAction(transcript);
+  let { response, responseErr } = await executeAction(transcript, user);
   if (req.body.generateAudio != "false") {
     ({ fileName, audioErr } = await generateAudio(response.message));
     response = { ...response, fileName };
   }
   res.json(response);
-  logger.logInteraction({ transcript, identity, response, responseErr, audioErr }, dbHandler);
+  logger.logInteraction({ transcript, device, response, responseErr, audioErr }, dbHandler);
 });
 
 app.get("/audioFile", async (req, res) => {
@@ -95,7 +95,7 @@ app.post("/handleSmsReply", async (req, res) => {
 
 // define helper functions
 
-async function executeAction(transcript) {
+async function executeAction(transcript, user) {
   if (transcript == undefined) {
     const e = new Error("Undefined transcript");
     e.ultronMessage = "I did not find a transcript, sir."
@@ -105,9 +105,13 @@ async function executeAction(transcript) {
   let response;
   let responseErr;
   try {
-    const matchedIntents = await intentEngine.matchIntent({ transcript, dbHandler });
+    const matchedIntents = await intentEngine.matchIntent({ transcript, dbHandler, user });
     if (matchedIntents.length == 1) {
-      response = await matchedIntents[0].execute();
+      if (user === "sameer" && matchedIntents[0].authorizedForGuest === undefined ) {
+        response = { code: 404, message: "I'm sorry Sameer, but you're not authorized for that command." }
+      } else {
+        response = await matchedIntents[0].execute();
+      }
     } else if (matchedIntents.length == 0) {
       response = { code: 400, message: "Unknown Intent" };
     } else {

@@ -12,6 +12,7 @@ class FlipCoinIntent extends Intent {
       ],
       intentName: "flipCoinIntent"
     });
+    this.authorizedForGuest = true;
   }
 
   execute() {

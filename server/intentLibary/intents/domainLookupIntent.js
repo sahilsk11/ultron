@@ -12,6 +12,7 @@ class DomainLookupIntent extends Intent {
       ],
       intentName: "domainLookupIntent"
     });
+    this.authorizedForGuest = true;
   }
 
   async execute() {

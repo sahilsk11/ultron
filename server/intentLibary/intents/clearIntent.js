@@ -8,6 +8,7 @@ class ClearIntent extends Intent {
       utterances: ["clear", "stop", "shut up", "stop"],
       intentName: "clearIntent"
     });
+    this.authorizedForGuest = true;
   }
 
   async execute() {

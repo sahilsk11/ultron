@@ -6,8 +6,9 @@ class MakeRandomDecisionIntent extends Intent {
       transcript,
       regex: "",
       utterances: ["should i"],
-      intentName: "makeRandomDecisionIntent"
+      intentName: "makeRandomDecisionIntent",
     });
+    this.authorizedForGuest = true;
   }
 
   execute() {

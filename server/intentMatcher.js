@@ -21,11 +21,11 @@ const loadedClasses = loadIntentClasses();
  * 
  * @return body to send back to client; typically {code, message, intent}
  */
-const matchIntent = async ({ transcript, dbHandler }) => {
+const matchIntent = async ({ transcript, dbHandler, user }) => {
   const matchedIntents = [];
   await Promise.all(loadedClasses.map(className => {
     if (file[0] !== "." && file !== "sampleIntent.js") {
-      const intentObj = new className.IntentClass({ transcript, dbHandler });
+      const intentObj = new className.IntentClass({ transcript, dbHandler, user });
       if (intentObj.transcriptMatches()) {
         matchedIntents.push(intentObj);
       }

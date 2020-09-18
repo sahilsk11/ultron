@@ -15,6 +15,7 @@ class AreYouThereIntent extends Intent {
       ],
       intentName: "areYouThereIntent"
     });
+    this.authorizedForGuest = true;
   }
 
   execute() {
