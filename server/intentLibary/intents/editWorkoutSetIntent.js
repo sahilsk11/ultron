@@ -5,7 +5,7 @@ class EditWorkoutSetIntent extends Intent {
     super({
       transcript,
       regex: "",
-      utterances: ['edit set', 'set previous', 'change last set', 'edit the last set', 'set last set', 'update set', 'update last set'],
+      utterances: ['edit set', 'set previous', 'change last set', 'edit the last set', 'edit last set', 'set last set', 'update set', 'update last set', 'update the last set'],
       intentName: "editWorkoutSetIntent",
       dbHandler
     });
