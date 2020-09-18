@@ -107,7 +107,7 @@ async function executeAction(transcript, user) {
   try {
     const matchedIntents = await intentEngine.matchIntent({ transcript, dbHandler, user });
     if (matchedIntents.length == 1) {
-      if (user === "sameer" && matchedIntents[0].authorizedForGuest === undefined ) {
+      if (user !== "sahil" && matchedIntents[0].authorizedForGuest === undefined ) {
         response = { code: 404, message: "I'm sorry Sameer, but you're not authorized for that command." }
       } else {
         response = await matchedIntents[0].execute();

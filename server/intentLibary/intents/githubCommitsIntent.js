@@ -32,7 +32,7 @@ class GithubCommitsIntent extends Intent {
 		const text = r.data;
 		const lines = text.split("\n");
 	
-		if (lines[966].toLowerCase().includes("contributions")) {mp
+		if (lines[966].toLowerCase().includes("contributions")) {
 			return this.cleanStr(lines[966]);
 		} else {
 			let lineIndex = 0;
