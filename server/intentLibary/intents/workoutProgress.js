@@ -107,7 +107,13 @@ class WorkoutProgressIntent extends Intent {
   }
 
   getPrevMonday() {
-    return moment().tz('America/Los_Angeles').subtract(4, 'hours').startOf('week').add(1, 'day').utc()._d;
+    let now = moment().tz('America/Los_Angeles').subtract(4, 'hours');
+    if (now.day() == 0) {
+      now = now.subtract(1, 'day').startOf('week').add(1, 'day');
+    } else {
+      now = now.startOf('week').add(1, 'day');
+    }
+    return now.utc()._d;
   }
 
   async scanForMuscle() {
