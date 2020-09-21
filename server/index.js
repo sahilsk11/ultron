@@ -6,7 +6,7 @@ const { exec } = require("child_process");
 const logger = require("./loggers");
 const ms = require('mediaserver');
 const fs = require('fs');
-const intentEngine = require("./intentMatcher");
+const intentEngine = require("./matchIntent");
 const { DBConnection } = require("./dbHandler");
 const axios = require('axios');
 

@@ -162,11 +162,20 @@ const send = ({ transcript, resetTranscript, setMessage, setIntent, updateState,
   let apiKey = getApiToken();
   const simulateProd = false;
   const host = simulateProd || process.env.NODE_ENV === "production" ? "https://www.ultron.sh/server" : "http://localhost:8080";
-  const endpoint = "/setIntent";
-  let params = "?transcript=" + transcript.toLowerCase();
-  params += "&api_key=" + apiKey;
+  //let params = "?transcript=" + transcript.toLowerCase();
+  //params += "&api_key=" + apiKey;
   try {
-    fetch(host + endpoint + params)
+    fetch(host, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        transcript,
+        api_key: apiKey,
+        generateAudio: true
+      })
+    })
       .then(response => {
         if (response.status === 200) {
           return response.json();
