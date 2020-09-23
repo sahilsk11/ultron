@@ -19,7 +19,7 @@ class GymContextIntent extends Intent {
     if (newContextState) {
       message = "Gym context active sir. Kick ass today.";
     } else {
-      message = "Gym context deactivted.";
+      message = "Gym context deactivated.";
     }
     return { code: 200, message, intent: this.intentName }
   }
