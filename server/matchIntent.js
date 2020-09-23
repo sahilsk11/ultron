@@ -33,13 +33,19 @@ const matchIntent = async ({ transcript, dbHandler, user }) => {
     }
   }));
   if (matchedIntents.length == 0) {
-    return useContext({ transcript, dbHandler, user });
+    return await useContext({ transcript, dbHandler, user });
   }
   return matchedIntents;
 }
 
-const useContext = ({ transcript, dbHandler, user }) => {
-  return [new loadedClasses["addWorkoutSet.js"].IntentClass({transcript, dbHandler, user})];
+const useContext = async ({ transcript, dbHandler, user }) => {
+  const collection = await dbHandler.getCollection("ultron", "contexts");
+  const result = await collection.find({ active: true }).toArray();
+  const intents = [];
+  for (let context of result) {
+    intents.push(new loadedClasses[context.defaultIntent].IntentClass({ transcript, dbHandler, user }))
+  }
+  return intents;
 }
 
 module.exports = {
