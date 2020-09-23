@@ -17,11 +17,23 @@ class GymContextIntent extends Intent {
     const result = await collection.updateOne({ contextName: "gym" }, { $set: { active: newContextState } });
     let message;
     if (newContextState) {
-      message = "Gym context active sir. Kick ass today.";
+      const quote = this.getWorkoutQuote();
+      message = quote + " Gym context active." ;
     } else {
       message = "Gym context deactivated.";
     }
     return { code: 200, message, intent: this.intentName }
+  }
+
+  getWorkoutQuote() {
+    const quotes = [
+      "Success isn’t always about ‘Greatness’, it’s about consistency.",
+      "No Pain, No Gain. Shut up and Train.",
+      "Train Insane or Remain the Same.",
+      "The body achieves what the mind believes.",
+      "Hustle for that Muscle."
+    ];
+    return this.getRandomPhrase(quotes);
   }
 }
 
