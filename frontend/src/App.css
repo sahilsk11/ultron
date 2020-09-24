@@ -1,5 +1,5 @@
 body {
-  background-color:#0b0723;
+  background-color: #0b0723;
   position: relative;
   height: 100vh;
 }
@@ -25,10 +25,29 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   z-index: -1;
   margin: 0px auto;
   display: block;
+}
+
+.credit {
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgb(142, 139, 161);
+  font-family: 'Montserrat', sans-serif;
+  position: fixed;
+  bottom: 5px;
+  font-weight: 400;
+}
+
+.credit>a {
+  color: rgb(142, 139, 161);
+  transition-duration: 0.3s;
+}
+
+.credit>a:hover {
+  color: rgb(182, 179, 201);
 }
 
 .greeting {
@@ -36,6 +55,7 @@ body {
   color: rgb(142, 139, 161);
   font-family: 'Montserrat', sans-serif;
   margin-bottom: 0px;
+  font-weight: 400;
 }
 
 .transcript-input {

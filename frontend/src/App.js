@@ -132,7 +132,8 @@ function App({
         />
       </div>
       <p className="transcript"><em>{transcript}</em></p>
-      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet" />
+      <p className="credit">animation design by <a href="https://dribbble.com/glebich" target="_blank">Gleb Kuznetsov</a></p>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet" />
     </div>
   );
 }
