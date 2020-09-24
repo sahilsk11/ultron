@@ -33,7 +33,6 @@ class WorkoutProgressIntent extends Intent {
     // today.setHours(0, 0, 0, 0);
     const muscleGroups = await this.getMuscleGroups();
     const muscleAggregators = this.constructMuscleAggregator(muscleGroups);
-    console.log(startDay);
     const matchSelector = {
       date: {
         $gte: startDay
@@ -103,7 +102,7 @@ class WorkoutProgressIntent extends Intent {
   }
 
   getDateToday() {
-    return moment().tz('America/Los_Angeles').subtract(4, 'hours').startOf('day').utc()._d;
+    return moment().tz('America/Los_Angeles').subtract(4, 'hours').startOf('day').utc().add(4, 'hours')._d;
   }
 
   getPrevMonday() {
