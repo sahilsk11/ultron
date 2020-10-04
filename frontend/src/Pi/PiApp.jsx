@@ -11,6 +11,9 @@ export default function PiApp({
   updateState
 }) {
   let content;
+  const screens = {
+    sleepClock: SleepClock()
+  }
   if (state === "ambient") {
     content = AmbientScreen({ startSession });
   } else if (state === "listening") {
@@ -19,7 +22,7 @@ export default function PiApp({
     content = ActionScreen({ closeSession, greeting: "thinking...", state });
   } else if (state === "sleep") {
     //return SleepMode({ updateState });
-    content = SleepClock({ updateState });
+    content = screens.sleepClock;
   } else if (state === "response") {
     content = ResponseScreen({ intentResponse, message, updateState });
   }
