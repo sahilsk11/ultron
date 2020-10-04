@@ -110,8 +110,25 @@ function SleepClock() {
 /*
  * Clock in listening mode
  */
-function ActiveClock() {
-
+function ActiveClock({ startSession }) {
+  const [time, updateTime] = useState("");
+  useInterval(() => {
+    const currentTime = new Date().toLocaleTimeString().toString();
+    const lastColon = currentTime.lastIndexOf(":");
+    const cleanedTimeStr = currentTime.substring(0, lastColon) + currentTime.substring(lastColon + 3);
+    updateTime(cleanedTimeStr);
+  }, 1000);
+  return (
+    <div>
+      <h3 className="pi-clock">{time}</h3>
+      <img
+        className="pi-ambient-clock"
+        onClick={() => startSession()}
+        src="pi-ambient.gif"
+        alt=""
+      />
+    </div>
+  )
 }
 
 
