@@ -104,7 +104,7 @@ function SleepClock({ updateState }) {
     updateTime(cleanedTimeStr);
   }, 1000);
   return (
-    <div onClick={() => updateState("ambient")}>
+    <div className="pi-backdrop" onClick={() => updateState("ambient")}>
       <h3 className="pi-clock">{time}</h3>
     </div>
   )

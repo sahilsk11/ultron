@@ -152,3 +152,9 @@
   animation: fadein 1s;
   z-index: 1;
 }
+
+.pi-backdrop {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
