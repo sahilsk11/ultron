@@ -5,6 +5,7 @@
   height: 318px;
   overflow: hidden;
   position: relative;
+  border: 1px solid red;
 }
 
 .pi-ambient {
@@ -132,11 +133,11 @@
   width: 100%;
   color: rgb(194, 194, 194);
   font-family: 'Montserrat', sans-serif;
-  font-size: 40px;
+  font-size: 70px;
   font-weight: 300;
   position: absolute;
   left: 50%;
-  top: 43%;
+  top: 40%;
   transform: translate(-50%, -50%);
   margin: 0px;
   text-align: center;
