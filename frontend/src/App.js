@@ -13,7 +13,7 @@ import {
 function Index() {
   const [lastTranscriptUpdate, setUpdateTime] = useState(null);
   const { listening, transcript, resetTranscript } = useSpeechRecognition();
-  const [state, updateState] = useState("sleep");
+  const [state, updateState] = useState("ambient");
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
 
