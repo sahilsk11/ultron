@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./pi.css";
 
 export default function PiApp({
@@ -18,7 +18,8 @@ export default function PiApp({
   } else if (state === "processing") {
     content = ActionScreen({ closeSession, greeting: "thinking...", state });
   } else if (state === "sleep") {
-    return SleepMode({ updateState });
+    //return SleepMode({ updateState });
+    content = SleepClock({ updateState });
   } else if (state === "response") {
     content = ResponseScreen({ intentResponse, message, updateState });
   }
@@ -85,4 +86,51 @@ function SleepMode({ updateState }) {
   return (
     <div className="pi-sleep-container" onClick={() => updateState("ambient")} />
   );
+}
+
+/*
+ * Clock for sleep mode
+ * HH:MM PM/AM
+ */
+function SleepClock() {
+  const [time, updateTime] = useState("");
+  useInterval(() => {
+    const currentTime = new Date().toLocaleTimeString().toString();
+    const lastColon = currentTime.lastIndexOf(":");
+    const cleanedTimeStr = currentTime.substring(0, lastColon) + currentTime.substring(lastColon + 3);
+    updateTime(cleanedTimeStr);
+  }, 1000);
+  return (
+    <div>
+      <h3 className="pi-clock">{time}</h3>
+    </div>
+  )
+}
+
+/*
+ * Clock in listening mode
+ */
+function ActiveClock() {
+
+}
+
+
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
 }

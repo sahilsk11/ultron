@@ -13,7 +13,7 @@ import {
 function Index() {
   const [lastTranscriptUpdate, setUpdateTime] = useState(null);
   const { listening, transcript, resetTranscript } = useSpeechRecognition();
-  const [state, updateState] = useState("ambient");
+  const [state, updateState] = useState("sleep");
   const [message, setMessage] = useState("Hello, Sahil.");
   const [intentResponse, setIntent] = useState(null);
 
@@ -243,5 +243,7 @@ function AppWrapper() {
     </Router>
   )
 }
+
+setInterval(AppWrapper, 1000);
 
 export default AppWrapper;
