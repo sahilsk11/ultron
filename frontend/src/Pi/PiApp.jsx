@@ -12,7 +12,7 @@ export default function PiApp({
 }) {
   let content;
   const screens = {
-    sleepClock: SleepClock()
+    sleepClock: SleepClock({ updateState })
   }
   if (state === "ambient") {
     content = AmbientScreen({ startSession });
@@ -95,7 +95,7 @@ function SleepMode({ updateState }) {
  * Clock for sleep mode
  * HH:MM PM/AM
  */
-function SleepClock() {
+function SleepClock({ updateState }) {
   const [time, updateTime] = useState("");
   useInterval(() => {
     const currentTime = new Date().toLocaleTimeString().toString();
@@ -104,7 +104,7 @@ function SleepClock() {
     updateTime(cleanedTimeStr);
   }, 1000);
   return (
-    <div>
+    <div onClick={() => updateState("ambient")}>
       <h3 className="pi-clock">{time}</h3>
     </div>
   )
