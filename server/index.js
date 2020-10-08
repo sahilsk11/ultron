@@ -20,7 +20,7 @@ const dbHandler = new DBConnection(["ultron", "gym"]);
 
 // ensures DB clients are initialized before serving
 async function main() {
-  await dbHandler.initClients();
+  dbHandler.initClients();
   app.listen(8080, () => {
     console.log("Server running on port 8080");
   })
@@ -57,7 +57,7 @@ app.post("/handleSmsReply", async (req, res) => {
   const identity = "text";
   let smsErr;
   const { response, responseErr } = await executeAction(transcript, "sahil");
-  
+
   try {
     const smsResponse = await axios.post('https://textbelt.com/text', {
       phone: number,
@@ -92,7 +92,7 @@ async function executeAction(transcript, user) {
   try {
     const matchedIntents = await intentEngine.matchIntent({ transcript, dbHandler, user });
     if (matchedIntents.length == 1) {
-      if (user !== "sahil" && matchedIntents[0].authorizedForGuest === undefined ) {
+      if (user !== "sahil" && matchedIntents[0].authorizedForGuest === undefined) {
         response = { code: 404, message: "I'm sorry Sameer, but you're not authorized for that command." }
       } else {
         response = await matchedIntents[0].execute();
@@ -130,11 +130,18 @@ function handleIntentClash(matchedIntents) {
 
 async function generateAudio(message) {
   message = message.replace(/"/g, '\\"');
+  let audioMap = JSON.parse(fs.readFileSync("./out/audio/map.json"));
+  if (audioMap[message]) {
+    audioMap[message].lastAccessed = new Date();
+    return { fileName: audioMap[message].fileName, audioErr: null };
+  }
   const fileName = generateFileName() + ".wav";
   const command = "./mimic --setf duration_stretch=0.9 -t \"" + message + "\" -o out/audio/" + fileName;
   let audioErr;
-  return new Promise(resolve => {
+
+  return new Promise(async resolve => {
     // TO-DO monitor the output of this and determine best way to handle
+    audioMap = await cleanAudioOut(25, audioMap);
     exec(command, (err, stdout, stderr) => {
       if (err) {
         console.error("Audio Error");
@@ -142,9 +149,47 @@ async function generateAudio(message) {
         audioErr = err;
         fileName = undefined;
       }
+      audioMap[message] = {
+        fileName,
+        lastAccessed: new Date().toISOString()
+      };
+      fs.writeFileSync("./out/audio/map.json", JSON.stringify(audioMap));
       resolve({ fileName, audioErr });
     })
   });
+}
+
+async function cleanAudioOut(fileThreshold, audioMap) {
+  await fs.readdir("./out/audio/", async (err, files) => {
+    files = await files.filter(file => file.substring(file.length - 4) === ".wav");
+    const numFiles = files.length;
+    if (numFiles >= fileThreshold) {
+      // Delete the oldest file
+      const audioList = await Object.keys(audioMap).map(key => ({ ...audioMap[key], message: key }));
+      await audioList.sort((a, b) => {
+        return a.lastAccessed > b.lastAccessed;
+      });
+      const numFilesToRemove = numFiles + 1 - fileThreshold;
+      console.log(numFilesToRemove);
+      console.log(audioList);
+      const deletedFiles = audioList.splice(0, numFilesToRemove);
+      await deletedFiles.forEach(removedFile => {
+        const removedFileName = removedFile.fileName;
+        console.log(removedFileName);
+        const removedKey = removedFile.message;
+        fs.unlink("./out/audio/" + removedFileName, err => {
+          //TO-DO handle this error
+          if (err)
+            throw err;
+        });
+        console.log(`removing ${audioMap[removedKey].fileName} from the object`);
+        delete audioMap[removedKey];
+      });
+    } else {
+      console.log("no file deleted");
+    }
+  });
+  return audioMap;
 }
 
 function generateFileName() {
