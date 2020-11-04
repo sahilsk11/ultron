@@ -8,6 +8,7 @@ __pycache__/
 mimic
 
 # out/
-server/out/audio/
+server/out/audio/*
+server/out/audio/map.json
 server/out/conversations/
 server/out/error.json

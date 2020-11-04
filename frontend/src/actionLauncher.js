@@ -1,7 +1,7 @@
 export default function actionLauncher({ data, updateState, resetTranscript }) {
   const { message, intent } = data;
   resetTranscript();
-  if (intent === "launch") {
+  if (intent === "launch" || intent === "showSourceCodeIntent") {
     window.open(data.url);
   } else if (intent === "hardwareSleepIntent" || intent === "closeShopIntent") {
     updateState("sleep");
