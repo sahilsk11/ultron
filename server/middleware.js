@@ -13,13 +13,13 @@ function configureAuth(req, res, next) {
   }
   res.setHeader('Access-Control-Allow-Headers', '*');
   const incomingRequestApiKey = req.query.api_key || req.body.api_key;
-  const identity = idenitifyRequest(incomingRequestApiKey);
+  const identity = idenitifyRequest(incomingRequestApiKey, isProduction);
   if (!identity && req.path !== "/audioFile" && req.path !== "/handleSmsReply") {
     res.json({ code: 403, message: "Invalid credentials" });
   } else {
     req.identity = identity;
     next();
-  } 
+  }
 }
 
 /**
@@ -28,7 +28,10 @@ function configureAuth(req, res, next) {
  * 
  * @param incomingApiKey the api key from the incoming request
  */
-function idenitifyRequest(incomingApiKey) {
+function idenitifyRequest(incomingApiKey, isProduction) {
+  if (!isProduction) {
+    return { user: "Sahil", device: "local" };
+  }
   if (!incomingApiKey) return null;
   const keychain = JSON.parse(fs.readFileSync('keychain.json', 'utf-8'))
   return keychain[incomingApiKey];
