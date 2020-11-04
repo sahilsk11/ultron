@@ -24,7 +24,7 @@ function containsError(interactionProps) {
 }
 
 function saveConversation(identity, log) {
-  appendToFile(`conversations/${identity}.json`, log);
+  appendToFile(`conversations/${identity.device}.json`, log);
 }
 
 function logError(interactionProps, dbHandler) {
