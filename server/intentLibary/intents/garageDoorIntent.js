@@ -24,7 +24,8 @@ class GarageDoorIntent extends Intent {
         message = "The garage door is closed, sir.";
       }
     } else if (this.transcript.includes("open")) {
-      this.makeRequest("open");
+      let r = await this.makeRequest("open");
+      console.log(r);
       message = "Opening the garage door now.";
     } else if (this.transcript.includes("close")) {
       message = "Closing the garage door now.";
@@ -34,7 +35,7 @@ class GarageDoorIntent extends Intent {
   }
 
   async makeRequest(command) {
-    const endpoint = "http://remote.kapurs.net:14380/garage/toggle" + command;
+    const endpoint = "http://remote.kapurs.net:14380/garage/toggle";
     const username = "admin";
     const password = this.getApiKey("HOME_PASSWORD");
     const response = await axios.get(endpoint, {
