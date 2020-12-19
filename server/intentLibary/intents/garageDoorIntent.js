@@ -34,7 +34,7 @@ class GarageDoorIntent extends Intent {
   }
 
   async makeRequest(command) {
-    const endpoint = "http://remote.kapurs.net:14380/GDS/status.py?command=" + command;
+    const endpoint = "http://remote.kapurs.net:14380/garage/toggle" + command;
     const username = "admin";
     const password = this.getApiKey("HOME_PASSWORD");
     const response = await axios.get(endpoint, {
