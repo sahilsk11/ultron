@@ -20,7 +20,7 @@ const dbHandler = new DBConnection(["ultron", "gym"]);
 
 // ensures DB clients are initialized before serving
 async function main() {
-  dbHandler.initClients();
+  await dbHandler.initClients();
   app.listen(8080, () => {
     console.log("Server running on port 8080");
   })
@@ -56,7 +56,6 @@ app.post("/handleSmsReply", async (req, res) => {
   const transcript = req.body.text;
   const identity = "text";
   let smsErr;
-  console.log("received text from " + fromNumber);
   const { response, responseErr } = await executeAction(transcript, "sahil");
 
   try {
@@ -64,7 +63,7 @@ app.post("/handleSmsReply", async (req, res) => {
       phone: number,
       message: response.message,
       key: process.env.TEXT_KEY,
-      replyWebhookUrl: 'https://www.ultron.sh/server/handleSmsReply'
+      replyWebhookUrl: 'https://www.ultron.sh/server/handleSmsReply?api_key='+process.env.TEXT_AUTH
     });
     smsResponseData = smsResponse.data
     const { success, quotaRemaining } = smsResponseData;
@@ -74,7 +73,7 @@ app.post("/handleSmsReply", async (req, res) => {
     console.error(err);
     smsErr = err;
   }
-  res.json({});
+  res.json({sent: true});
   logger.logInteraction({ transcript, identity, response, responseErr, smsErr });
 });
 
@@ -94,7 +93,7 @@ async function executeAction(transcript, user) {
     const matchedIntents = await intentEngine.matchIntent({ transcript, dbHandler, user });
     if (matchedIntents.length == 1) {
       if (user !== "sahil" && matchedIntents[0].authorizedForGuest === undefined) {
-        response = { code: 404, message: "I'm sorry sir, but you're not authorized for that command." }
+        response = { code: 403, message: "I'm sorry sir, but you're not authorized for that command." }
       } else {
         response = await matchedIntents[0].execute();
       }
@@ -171,12 +170,9 @@ async function cleanAudioOut(fileThreshold, audioMap) {
         return a.lastAccessed > b.lastAccessed;
       });
       const numFilesToRemove = numFiles + 1 - fileThreshold;
-      console.log(numFilesToRemove);
-      console.log(audioList);
       const deletedFiles = audioList.splice(0, numFilesToRemove);
       await deletedFiles.forEach(removedFile => {
         const removedFileName = removedFile.fileName;
-        console.log(removedFileName);
         const removedKey = removedFile.message;
         fs.unlink("./out/audio/" + removedFileName, err => {
           //TO-DO handle this error
@@ -186,8 +182,6 @@ async function cleanAudioOut(fileThreshold, audioMap) {
         console.log(`removing ${audioMap[removedKey].fileName} from the object`);
         delete audioMap[removedKey];
       });
-    } else {
-      console.log("no file deleted");
     }
   });
   return audioMap;

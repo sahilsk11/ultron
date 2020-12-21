@@ -30,7 +30,7 @@ function configureAuth(req, res, next) {
  */
 function idenitifyRequest(incomingApiKey, isProduction) {
   if (!isProduction) {
-    return { user: "Sahil", device: "local" };
+    return { user: "sahil", device: "local" };
   }
   if (!incomingApiKey) return null;
   const keychain = JSON.parse(fs.readFileSync('keychain.json', 'utf-8'))
