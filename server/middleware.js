@@ -14,7 +14,7 @@ function configureAuth(req, res, next) {
   res.setHeader('Access-Control-Allow-Headers', '*');
   const incomingRequestApiKey = req.query.api_key || req.body.api_key;
   const identity = idenitifyRequest(incomingRequestApiKey, isProduction);
-  if (!identity && req.path !== "/audioFile" && req.path !== "/handleSmsReply") {
+  if (!identity && req.path !== "/audioFile") {
     res.json({ code: 403, message: "Invalid credentials" });
   } else {
     req.identity = identity;
