@@ -15,36 +15,52 @@ class GarageDoorIntent extends Intent {
     let message;
     if (this.transcript.includes("protocol")) {
       message = "Initiating barn door protocol.";
-      this.makeRequest("close");
+      await this.doorControl("close");
     } else if (this.transcript.includes("is") || this.transcript.includes("status")) {
-      let response = await this.makeRequest("status");
-      if (response.status) {
+      let isDoorOpen = await this.getStatus();
+      if (isDoorOpen) {
         message = "Sir, the garage door is open.";
       } else {
         message = "The garage door is closed, sir.";
       }
     } else if (this.transcript.includes("open")) {
-      let r = await this.makeRequest("open");
-      console.log(r);
-      message = "Opening the garage door now.";
+      const { state_changed } = await this.doorControl("open");
+      if (state_changed) {
+        message = "Opening the garage door now.";
+      } else {
+        message = "The garage door is already open."
+      }
     } else if (this.transcript.includes("close")) {
-      message = "Closing the garage door now.";
-      this.makeRequest("close");
+      const { state_changed } = await this.doorControl("close");
+      if (state_changed) {
+        message = "Closing the garage door now.";
+      } else {
+        message = "The garage door is already closed."
+      }
     }
     return { code: 200, message, intent: this.intentName }
   }
 
-  async makeRequest(command) {
-    const endpoint = "http://remote.kapurs.net:14380/garage/toggle";
-    const username = "admin";
-    const password = this.getApiKey("HOME_PASSWORD");
-    const response = await axios.get(endpoint, {
-      auth: {
-        username,
-        password
-      }
+  async getStatus() {
+    const apiKey = this.getApiKey("GARAGE_KEY");
+    let endpoint = "http://remote.kapurs.net:14380/garage/doorStatus";
+    const response = await axios.post(endpoint, {
+      apiKey
     });
+    if (response.data.doorOpen === true) {
+      return true;
+    } else if (response.data.doorOpen === false) {
+      return false
+    }
+    throw Error("indeterminate garage door state");
+  }
 
+  async doorControl(command) {
+    const apiKey = this.getApiKey("GARAGE_KEY");
+    let endpoint = "http://remote.kapurs.net:14380/garage/" + command + "Door";
+    const response = await axios.post(endpoint, {
+      apiKey
+    });
     return response.data;
   }
 }
