@@ -17,7 +17,12 @@ class DomainLookupIntent extends Intent {
   }
 
   async execute() {
-    let domain = this.transcript.substring((this.transcript.lastIndexOf("lookup") + "lookup".length + 1));
+    let domain;
+    if (this.transcript.indexOf("lookup")) {
+      domain = this.transcript.substring((this.transcript.lastIndexOf("lookup") + "lookup".length + 1));
+    } else {
+      domain = this.transcript.substring((this.transcript.lastIndexOf("look up") + "look up".length + 1));
+    }
     domain = domain.split(" ").join("");
     let availability = await this.checkDomainAvailability(domain);
 
