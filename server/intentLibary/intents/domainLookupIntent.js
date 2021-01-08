@@ -9,6 +9,7 @@ class DomainLookupIntent extends Intent {
       regex: [],
       utterances: [
         "domain lookup",
+        "domain look up"
       ],
       intentName: "domainLookupIntent"
     });
