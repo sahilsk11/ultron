@@ -14,7 +14,7 @@ class Goodnight extends Intent {
 
   async execute() {
     let message = "Goodnight, sir. Lighting the way up.";
-    axios.post(
+    await axios.post(
       "localhost:8000/goodnight",
       {}
     )
