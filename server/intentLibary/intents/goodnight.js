@@ -5,7 +5,7 @@ class Goodnight extends Intent {
     super({
       transcript,
       regex: [],
-      utterances: ['goodnight', 'heading up', 'downstairs lights off'],
+      utterances: ['goodnight', 'heading up', 'downstairs lights off', 'good night'],
       intentName: "goodnight",
       dbHandler
     });
