@@ -71,12 +71,12 @@ class LightsIntent extends Intent {
 
     roomName = this.correctBerryRoomName(roomName);
 
-    requestBody = {
+    let requestBody = {
       "lightName": roomName.toUpperCase(),
       "state": commandName.toUpperCase()
     }
 
-    const response = await axios.post("http://localhost:8000", data, config);
+    const response = await axios.post("http://localhost:8000", requestBody, config);
     return response.status;
   }
 
