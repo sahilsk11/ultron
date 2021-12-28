@@ -72,7 +72,7 @@ class LightsIntent extends Intent {
     roomName = this.correctBerryRoomName(roomName);
 
     let requestBody = {
-      "lightName": roomName.toUpperCase(),
+      "lightName": roomName.toUpperCase().replace(" ", "_"),
       "state": commandName.toUpperCase()
     }
 
@@ -82,6 +82,8 @@ class LightsIntent extends Intent {
 
   correctBerryRoomName(roomName) {
     roomName = roomName.replace("lights", "")
+    roomName = roomName.replace("room", "")
+    roomName = roomName.trim()
     if (roomName.indexOf("bedroom") >= 0) {
       return "SAHIL_BEDROOM"
     }
