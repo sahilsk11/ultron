@@ -69,7 +69,7 @@ class LightsIntent extends Intent {
       }
     }
 
-    roomName = correctBerryRoomName(roomName);
+    roomName = this.correctBerryRoomName(roomName);
 
     requestBody = {
       "lightName": roomName.toUpperCase(),
