@@ -22,7 +22,7 @@ class TheaterScene extends Intent {
       }
     }
 
-    const response = await axios.post("http://localhost:8000/scenes/theaterScene", {}, config);
+    const response = await axios.post("http://localhost:8000/scenes/theater", {}, config);
 
     let message = "Theater scene activated.";
     return { code: 200, message, intent: this.intentName }
