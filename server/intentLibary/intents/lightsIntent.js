@@ -76,7 +76,7 @@ class LightsIntent extends Intent {
       "state": commandName.toUpperCase()
     }
 
-    const response = await axios.post("http://localhost:8000", requestBody, config);
+    const response = await axios.post("http://localhost:8000/lights/toggleLight", requestBody, config);
     return response.status;
   }
 
