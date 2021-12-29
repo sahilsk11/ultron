@@ -25,6 +25,8 @@ class SetHeatIntent extends Intent {
     } else if (thermostatTargetTemperature > 75 || thermostatTargetTemperature < 40) {
       return { code: 400, message: thermostatTargetTemperature + " degrees is not a valid thermostat temperature.", intent: this.intentName }
     }
+
+    await this.setTemperature(thermostatRoomName, thermostatTargetTemperature)
     
     let message = "Setting " + thermostatRoomName + " to " + thermostatTargetTemperature + ".";
     return { code: 200, message, intent: this.intentName }
