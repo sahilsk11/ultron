@@ -61,6 +61,10 @@ class LightsIntent extends Intent {
   }
 
   async controlBerryLights({roomName, commandName}) {
+    if (this.transcript.indexOf("downstairs") >= 0) {
+      // switch out of this because this is a scene, not a room name
+      return this.downstairsLightsOn()
+    }
     const apiKey = process.env.KNOX_KEY;
     const config = {
       headers: {
@@ -78,6 +82,21 @@ class LightsIntent extends Intent {
 
     const response = await axios.post("http://localhost:8000/lights/toggleLight", requestBody, config);
     return response.status;
+  }
+
+  async downstairsLightsOn() {
+    const apiKey = process.env.KNOX_KEY;
+    const config = {
+      headers: {
+        'Authorization': 'Bearer ' + apiKey,
+        'Content-Type': 'application/json'
+      }
+    }
+
+    await axios.post(
+      "http://localhost:8000/scenes/downstairsLightsOn",
+      {}, config
+    )
   }
 
   correctBerryRoomName(roomName) {
