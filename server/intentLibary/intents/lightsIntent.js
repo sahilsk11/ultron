@@ -65,6 +65,9 @@ class LightsIntent extends Intent {
       // switch out of this because this is a scene, not a room name
       return this.downstairsLightsOn()
     }
+    if (this.transcript.indexOf("set") >= 0) {
+      return this.adjustBrightness(roomName);
+    }
     const apiKey = process.env.KNOX_KEY;
     const config = {
       headers: {
@@ -81,6 +84,34 @@ class LightsIntent extends Intent {
     }
 
     const response = await axios.post("http://localhost:8000/lights/toggleLight", requestBody, config);
+    return response.status;
+  }
+
+  async adjustBrightness(roomName) {
+    const apiKey = process.env.KNOX_KEY;
+    const config = {
+      headers: {
+        'Authorization': 'Bearer ' + apiKey,
+        'Content-Type': 'application/json'
+      }
+    }
+
+    const regex = /[0-9]+/;
+    const found = transcript.match(regex);
+    if (found.length == 0) {
+      return 500;
+    }
+    brightness = parseInt(found[found.length-1], 10)
+
+    let requestBody = {
+      "lightName": roomName.toUpperCase().replace(" ", "_"),
+      "brightness": brightness
+    }
+
+    const response = await axios.post(
+      "http://localhost:8000/lights/setBrightness",
+      requestBody, config
+    )
     return response.status;
   }
 

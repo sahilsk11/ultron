@@ -49,7 +49,7 @@ class SetHeatIntent extends Intent {
     if (found.length == 0) {
       return ""
     }
-    return parseInt(found[0], 10)
+    return parseInt(found[found.length-1], 10)
   }
 
   async setTemperature(thermostatName, targetTemperature) {
