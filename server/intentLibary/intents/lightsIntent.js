@@ -61,7 +61,7 @@ class LightsIntent extends Intent {
   }
 
   async controlBerryLights({roomName, commandName}) {
-    if (this.transcript.indexOf("downstairs") >= 0) {
+    if (this.transcript.indexOf("downstairs") >= 0 && this.transcript.indexOf("on") >= 0) {
       // switch out of this because this is a scene, not a room name
       return this.downstairsLightsOn()
     }
