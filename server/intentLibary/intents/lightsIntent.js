@@ -65,6 +65,7 @@ class LightsIntent extends Intent {
       // switch out of this because this is a scene, not a room name
       return this.downstairsLightsOn()
     }
+    roomName = this.correctBerryRoomName(roomName);
     if (this.transcript.indexOf("set") >= 0) {
       return this.adjustBrightness(roomName);
     }
