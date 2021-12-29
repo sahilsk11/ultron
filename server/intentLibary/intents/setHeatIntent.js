@@ -5,7 +5,7 @@ class SetHeatIntent extends Intent {
   constructor({ transcript, dbHandler }) {
     super({
       transcript,
-      regex: [/set .* temperature/],
+      regex: [/set .* temperature/, /set .* heat/],
       utterances: ['turn the heater', 'set heat', 'set the heat', 'set the temperature', 'set temperature'],
       intentName: "setHeatIntent",
       dbHandler
