@@ -12,12 +12,12 @@ class SetHeatIntent extends Intent {
   }
 
   async execute() {
-    thermostatRoomName = parseRoomName(this.transcript);
+    thermostatRoomName = this.parseRoomName(this.transcript);
     if (thermostatName == "") {
       return { code: 400, message: "Could not identify thermostat name.", intent: this.intentName }
     }
 
-    thermostatTargetTemperature = parseTemperature(this.transcript);
+    thermostatTargetTemperature = this.parseTemperature(this.transcript);
     if (thermostatTargetTemperature == "") {
       return { code: 400, message: "Could not identify thermostat temperature.", intent: this.intentName }
     } else if (isNaN(thermostatTargetTemperature)) {
