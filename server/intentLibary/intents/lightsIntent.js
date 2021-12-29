@@ -93,10 +93,11 @@ class LightsIntent extends Intent {
       }
     }
 
-    await axios.post(
+    const response = await axios.post(
       "http://localhost:8000/scenes/downstairsLightsOn",
       {}, config
     )
+    return response.status;
   }
 
   correctBerryRoomName(roomName) {
