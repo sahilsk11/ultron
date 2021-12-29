@@ -62,8 +62,8 @@ class SetHeatIntent extends Intent {
     }
 
     let requestBody = {
-      thermostatName: thermostatName,
-      targetTemperature: targetTemperature
+      "thermostatName": thermostatName,
+      "targetTemperature": targetTemperature
     }
 
     return await axios.post("http://localhost:8000/climate/setHeat", requestBody, config);
