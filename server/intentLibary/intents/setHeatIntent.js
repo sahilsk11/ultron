@@ -13,7 +13,7 @@ class SetHeatIntent extends Intent {
 
   async execute() {
     let thermostatRoomName = this.parseRoomName(this.transcript);
-    if (thermostatName == "") {
+    if (thermostatRoomName == "") {
       return { code: 400, message: "Could not identify thermostat name.", intent: this.intentName }
     }
 
