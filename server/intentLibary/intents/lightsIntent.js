@@ -97,7 +97,7 @@ class LightsIntent extends Intent {
     }
 
     const regex = /[0-9]+/;
-    const found = transcript.match(regex);
+    const found = this.transcript.match(regex);
     if (found.length == 0) {
       return 500;
     }
