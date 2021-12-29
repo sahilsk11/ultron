@@ -101,7 +101,7 @@ class LightsIntent extends Intent {
     if (found.length == 0) {
       return 500;
     }
-    brightness = parseInt(found[found.length-1], 10)
+    let brightness = parseInt(found[found.length-1], 10)
 
     let requestBody = {
       "lightName": roomName.toUpperCase().replace(" ", "_"),
